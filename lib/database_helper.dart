@@ -76,8 +76,9 @@ class DatabaseHelper {
 
   Future<Database> initDatabase() async {
     final dbpath = await getDatabasesPath();
-    print(dbpath);
+    print('database path : $dbpath');
     String path = join(dbpath, 'storage.db');
+    print('final path : $path');
     return await openDatabase(path, version: 1, onCreate: _createDb);
   }
 
@@ -349,6 +350,7 @@ class DatabaseHelper {
     final db = await database;
     return await db.query('Subject');
   }
+
   Future<List<Map<String, dynamic>>> getResponses() async {
     final db = await database;
     return await db.query('record_log');

@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'login_page.dart';
 import 'database_helper.dart';
-import 'package:sqflite_common_ffi/sqflite_ffi.dart';
+// import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 void main() {
-  sqfliteFfiInit();
-  databaseFactory = databaseFactoryFfi;
+  // sqfliteFfiInit();
+  // databaseFactory = databaseFactoryFfi;
   final dbHelper = DatabaseHelper.instance;
   dbHelper.initDatabase();
   runApp(const MyApp());
