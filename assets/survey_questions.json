@@ -1,0 +1,1 @@
+{"questions":[{"question":"Tell me your name","type":"Single Choice","options":["hero","ram","sam"]},{"question":"WHat is your favourite sport?","type":"Multiple Choice","options":["cricket","foot ball","baseball"]},{"question":"What is your favourite movie?","type":"Text Answer","options":[]},{"question":"What is your age?","type":"Integer Answer","options":[]}]}
