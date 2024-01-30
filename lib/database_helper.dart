@@ -163,14 +163,22 @@ class DatabaseHelper {
     if (!subjectExists) {
       await db.execute('''
           CREATE TABLE Subject (
-            Name TEXT,
             subject_id INTEGER PRIMARY KEY AUTOINCREMENT,
+            MotherNameBeneficiary TEXT,
+            ChildNameBeneficiary TEXT,
+            Mobile TEXT,
+            InitialDate TEXT,
+            FinalDate TEXT,
+            Address TEXT,
+            HusbandName TEXT,
             Age INTEGER,
             Sex TEXT,
+            Caste TEXT,
+            Image TEXT,
+            Voice TEXT,
+            Religion Text,
             Occupation TEXT,
             Zone_ID TEXT,
-            Address TEXT,
-            Mobile TEXT,
             Email TEXT,
             Instance_time TIME DEFAULT CURRENT_TIME
           )
@@ -281,14 +289,14 @@ class DatabaseHelper {
   }
 
   Future<Map<String, dynamic>?> getUser(
-      String username, String password, String? userType) async {
+      String username, String password) async {
     final db = await database;
 
     // Replace 'users' with the actual name of your users table
     final List<Map<String, dynamic>> users = await db.query(
       'users',
-      where: 'Userid = ? AND Password = ? AND User_Type = ?',
-      whereArgs: [username, password, userType],
+      where: 'Userid = ? AND Password = ?',
+      whereArgs: [username, password],
     );
 
     if (users.isNotEmpty) {
@@ -422,6 +430,35 @@ class DatabaseHelper {
     return names;
   }
 
+  // Future<List<Map<String, String>>> getSubjectNames() async {
+  //   // Replace this with the actual implementation to fetch data from the database
+  //   final db = await database;
+  //   final result = await db.query('Subject', columns: [
+  //     'MotherNameBeneficiary',
+  //     'ChildNameBeneficiary',
+  //     'HusbandName'
+  //   ]);
+  //   print(result);
+  //   final names = result.map((e) => null)
+  //   return List.generate(
+  //     100,
+  //     (index) => {
+  //       'motherName': 'Mother Name $index',
+  //       'childName': 'Child Name $index',
+  //       'husbandName': 'Husband Name $index',
+  //     },
+  //   );
+  // }
+  Future<List<Map<String, Object?>>> getFamilyDetails() async {
+    final db = await database;
+    final result = await db.query('Subject', columns: [
+      'MotherNameBeneficiary',
+      'ChildNameBeneficiary',
+      'HusbandName'
+    ]);
+    return result;
+  }
+
   Future<List<String>> getFormsNames() async {
     final db = await database;
     final result = await db.query(
@@ -488,5 +525,15 @@ class DatabaseHelper {
       where: 'Userid = ?',
       whereArgs: [userId],
     );
+  }
+
+  Future<void> deleteDatabaseUtil() async {
+    String path = join(await getDatabasesPath(), 'storage.db');
+
+    // Delete the database file
+    await deleteDatabase(path);
+     path = join(await getDatabasesPath(), 'storage1.db');
+    await deleteDatabase(path);
+    print('deleted database successfully');
   }
 }

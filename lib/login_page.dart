@@ -12,13 +12,13 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final TextEditingController usernameController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-  String? selectedUserType;
-  List<String> userTypes = [
-    'Admin',
-    'Center Admin',
-    'Surveyor',
-    'Design Executive'
-  ];
+  String? userType;
+  // List<String> userTypes = [
+  //   'Admin',
+  //   'Center Admin',
+  //   'Surveyor',
+  //   'Design Executive'
+  // ];
 
   void handleLogin() async {
     String username = usernameController.text;
@@ -26,43 +26,40 @@ class _LoginPageState extends State<LoginPage> {
 
     final databaseHelper = DatabaseHelper.instance;
 
-
-    final user =
-        await databaseHelper.getUser(username, password, selectedUserType);
+    final user = await databaseHelper.getUser(username, password);
 
     if (user != null) {
       // User exists
       print('Login successful for user: ${user['Name']}');
+      userType = user['User_Type'];
 
-
-      if (selectedUserType == 'Admin') {
+      if (userType == 'Admin') {
         // Navigate to the AdminPage
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => AdminPageUtil()),
         );
       }
-      //else if (selectedUserType == 'Center Admin') {
+      //else if (userType == 'Center Admin') {
       //   // Navigate to the CenterAdminPage
       //   Navigator.pushReplacement(
       //     context,
       //     MaterialPageRoute(builder: (context) => CenterAdminPage()),
       //   );
       // }
-      else if (selectedUserType == 'Surveyor') {
+      else if (userType == 'Surveyor') {
         // Navigate to the SurveyorPage
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => SurveyorPageUtil()),
         );
-      } else if (selectedUserType == 'Design Executive') {
+      } else if (userType == 'Design Executive') {
         // Navigate to the DesignExecutivePage
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => DesignExecutiveUtilPage()),
         );
       } else {
-        
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Incorrect credentials!!!'),
@@ -70,7 +67,6 @@ class _LoginPageState extends State<LoginPage> {
         );
       }
     } else {
-     
       print('Login failed. User not found.');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -92,9 +88,9 @@ class _LoginPageState extends State<LoginPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               Text(
-                'SURVEY PROJECT', 
+                'SERVICE PROJECT',
                 style: TextStyle(
-                  fontSize: 24, 
+                  fontSize: 24,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -104,22 +100,22 @@ class _LoginPageState extends State<LoginPage> {
                 height: 250,
               ),
               SizedBox(height: 20),
-              DropdownButton<String>(
-                hint: Text('Select User Type'),
-                value: selectedUserType,
-                items: userTypes.map((String userType) {
-                  return DropdownMenuItem<String>(
-                    value: userType,
-                    child: Text(userType),
-                  );
-                }).toList(),
-                onChanged: (String? newValue) {
-                  setState(() {
-                    selectedUserType = newValue;
-                  });
-                },
-              ),
-              SizedBox(height: 20),
+              // DropdownButton<String>(
+              //   hint: Text('Select User Type'),
+              //   value: selectedUserType,
+              //   items: userTypes.map((String userType) {
+              //     return DropdownMenuItem<String>(
+              //       value: userType,
+              //       child: Text(userType),
+              //     );
+              //   }).toList(),
+              //   onChanged: (String? newValue) {
+              //     setState(() {
+              //       selectedUserType = newValue;
+              //     });
+              //   },
+              // ),
+              // SizedBox(height: 20),
               Container(
                 width: 200,
                 height: 40,
@@ -154,7 +150,7 @@ class _LoginPageState extends State<LoginPage> {
                           labelText: 'Password',
                           border: OutlineInputBorder(),
                         ),
-                        obscureText: true, 
+                        obscureText: true,
                       ),
                     ),
                   ],

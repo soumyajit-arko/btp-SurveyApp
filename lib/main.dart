@@ -4,9 +4,13 @@ import 'database_helper.dart';
 // import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+
   // sqfliteFfiInit();
   // databaseFactory = databaseFactoryFfi;
+
   final dbHelper = DatabaseHelper.instance;
+  // dbHelper.deleteDatabaseUtil();
   dbHelper.initDatabase();
   runApp(const MyApp());
 }

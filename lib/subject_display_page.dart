@@ -48,10 +48,25 @@ class _SubjectDisplayPageState extends State<SubjectDisplayPage> {
                           child: DataTable(
                             columns: const <DataColumn>[
                               DataColumn(
-                                label: Text('Name'),
+                                label: Text('Mother Name'),
                               ),
                               DataColumn(
-                                label: Text('Subject ID'),
+                                label: Text('Child Name'),
+                              ),
+                              DataColumn(
+                                label: Text('Initial Date'),
+                              ),
+                              DataColumn(
+                                label: Text('Final Date'),
+                              ),
+                              DataColumn(
+                                label: Text('Contact No.'),
+                              ),
+                              DataColumn(
+                                label: Text('Address'),
+                              ),
+                              DataColumn(
+                                label: Text('Husband Name'),
                               ),
                               DataColumn(
                                 label: Text('Age'),
@@ -60,38 +75,33 @@ class _SubjectDisplayPageState extends State<SubjectDisplayPage> {
                                 label: Text('Sex'),
                               ),
                               DataColumn(
-                                label: Text('Zone ID'),
-                              ),
-                              DataColumn(
-                                label: Text('Occupation'),
-                              ),
-                              DataColumn(
-                                label: Text('Address'),
-                              ),
-                              DataColumn(
-                                label: Text('Mobile'),
-                              ),
-                              DataColumn(
-                                label: Text('Email'),
+                                label: Text('Caste'),
                               ),
                             ],
                             rows: subjects
                                 .map(
-                                  (user) => DataRow(
+                                  (subject) => DataRow(
                                     cells: <DataCell>[
-                                      DataCell(Text(user['Name'].toString())),
+                                      DataCell(Text(
+                                          subject['MotherNameBeneficiary']
+                                              .toString())),
+                                      DataCell(Text(
+                                          subject['ChildNameBeneficiary']
+                                              .toString())),
+                                      DataCell(Text(
+                                          subject['InitialDate'].toString())),
+                                      DataCell(Text(
+                                          subject['FinalDate'].toString())),
+                                      DataCell(Text(subject['Mobile']
+                                          .toString())), // Assuming 'Mobile' is the contact number
                                       DataCell(
-                                          Text(user['subject_id'].toString())),
-                                      DataCell(Text(user['Age'].toString())),
-                                      DataCell(Text(user['Sex'].toString())),
+                                          Text(subject['Address'].toString())),
+                                      DataCell(Text(
+                                          subject['HusbandName'].toString())),
+                                      DataCell(Text(subject['Age'].toString())),
+                                      DataCell(Text(subject['Sex'].toString())),
                                       DataCell(
-                                          Text(user['Zone_ID'].toString())),
-                                      DataCell(
-                                          Text(user['Occupation'].toString())),
-                                      DataCell(
-                                          Text(user['Address'].toString())),
-                                      DataCell(Text(user['Mobile'].toString())),
-                                      DataCell(Text(user['Email'].toString())),
+                                          Text(subject['Caste'].toString())),
                                     ],
                                   ),
                                 )
