@@ -32,13 +32,14 @@ class _TemplateSourcePageState extends State<TemplateSourcePage> {
   }
 
   Widget _buildSmallTextField(String questionText, String hintText) {
-    return Container(
-      width: 400, // Set the desired width
-      height: 50,
-      child: TextField(
-        decoration: InputDecoration(
-          hintText: hintText,
-          border: OutlineInputBorder(),
+    return Expanded(
+      child: Container(
+        height: 50,
+        child: TextField(
+          decoration: InputDecoration(
+            hintText: hintText,
+            border: OutlineInputBorder(),
+          ),
         ),
       ),
     );
@@ -53,6 +54,7 @@ class _TemplateSourcePageState extends State<TemplateSourcePage> {
       // body: Stack(
       //   children: <Widget>[
       body: SingleChildScrollView(
+        scrollDirection: Axis.vertical,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [

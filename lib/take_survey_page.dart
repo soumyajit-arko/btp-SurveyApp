@@ -1,12 +1,14 @@
+import 'package:app_001/family_details.dart';
+import 'package:app_001/form_details.dart';
 import 'package:flutter/material.dart';
 import 'database_helper.dart';
 import 'dart:convert';
 import 'login_page.dart';
 
 class TakeSurveyPage extends StatefulWidget {
-  final String formName;
-  final String subjectName;
-  TakeSurveyPage(this.formName, this.subjectName);
+  final FormDetails formName;
+  final FamilyDetails familyDetails;
+  const TakeSurveyPage(this.formName, this.familyDetails, {super.key});
   @override
   _TakeSurveyPageState createState() => _TakeSurveyPageState();
 }
@@ -19,6 +21,7 @@ class _TakeSurveyPageState extends State<TakeSurveyPage> {
   void initState() {
     super.initState();
     displayForm();
+    printSelectedName();
   }
 
   void printSelectedName() async {
@@ -27,12 +30,12 @@ class _TakeSurveyPageState extends State<TakeSurveyPage> {
 
     // print('Final');
     print(widget.formName);
-    print(widget.subjectName);
+    print(widget.familyDetails);
   }
 
   void displayForm() async {
     final details =
-        await DatabaseHelper.instance.getFormWithName(widget.formName);
+        await DatabaseHelper.instance.getFormWithName(widget.formName.formName);
     final jsonContent = details[0]['template_source'];
     final data = json.decode(jsonContent);
     List<Map<String, dynamic>> mapList =
@@ -65,8 +68,9 @@ class _TakeSurveyPageState extends State<TakeSurveyPage> {
     final responsesMap = Map<String, dynamic>.from(responses);
     final responsesJson = json.encode(responsesMap);
     final subjectID =
-        await DatabaseHelper.instance.getsubjectIDByName(widget.subjectName);
-    final sid_ = await DatabaseHelper.instance.getSidByName(widget.formName);
+        await DatabaseHelper.instance.getsubjectIDByName(widget.familyDetails);
+    final sid_ =
+        await DatabaseHelper.instance.getSidByName(widget.formName.formName);
     final subID = int.parse(subjectID);
     final sid = int.parse(sid_);
     DateTime now = DateTime.now();
@@ -97,6 +101,11 @@ class _TakeSurveyPageState extends State<TakeSurveyPage> {
     setState(() {
       responses = {};
     });
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Survey saved successfully'),
+      ),
+    );
   }
 
   Widget _buildSmallTextField(String questionText, String hintText) {

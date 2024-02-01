@@ -1,3 +1,4 @@
+import 'package:app_001/family_details.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
@@ -405,17 +406,30 @@ class DatabaseHelper {
     return result.first['fid'].toString();
   }
 
-  Future<String> getsubjectIDByName(String? name) async {
+  Future<String> getsubjectIDByName(FamilyDetails? familyDetails) async {
     final db = await database;
+    
     final result = await db.query(
       'Subject',
       columns: ['subject_id'],
-      where: 'Name = ?',
-      whereArgs: [name],
+      where:
+          'MotherNameBeneficiary = ? AND ChildNameBeneficiary =? AND HusbandName = ?',
+      whereArgs: [familyDetails?.motherName,familyDetails?.childName,familyDetails?.husbandName],
     );
     // Return the sid as a String
     return result.first['subject_id'].toString();
   }
+  // Future<String> getsubjectIDByName(String? name) async {
+  //   final db = await database;
+  //   final result = await db.query(
+  //     'Subject',
+  //     columns: ['subject_id'],
+  //     where: 'Name = ?',
+  //     whereArgs: [name],
+  //   );
+  //   // Return the sid as a String
+  //   return result.first['subject_id'].toString();
+  // }
 
   Future<List<String>> getSubjectNames() async {
     final db = await database;
@@ -532,7 +546,7 @@ class DatabaseHelper {
 
     // Delete the database file
     await deleteDatabase(path);
-     path = join(await getDatabasesPath(), 'storage1.db');
+    path = join(await getDatabasesPath(), 'storage1.db');
     await deleteDatabase(path);
     print('deleted database successfully');
   }

@@ -89,22 +89,22 @@ class _DisplaySurveyResponsesState extends State<DisplaySurveyResponses> {
               ],
             )),
           ),
-          Positioned(
-            top: 10,
-            right: 10,
-            child: ElevatedButton.icon(
-              onPressed: () {
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => LoginPage(),
-                  ),
-                );
-              },
-              icon: Icon(Icons.logout, size: 30),
-              label: Text('Logout'),
-            ),
-          ),
+          // Positioned(
+          //   top: 10,
+          //   right: 10,
+          //   child: ElevatedButton.icon(
+          //     onPressed: () {
+          //       Navigator.pushReplacement(
+          //         context,
+          //         MaterialPageRoute(
+          //           builder: (context) => LoginPage(),
+          //         ),
+          //       );
+          //     },
+          //     icon: Icon(Icons.logout, size: 30),
+          //     label: Text('Logout'),
+          //   ),
+          // ),
         ],
       ),
     );

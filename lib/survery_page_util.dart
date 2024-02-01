@@ -1,4 +1,5 @@
 import 'package:app_001/display_survey_responses.dart';
+import 'package:app_001/subject_selection_survey.dart';
 
 import 'select_subject_survey.dart';
 import 'subject_display_page.dart';
@@ -72,7 +73,7 @@ class _SurveyorPageUtilState extends State<SurveyorPageUtil> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => SelectSubjectSurveyPage(),
+                            builder: (context) => FamilyDataTablePage(),
                           ),
                         );
                       },
