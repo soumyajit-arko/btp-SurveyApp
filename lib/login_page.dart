@@ -95,7 +95,7 @@ class _LoginPageState extends State<LoginPage> {
                 ),
               ),
               Image.asset(
-                'assets/images/login_bg.png',
+                'assets/images/bg2.jpeg',
                 width: 450,
                 height: 250,
               ),

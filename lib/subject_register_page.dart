@@ -1,8 +1,13 @@
 import 'dart:io';
-
+// import 'package:audioplayers/audioplayers.dart';
+import 'package:camera/camera.dart';
+import 'package:path/path.dart' as path;
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:path_provider/path_provider.dart';
+// import 'package:record/record.dart';
+
 import 'database_helper.dart';
 import 'login_page.dart';
 
@@ -40,19 +45,24 @@ class _SubjectRegisterPageState extends State<SubjectRegisterPage> {
   final TextEditingController emailController = TextEditingController();
 
   File? _image;
-  Future<void> _getImage() async {
-    final picker = ImagePicker();
-    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
 
-    setState(() {
-      if (pickedFile != null) {
-        _image = File(pickedFile.path);
-      }
-    });
-  }
+  bool showPlayer = false;
+  String? audioPath;
+
+  // Future<void> _getImage() async {
+  //   final picker = ImagePicker();
+  //   final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+
+  //   setState(() {
+  //     if (pickedFile != null) {
+  //       _image = File(pickedFile.path);
+  //     }
+  //   });
+  // }
 
   @override
   void initState() {
+    showPlayer = false;
     super.initState();
   }
 
@@ -95,6 +105,13 @@ class _SubjectRegisterPageState extends State<SubjectRegisterPage> {
   //   emailController.clear();
   // }
   void addSubject() async {
+    Directory documentDirectory = await getApplicationDocumentsDirectory();
+    String filename = motherNameBeneficiaryController.text + ".jpg";
+    String pathutil = path.join(documentDirectory.path, filename);
+    final te = await _image?.copy(pathutil);
+    // _image.
+    print(te);
+    print('done');
     String motherNameBeneficiary = motherNameBeneficiaryController.text;
     String childNameBeneficiary = childNameBeneficiaryController.text;
     String mobile = mobileController.text;
@@ -105,7 +122,7 @@ class _SubjectRegisterPageState extends State<SubjectRegisterPage> {
     String age = ageController.text;
     String sex = sexController.text;
     String caste = casteController.text;
-    // String image = imageController.text;
+    String image = filename;
     // String voice = voiceController.text;
     String religion = religionController.text;
     String occupation = occupationController.text;
@@ -123,7 +140,7 @@ class _SubjectRegisterPageState extends State<SubjectRegisterPage> {
       'Age': age,
       'Sex': sex,
       'Caste': caste,
-      'Image': '',
+      'Image': image,
       'Voice': '',
       'Religion': religion,
       'Occupation': occupation,
@@ -132,6 +149,23 @@ class _SubjectRegisterPageState extends State<SubjectRegisterPage> {
     });
     _clearFields();
   }
+
+  // void tempFun() async {
+  //   Directory documentDirectory = await getApplicationDocumentsDirectory();
+  //   String filename = motherNameBeneficiaryController.text + ".jpg";
+
+  //   final pathutil = path.join(documentDirectory.path, filename);
+  //   print(pathutil);
+  //   final f = File(pathutil);
+  //   final  fileContent = await f.readAsBytes();
+
+  //   print(f);
+  //   print(fileContent);
+  //   setState(() {
+  //     _tempimage = f;
+  //   });
+  //   print('executed :: : ');
+  // }
 
   void _clearFields() {
     motherNameBeneficiaryController.clear();
@@ -150,6 +184,7 @@ class _SubjectRegisterPageState extends State<SubjectRegisterPage> {
     occupationController.clear();
     zoneidController.clear();
     emailController.clear();
+    // _image.delete()
   }
 
   Widget _buildSmallTextField(
@@ -208,6 +243,18 @@ class _SubjectRegisterPageState extends State<SubjectRegisterPage> {
   //     ),
   //   );
   // }
+  Future<void> _getImageFromCamera() async {
+    final pickedFile = await ImagePicker().pickImage(
+      source: ImageSource.camera,
+    );
+
+    if (pickedFile != null) {
+      setState(() {
+        _image = File(pickedFile.path);
+      });
+    }
+  }
+
   Widget _buildFormField(String labelText, TextEditingController controller,
       {TextInputType? keyboardType}) {
     return Container(
@@ -244,6 +291,8 @@ class _SubjectRegisterPageState extends State<SubjectRegisterPage> {
       ),
     );
   }
+
+  
 
   DateTime initialDateSelected = DateTime.now();
   DateTime finalDateSelected = DateTime.now();
@@ -321,36 +370,25 @@ class _SubjectRegisterPageState extends State<SubjectRegisterPage> {
       body: Stack(
         children: <Widget>[
           SingleChildScrollView(
-            padding: EdgeInsets.all(16.0),
+            padding: const EdgeInsets.all(16.0),
             child: Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  Text(
+                  const Text(
                     'Create a New Subject',
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
                   _buildFormField(
                       'Mother\'s Name', motherNameBeneficiaryController),
                   _buildFormField(
                       'Child\'s Name', childNameBeneficiaryController),
                   _buildFormField('Mobile', mobileController,
                       keyboardType: TextInputType.phone),
-                  // _buildFormField('Initial Date', initialDateController,
-                  //     keyboardType: TextInputType.datetime),
-                  // Text(
-                  //   "Selected Date: ${_formatDate(initialDateSelected)}", // Format the date as a string
-                  //   style: TextStyle(fontSize: 18),
-                  // ),
-                  // SizedBox(height: 20),
-                  // ElevatedButton(
-                  //   onPressed: () => _selectDate(context),
-                  //   child: Text('Select Date'),
-                  // ),
                   _buildDateSelector('Initial Date', initialDateSelected,
                       (DateTime date) {
                     setState(() {
@@ -370,31 +408,42 @@ class _SubjectRegisterPageState extends State<SubjectRegisterPage> {
                       keyboardType: TextInputType.number),
                   _buildFormField('Sex', sexController),
                   _buildFormField('Caste', casteController),
-                  _buildFormField('Image', imageController),
-                  _buildFormField('Voice', voiceController),
+                  // _buildFormField('Image', imageController),
+                  // _buildFormField('Voice', voiceController),
                   _buildFormField('Religion', religionController),
                   _buildFormField('Occupation', occupationController),
-                  _buildFormField('Zone ID', zoneidController),
+                  _buildFormField('Village', zoneidController),
                   _buildFormField('Email', emailController,
                       keyboardType: TextInputType.emailAddress),
                   _image == null
-                      ? Text('No image selected.')
+                      ? const Text('No image selected.')
                       : Image.file(
                           _image!,
                           height: 100,
                           width: 100,
                         ),
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
+                  // ElevatedButton(
+                  //   onPressed: _getImage,
+                  //   child: Text('Pick Image'),
+                  // ),
                   ElevatedButton(
-                    onPressed: _getImage,
-                    child: Text('Pick Image'),
+                    // onPressed: () async {
+                    //   await availableCameras().then((value) => Navigator.push(
+                    //       context,
+                    //       MaterialPageRoute(
+                    //           builder: (_) => CameraPage(cameras: value))));
+                    // },
+                    onPressed: _getImageFromCamera,
+                    child: const Text("Take a Picture"),
                   ),
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
                   ElevatedButton.icon(
                     onPressed: addSubject,
-                    icon: Icon(Icons.person, size: 30),
-                    label: Text('Create Subject'),
-                  )
+                    icon: const Icon(Icons.person, size: 30),
+                    label: const Text('Create Subject'),
+                  ),
+                  // ElevatedButton(onPressed: tempFun, child: Text('Temp')),
                 ],
               ),
             ),
