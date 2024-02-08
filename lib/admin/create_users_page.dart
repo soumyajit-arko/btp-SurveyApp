@@ -3,9 +3,9 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'database_helper.dart';
+import '../backend/database_helper.dart';
 import 'package:intl/intl.dart';
-import 'login_page.dart';
+import '../login_page.dart';
 
 class CreateUsersPage extends StatefulWidget {
   @override

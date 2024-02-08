@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'login_page.dart';
+import '../login_page.dart';
 import 'create_users_page.dart';
 import 'display_users_page.dart';
 
@@ -13,7 +13,7 @@ class _AdminPageUtilState extends State<AdminPageUtil> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Home Page'),
+        title: Text('Admin Page'),
       ),
       body: Stack(
         children: <Widget>[

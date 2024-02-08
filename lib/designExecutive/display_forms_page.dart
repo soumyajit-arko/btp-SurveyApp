@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'database_helper.dart';
-
+import '../backend/database_helper.dart';
 import 'display_template_page.dart';
-import 'login_page.dart';
 
 class DisplayFormsPage extends StatefulWidget {
   const DisplayFormsPage({super.key});
@@ -21,10 +19,12 @@ class _DisplayFormsPageState extends State<DisplayFormsPage> {
   }
 
   void _loadForms() async {
-    formsList = await DatabaseHelper.instance.getForms();
-    // print('loaded forms list : ');
-    // print(formsList);
-    setState(() {});
+    print('loaded forms list : ');
+    final fL = await DatabaseHelper.instance.getForms();
+    print(formsList);
+    setState(() {
+      formsList = fL;
+    });
   }
 
   @override
@@ -52,11 +52,12 @@ class _DisplayFormsPageState extends State<DisplayFormsPage> {
                           scrollDirection: Axis.horizontal,
                           child: DataTable(
                             columns: const <DataColumn>[
-                              DataColumn(label: Text('sid')),
+                              DataColumn(label: Text('Id')),
                               DataColumn(label: Text('Name')),
                               DataColumn(label: Text('Description')),
-                              DataColumn(label: Text('template_source')),
-                              DataColumn(label: Text('date_creation')),
+                              DataColumn(label: Text('Survey template')),
+                              DataColumn(label: Text('Details')),
+                              DataColumn(label: Text('Creation date')),
                             ],
                             rows: formsList
                                 .map(
@@ -67,7 +68,7 @@ class _DisplayFormsPageState extends State<DisplayFormsPage> {
                                       DataCell(Text(
                                           form_['Description'].toString())),
                                       DataCell(
-                                        const Text("View the form"),
+                                        const Text("View the survey form"),
                                         onTap: () {
                                           // Handle navigation to a new page displaying the content
                                           String templateSource =
@@ -78,7 +79,26 @@ class _DisplayFormsPageState extends State<DisplayFormsPage> {
                                             MaterialPageRoute(
                                               builder: (context) =>
                                                   TemplateSourcePage(
+                                                      "Survey Form",
                                                       templateSource),
+                                            ),
+                                          );
+                                        },
+                                      ),
+                                      DataCell(
+                                        const Text("View the details form"),
+                                        onTap: () {
+                                          // Handle navigation to a new page displaying the content
+                                          String detailsSource =
+                                              form_['details_source']
+                                                  .toString();
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  TemplateSourcePage(
+                                                      "Details Form",
+                                                      detailsSource),
                                             ),
                                           );
                                         },
@@ -96,22 +116,22 @@ class _DisplayFormsPageState extends State<DisplayFormsPage> {
               ),
             ),
           ),
-          Positioned(
-            top: 10, // Adjust top position as needed
-            right: 10, // Adjust right position as needed
-            child: ElevatedButton.icon(
-              onPressed: () {
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => LoginPage(),
-                  ),
-                );
-              },
-              icon: Icon(Icons.logout, size: 30), // Add a logout icon
-              label: Text('Logout'),
-            ),
-          ),
+          // Positioned(
+          //   top: 10, // Adjust top position as needed
+          //   right: 10, // Adjust right position as needed
+          //   child: ElevatedButton.icon(
+          //     onPressed: () {
+          //       Navigator.pushReplacement(
+          //         context,
+          //         MaterialPageRoute(
+          //           builder: (context) => LoginPage(),
+          //         ),
+          //       );
+          //     },
+          //     icon: Icon(Icons.logout, size: 30), // Add a logout icon
+          //     label: Text('Logout'),
+          //   ),
+          // ),
         ],
       ),
     );

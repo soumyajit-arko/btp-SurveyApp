@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'database_helper.dart';
-import 'login_page.dart';
+import '../backend/database_helper.dart';
+import '../login_page.dart';
 
 class DisplayUsersPage extends StatefulWidget {
   @override

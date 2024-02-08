@@ -1,8 +1,8 @@
-import 'package:app_001/display_fields_page.dart';
-import 'package:app_001/display_forms_page.dart';
-import 'package:app_001/forms_name_details_page.dart';
+import 'package:app_001/designExecutive/display_fields_page.dart';
+import 'package:app_001/designExecutive/display_forms_page.dart';
+import 'package:app_001/designExecutive/forms_name_details_page.dart';
 import 'package:flutter/material.dart';
-import 'login_page.dart';
+import '../login_page.dart';
 
 class DesignExecutiveUtilPage extends StatefulWidget {
   @override
@@ -15,7 +15,7 @@ class _DesignExecutiveUtilPageState extends State<DesignExecutiveUtilPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Home Page'),
+        title: Text('Design Executive Page'),
       ),
       body: Stack(
         children: <Widget>[

@@ -1,10 +1,11 @@
-import 'package:app_001/form_selection_survey.dart';
+import 'package:app_001/surveyor/form_selection_survey.dart';
 import 'package:flutter/material.dart';
-import 'package:app_001/database_helper.dart';
+import 'package:app_001/backend/database_helper.dart';
 import 'family_details.dart';
 
-
 class FamilyDataTablePage extends StatefulWidget {
+  final String nextPage;
+  const FamilyDataTablePage({required this.nextPage,super.key});
   @override
   _FamilyDataTablePageState createState() => _FamilyDataTablePageState();
 }
@@ -14,7 +15,7 @@ class _FamilyDataTablePageState extends State<FamilyDataTablePage> {
   List<FamilyDetails> filteredList = [];
 
   TextEditingController searchController = TextEditingController();
-  String selectedCategory = 'Mother Name';
+  String selectedCategory = 'Beneficiary Name';
 
   @override
   void initState() {
@@ -30,9 +31,10 @@ class _FamilyDataTablePageState extends State<FamilyDataTablePage> {
       familyList = familyDetails
           .map(
             (family) => FamilyDetails(
-              motherName: family['MotherNameBeneficiary'].toString(),
-              childName: family['ChildNameBeneficiary'].toString(),
-              husbandName: family['HusbandName'].toString(),
+              subjectID: family['subject_id'].toString(),
+              subjectName: family['SubjectName'].toString(),
+              spouseName: family['SpouseName'].toString(),
+              childName: family['ChildName'].toString(),
             ),
           )
           .toList();
@@ -42,20 +44,20 @@ class _FamilyDataTablePageState extends State<FamilyDataTablePage> {
 
   void filterFamilyList(String query) {
     setState(() {
-      if (selectedCategory == 'Mother Name') {
+      if (selectedCategory == 'Beneficiary Name') {
         filteredList = familyList
             .where((family) =>
-                family.motherName.toLowerCase().contains(query.toLowerCase()))
+                family.subjectName.toLowerCase().contains(query.toLowerCase()))
             .toList();
       } else if (selectedCategory == 'Child Name') {
         filteredList = familyList
             .where((family) =>
                 family.childName.toLowerCase().contains(query.toLowerCase()))
             .toList();
-      } else if (selectedCategory == 'Husband Name') {
+      } else if (selectedCategory == 'Spouse Name') {
         filteredList = familyList
             .where((family) =>
-                family.husbandName.toLowerCase().contains(query.toLowerCase()))
+                family.spouseName.toLowerCase().contains(query.toLowerCase()))
             .toList();
       }
     });
@@ -66,9 +68,9 @@ class _FamilyDataTablePageState extends State<FamilyDataTablePage> {
     var dataTable = PaginatedDataTable(
       showCheckboxColumn: false,
       columns: const <DataColumn>[
-        DataColumn(label: Text('Mother Name')),
+        DataColumn(label: Text('Beneficiary Name')),
         DataColumn(label: Text('Child Name')),
-        DataColumn(label: Text('Husband Name')),
+        DataColumn(label: Text('Spouse Name')),
       ],
       source: _FamilyDataSource(
         filteredList,
@@ -97,9 +99,9 @@ class _FamilyDataTablePageState extends State<FamilyDataTablePage> {
                   DropdownButton<String>(
                     value: selectedCategory,
                     items: [
-                      'Mother Name',
+                      'Beneficiary Name',
                       'Child Name',
-                      'Husband Name',
+                      'Spouse Name',
                     ].map((String category) {
                       return DropdownMenuItem<String>(
                         value: category,
@@ -108,7 +110,7 @@ class _FamilyDataTablePageState extends State<FamilyDataTablePage> {
                     }).toList(),
                     onChanged: (String? value) {
                       setState(() {
-                        selectedCategory = value ?? 'Mother Name';
+                        selectedCategory = value ?? 'Beneficiary Name';
                       });
                     },
                   ),
@@ -152,7 +154,7 @@ class _FamilyDataTablePageState extends State<FamilyDataTablePage> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => FormDataTablePage(family: family),
+        builder: (context) => FormDataTablePage(family: family,nextPage: widget.nextPage),
       ),
     );
   }
@@ -174,9 +176,9 @@ class FamilyDetailsPage extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text('Mother Name: ${family.motherName}'),
+              Text('Mother Name: ${family.subjectName}'),
               Text('Child Name: ${family.childName}'),
-              Text('Husband Name: ${family.husbandName}'),
+              Text('Husband Name: ${family.spouseName}'),
             ],
           ),
         ),
@@ -199,9 +201,9 @@ class _FamilyDataSource extends DataTableSource {
     final family = _familyList[index];
     return DataRow(
       cells: [
-        DataCell(Text(family.motherName)),
+        DataCell(Text(family.subjectName)),
         DataCell(Text(family.childName)),
-        DataCell(Text(family.husbandName)),
+        DataCell(Text(family.spouseName)),
       ],
       onSelectChanged: (isSelected) {
         if (isSelected != null && isSelected) {

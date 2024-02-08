@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'database_helper.dart';
+import '../backend/database_helper.dart';
 
-import 'login_page.dart';
+import '../login_page.dart';
 
 class DisplayFieldsPage extends StatefulWidget {
   const DisplayFieldsPage({super.key});
@@ -53,6 +53,7 @@ class _DisplayFieldsPageState extends State<DisplayFieldsPage> {
                             DataColumn(label: Text('fid')),
                             DataColumn(label: Text('sid')),
                             DataColumn(label: Text('Name')),
+                            DataColumn(label: Text('Type')),
                             DataColumn(label: Text('attribute_name')),
                             DataColumn(label: Text('attribute_datatype')),
                             DataColumn(label: Text('attribute_unit')),
@@ -67,6 +68,7 @@ class _DisplayFieldsPageState extends State<DisplayFieldsPage> {
                                     DataCell(Text(form_['fid'].toString())),
                                     DataCell(Text(form_['sid'].toString())),
                                     DataCell(Text(form_['Name'].toString())),
+                                    DataCell(Text(form_['source_type'].toString())),
                                     DataCell(Text(
                                         form_['attribute_name'].toString())),
                                     DataCell(Text(form_['attribute_datatype']
@@ -89,22 +91,22 @@ class _DisplayFieldsPageState extends State<DisplayFieldsPage> {
               ],
             )),
           ),
-          Positioned(
-            top: 10, // Adjust top position as needed
-            right: 10, // Adjust right position as needed
-            child: ElevatedButton.icon(
-              onPressed: () {
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => LoginPage(),
-                  ),
-                );
-              },
-              icon: Icon(Icons.logout, size: 30), // Add a logout icon
-              label: Text('Logout'),
-            ),
-          ),
+          // Positioned(
+          //   top: 10, // Adjust top position as needed
+          //   right: 10, // Adjust right position as needed
+          //   child: ElevatedButton.icon(
+          //     onPressed: () {
+          //       Navigator.pushReplacement(
+          //         context,
+          //         MaterialPageRoute(
+          //           builder: (context) => LoginPage(),
+          //         ),
+          //       );
+          //     },
+          //     icon: Icon(Icons.logout, size: 30), // Add a logout icon
+          //     label: Text('Logout'),
+          //   ),
+          // ),
         ],
       ),
     );

@@ -8,8 +8,8 @@ import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 // import 'package:record/record.dart';
 
-import 'database_helper.dart';
-import 'login_page.dart';
+import '../backend/database_helper.dart';
+import '../login_page.dart';
 
 class SubjectRegisterPage extends StatefulWidget {
   @override
@@ -25,15 +25,18 @@ class _SubjectRegisterPageState extends State<SubjectRegisterPage> {
   // final TextEditingController addressController = TextEditingController();
   // final TextEditingController mobileController = TextEditingController();
   // final TextEditingController emailController = TextEditingController();
-  final TextEditingController motherNameBeneficiaryController =
-      TextEditingController();
-  final TextEditingController childNameBeneficiaryController =
-      TextEditingController();
+  final TextEditingController subjectNameController = TextEditingController();
+  final TextEditingController childNameController = TextEditingController();
   final TextEditingController mobileController = TextEditingController();
-  final TextEditingController initialDateController = TextEditingController();
-  final TextEditingController finalDateController = TextEditingController();
+  final TextEditingController maritalStatusController = TextEditingController();
+  final TextEditingController villageController = TextEditingController();
+  final TextEditingController idTypeController = TextEditingController();
+  final TextEditingController idNumberController = TextEditingController();
+
+  // final TextEditingController initialDateController = TextEditingController();
+  // final TextEditingController finalDateController = TextEditingController();
   final TextEditingController addressController = TextEditingController();
-  final TextEditingController husbandNameController = TextEditingController();
+  final TextEditingController spouseNameController = TextEditingController();
   final TextEditingController ageController = TextEditingController();
   final TextEditingController sexController = TextEditingController();
   final TextEditingController casteController = TextEditingController();
@@ -106,19 +109,23 @@ class _SubjectRegisterPageState extends State<SubjectRegisterPage> {
   // }
   void addSubject() async {
     Directory documentDirectory = await getApplicationDocumentsDirectory();
-    String filename = motherNameBeneficiaryController.text + ".jpg";
+    String filename = subjectNameController.text + ".jpg";
     String pathutil = path.join(documentDirectory.path, filename);
     final te = await _image?.copy(pathutil);
     // _image.
     print(te);
     print('done');
-    String motherNameBeneficiary = motherNameBeneficiaryController.text;
-    String childNameBeneficiary = childNameBeneficiaryController.text;
+    String subjectName = subjectNameController.text;
+    String spouseName = spouseNameController.text;
+    String childName = childNameController.text;
+    String maritalStatus = maritalStatusController.text;
+    String village = villageController.text;
+    String idType = idTypeController.text;
+    String idNumber = idNumberController.text;
     String mobile = mobileController.text;
-    String initialDate = initialDateController.text;
-    String finalDate = finalDateController.text;
+    // String initialDate = initialDateController.text;
+    // String finalDate = finalDateController.text;
     String address = addressController.text;
-    String husbandName = husbandNameController.text;
     String age = ageController.text;
     String sex = sexController.text;
     String caste = casteController.text;
@@ -130,13 +137,17 @@ class _SubjectRegisterPageState extends State<SubjectRegisterPage> {
     String email = emailController.text;
 
     await DatabaseHelper.instance.insertSubject({
-      'MotherNameBeneficiary': motherNameBeneficiary,
-      'ChildNameBeneficiary': childNameBeneficiary,
+      'SubjectName': subjectName,
+      'SpouseName': spouseName,
+      'ChildName': childName,
+      'MaritalStatus': maritalStatus,
+      'Village': village,
+      'IDType': idType,
+      'IDNumber': idNumber,
       'Mobile': mobile,
-      'InitialDate': initialDate,
-      'FinalDate': finalDate,
+      // 'InitialDate': initialDate,
+      // 'FinalDate': finalDate,
       'Address': address,
-      'HusbandName': husbandName,
       'Age': age,
       'Sex': sex,
       'Caste': caste,
@@ -148,11 +159,16 @@ class _SubjectRegisterPageState extends State<SubjectRegisterPage> {
       'Email': email,
     });
     _clearFields();
+    ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Benificary Enrolled successfully'),
+        ),
+      );
   }
 
   // void tempFun() async {
   //   Directory documentDirectory = await getApplicationDocumentsDirectory();
-  //   String filename = motherNameBeneficiaryController.text + ".jpg";
+  //   String filename = subjectNameController.text + ".jpg";
 
   //   final pathutil = path.join(documentDirectory.path, filename);
   //   print(pathutil);
@@ -168,13 +184,17 @@ class _SubjectRegisterPageState extends State<SubjectRegisterPage> {
   // }
 
   void _clearFields() {
-    motherNameBeneficiaryController.clear();
-    childNameBeneficiaryController.clear();
+    subjectNameController.clear();
+    childNameController.clear();
     mobileController.clear();
-    initialDateController.clear();
-    finalDateController.clear();
+    maritalStatusController.clear();
+    villageController.clear();
+    idTypeController.clear();
+    idNumberController.clear();
+    // initialDateController.clear();
+    // finalDateController.clear();
     addressController.clear();
-    husbandNameController.clear();
+    spouseNameController.clear();
     ageController.clear();
     sexController.clear();
     casteController.clear();
@@ -292,80 +312,78 @@ class _SubjectRegisterPageState extends State<SubjectRegisterPage> {
     );
   }
 
-  
+  // DateTime initialDateSelected = DateTime.now();
+  // DateTime finalDateSelected = DateTime.now();
 
-  DateTime initialDateSelected = DateTime.now();
-  DateTime finalDateSelected = DateTime.now();
+  // Widget _buildDateSelector(String labelText, DateTime selectedDate,
+  //     Function(DateTime) onDateSelected, TextEditingController dateController) {
+  //   if (selectedDate != null) {
+  //     dateController.text = _formatDate(selectedDate);
+  //   }
 
-  Widget _buildDateSelector(String labelText, DateTime selectedDate,
-      Function(DateTime) onDateSelected, TextEditingController dateController) {
-    if (selectedDate != null) {
-      dateController.text = _formatDate(selectedDate);
-    }
+  //   return Container(
+  //     margin: EdgeInsets.symmetric(vertical: 10),
+  //     child: Column(
+  //       mainAxisAlignment: MainAxisAlignment.center,
+  //       children: [
+  //         Row(
+  //           children: [
+  //             Container(
+  //               width: 100,
+  //               child: Text(
+  //                 labelText,
+  //                 style: TextStyle(fontSize: 18),
+  //               ),
+  //             ),
+  //             SizedBox(
+  //               width: 20,
+  //             ),
+  //             Expanded(
+  //               child: TextField(
+  //                 controller: dateController,
+  //                 readOnly: true,
+  //                 onTap: () => _selectDate(
+  //                     context, selectedDate, onDateSelected, dateController),
+  //                 decoration: InputDecoration(
+  //                   hintText: 'Select Date',
+  //                   border: OutlineInputBorder(),
+  //                 ),
+  //               ),
+  //             ),
+  //           ],
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
 
-    return Container(
-      margin: EdgeInsets.symmetric(vertical: 10),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Row(
-            children: [
-              Container(
-                width: 100,
-                child: Text(
-                  labelText,
-                  style: TextStyle(fontSize: 18),
-                ),
-              ),
-              SizedBox(
-                width: 20,
-              ),
-              Expanded(
-                child: TextField(
-                  controller: dateController,
-                  readOnly: true,
-                  onTap: () => _selectDate(
-                      context, selectedDate, onDateSelected, dateController),
-                  decoration: InputDecoration(
-                    hintText: 'Select Date',
-                    border: OutlineInputBorder(),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
+  // Future<void> _selectDate(
+  //     BuildContext context,
+  //     DateTime selectedDate,
+  //     Function(DateTime) onDateSelected,
+  //     TextEditingController controller) async {
+  //   final DateTime? pickedDate = await showDatePicker(
+  //     context: context,
+  //     initialDate: selectedDate ?? DateTime.now(),
+  //     firstDate: DateTime(1900),
+  //     lastDate: DateTime(2101),
+  //   );
 
-  Future<void> _selectDate(
-      BuildContext context,
-      DateTime selectedDate,
-      Function(DateTime) onDateSelected,
-      TextEditingController controller) async {
-    final DateTime? pickedDate = await showDatePicker(
-      context: context,
-      initialDate: selectedDate ?? DateTime.now(),
-      firstDate: DateTime(1900),
-      lastDate: DateTime(2101),
-    );
+  //   if (pickedDate != null) {
+  //     onDateSelected(pickedDate);
+  //     controller.text = _formatDate(pickedDate);
+  //   }
+  // }
 
-    if (pickedDate != null) {
-      onDateSelected(pickedDate);
-      controller.text = _formatDate(pickedDate);
-    }
-  }
-
-  String _formatDate(DateTime date) {
-    return DateFormat('dd-MM-yyyy').format(date);
-  }
+  // String _formatDate(DateTime date) {
+  //   return DateFormat('dd-MM-yyyy').format(date);
+  // }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Subject Registration Page'),
+        title: Text('Beneficiary Enrollment Page'),
       ),
       body: Stack(
         children: <Widget>[
@@ -376,34 +394,36 @@ class _SubjectRegisterPageState extends State<SubjectRegisterPage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
                   const Text(
-                    'Create a New Subject',
+                    'Enroll New Beneficiary',
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   const SizedBox(height: 20),
-                  _buildFormField(
-                      'Mother\'s Name', motherNameBeneficiaryController),
-                  _buildFormField(
-                      'Child\'s Name', childNameBeneficiaryController),
+                  _buildFormField('Beneficiary Name', subjectNameController),
+                  _buildFormField('Spouse Name', spouseNameController),
+                  _buildFormField('Child Name', childNameController),
+                  _buildFormField('Marital Status', maritalStatusController),
+                  _buildFormField('Village', villageController),
+                  _buildFormField('ID Type', idTypeController),
+                  _buildFormField('ID Number', idNumberController),
                   _buildFormField('Mobile', mobileController,
                       keyboardType: TextInputType.phone),
-                  _buildDateSelector('Initial Date', initialDateSelected,
-                      (DateTime date) {
-                    setState(() {
-                      initialDateSelected = date;
-                    });
-                  }, initialDateController),
-                  _buildDateSelector('Final Date', finalDateSelected,
-                      (DateTime date) {
-                    setState(() {
-                      finalDateSelected = date;
-                    });
-                  }, finalDateController),
+                  // _buildDateSelector('Initial Date', initialDateSelected,
+                  //     (DateTime date) {
+                  //   setState(() {
+                  //     initialDateSelected = date;
+                  //   });
+                  // }, initialDateController),
+                  // _buildDateSelector('Final Date', finalDateSelected,
+                  //     (DateTime date) {
+                  //   setState(() {
+                  //     finalDateSelected = date;
+                  //   });
+                  // }, finalDateController),
 
                   _buildFormField('Address', addressController),
-                  _buildFormField('Husband\'s Name', husbandNameController),
                   _buildFormField('Age', ageController,
                       keyboardType: TextInputType.number),
                   _buildFormField('Sex', sexController),
@@ -412,7 +432,7 @@ class _SubjectRegisterPageState extends State<SubjectRegisterPage> {
                   // _buildFormField('Voice', voiceController),
                   _buildFormField('Religion', religionController),
                   _buildFormField('Occupation', occupationController),
-                  _buildFormField('Village', zoneidController),
+                  _buildFormField('Zone ID', zoneidController),
                   _buildFormField('Email', emailController,
                       keyboardType: TextInputType.emailAddress),
                   _image == null

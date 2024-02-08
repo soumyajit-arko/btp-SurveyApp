@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'create_forms_page.dart';
-import 'database_helper.dart';
+import '../backend/database_helper.dart';
 
 
-import 'login_page.dart';
+import '../login_page.dart';
 
 class FormsNameDetailsPage extends StatefulWidget {
   const FormsNameDetailsPage({super.key});
@@ -40,7 +40,7 @@ class _FormsNameDetailsPageState extends State<FormsNameDetailsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Create Form'),
+        title: Text('Add Survey Details'),
       ),
       body: Stack(
         children: <Widget>[
@@ -74,27 +74,27 @@ class _FormsNameDetailsPageState extends State<FormsNameDetailsPage> {
                     );
                   },
                   icon: Icon(Icons.create, size: 30), // Add a "create" icon
-                  label: Text('Create Survey'),
+                  label: Text('Create Survey Form'),
                 ),
               ],
             )),
           ),
-          Positioned(
-            top: 10, // Adjust top position as needed
-            right: 10, // Adjust right position as needed
-            child: ElevatedButton.icon(
-              onPressed: () {
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => LoginPage(),
-                  ),
-                );
-              },
-              icon: Icon(Icons.logout, size: 30), // Add a logout icon
-              label: Text('Logout'),
-            ),
-          ),
+          // Positioned(
+          //   top: 10, // Adjust top position as needed
+          //   right: 10, // Adjust right position as needed
+          //   child: ElevatedButton.icon(
+          //     onPressed: () {
+          //       Navigator.pushReplacement(
+          //         context,
+          //         MaterialPageRoute(
+          //           builder: (context) => LoginPage(),
+          //         ),
+          //       );
+          //     },
+          //     icon: Icon(Icons.logout, size: 30), // Add a logout icon
+          //     label: Text('Logout'),
+          //   ),
+          // ),
         ],
       ),
     );

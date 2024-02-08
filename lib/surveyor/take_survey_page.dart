@@ -1,14 +1,22 @@
-import 'package:app_001/family_details.dart';
-import 'package:app_001/form_details.dart';
+import 'package:app_001/surveyor/family_details.dart';
+import 'package:app_001/surveyor/form_details.dart';
 import 'package:flutter/material.dart';
-import 'database_helper.dart';
+import '../backend/database_helper.dart';
 import 'dart:convert';
-import 'login_page.dart';
 
 class TakeSurveyPage extends StatefulWidget {
   final FormDetails formName;
   final FamilyDetails familyDetails;
-  const TakeSurveyPage(this.formName, this.familyDetails, {super.key});
+  final String nextPage;
+  final String startDate;
+  final String endDate;
+  const TakeSurveyPage(
+      {required this.formName,
+      required this.familyDetails,
+      required this.nextPage,
+      this.startDate="",
+      this.endDate="",
+      super.key});
   @override
   _TakeSurveyPageState createState() => _TakeSurveyPageState();
 }
@@ -16,12 +24,23 @@ class TakeSurveyPage extends StatefulWidget {
 class _TakeSurveyPageState extends State<TakeSurveyPage> {
   List<Map<String, dynamic>> questions = [];
   Map<String, dynamic> responses = {};
-
+  String pageTitle = "Take Survey";
+  String saveText = "Save Survey";
   @override
   void initState() {
     super.initState();
+    changeTitle();
     displayForm();
     printSelectedName();
+  }
+
+  void changeTitle() {
+    if (widget.nextPage != 'survey') {
+      setState(() {
+        pageTitle = "Regisration for Service";
+        saveText = "Enroll for service";
+      });
+    }
   }
 
   void printSelectedName() async {
@@ -36,7 +55,13 @@ class _TakeSurveyPageState extends State<TakeSurveyPage> {
   void displayForm() async {
     final details =
         await DatabaseHelper.instance.getFormWithName(widget.formName.formName);
-    final jsonContent = details[0]['template_source'];
+    String jsonContent = "";
+
+    if (widget.nextPage != "survey") {
+      jsonContent = details[0]['details_source'];
+    } else {
+      jsonContent = details[0]['template_source'];
+    }
     final data = json.decode(jsonContent);
     List<Map<String, dynamic>> mapList =
         data.cast<Map<String, dynamic>>().toList();
@@ -67,22 +92,40 @@ class _TakeSurveyPageState extends State<TakeSurveyPage> {
   void saveResponse() async {
     final responsesMap = Map<String, dynamic>.from(responses);
     final responsesJson = json.encode(responsesMap);
-    final subjectID =
-        await DatabaseHelper.instance.getsubjectIDByName(widget.familyDetails);
+    final subjectID = widget.familyDetails.subjectID;
+    // await DatabaseHelper.instance.getsubjectIDByName(widget.familyDetails);
     final sid_ =
         await DatabaseHelper.instance.getSidByName(widget.formName.formName);
     final subID = int.parse(subjectID);
     final sid = int.parse(sid_);
     DateTime now = DateTime.now();
     final formattedDatetime = now.toUtc().toIso8601String();
-
-    await DatabaseHelper.instance.insertResponse({
-      'subject_id': subID,
-      'survey_datetime': formattedDatetime,
-      'sid': sid,
-      'survey_data': responsesJson,
-    });
-
+    if (widget.nextPage != "survey") {
+      final b = await DatabaseHelper.instance.insertResponse({
+        'subject_id': subID,
+        'survey_datetime': formattedDatetime,
+        'sid': sid,
+        'record_type': 1,
+        'survey_data': responsesJson,
+      });
+      print('B : : : $b');
+      final c = await DatabaseHelper.instance.insertServiceEnrollment({
+        'subject_id': subID,
+        'sid': sid,
+        'start_date': widget.startDate,
+        'end_date': widget.endDate,
+      });
+      print('doen : $c');
+    } else {
+      final b = await DatabaseHelper.instance.insertResponse({
+        'subject_id': subID,
+        'survey_datetime': formattedDatetime,
+        'sid': sid,
+        'record_type': 0,
+        'survey_data': responsesJson,
+      });
+      print('B : : : $b');
+    }
     final rid_ =
         await DatabaseHelper.instance.getridBysubjectIDandDatetime(subID, now);
     final rid = int.parse(rid_);
@@ -101,11 +144,19 @@ class _TakeSurveyPageState extends State<TakeSurveyPage> {
     setState(() {
       responses = {};
     });
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Survey saved successfully'),
-      ),
-    );
+    if (widget.nextPage != 'survey') {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Successfully Enrolled To Service'),
+        ),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Survey Successfuly Saved'),
+        ),
+      );
+    }
   }
 
   Widget _buildSmallTextField(String questionText, String hintText) {
@@ -186,7 +237,7 @@ class _TakeSurveyPageState extends State<TakeSurveyPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Take Survey'),
+        title: Text(pageTitle),
       ),
       body: Stack(
         children: <Widget>[
@@ -213,7 +264,7 @@ class _TakeSurveyPageState extends State<TakeSurveyPage> {
                 ElevatedButton.icon(
                   onPressed: saveResponse,
                   icon: Icon(Icons.save, size: 30),
-                  label: Text('Save Response'),
+                  label: Text(saveText),
                 ),
               ],
             ),

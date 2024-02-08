@@ -1,13 +1,10 @@
 import 'package:flutter/material.dart';
-import 'database_helper.dart';
 import 'dart:convert';
-
-import 'login_page.dart';
 
 class TemplateSourcePage extends StatefulWidget {
   final String templateSource;
-
-  TemplateSourcePage(this.templateSource);
+  final String pageTitle;
+  TemplateSourcePage(this.pageTitle,this.templateSource);
 
   @override
   State<TemplateSourcePage> createState() => _TemplateSourcePageState();
@@ -49,7 +46,7 @@ class _TemplateSourcePageState extends State<TemplateSourcePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Survey Form'),
+        title: Text(widget.pageTitle),
       ),
       // body: Stack(
       //   children: <Widget>[

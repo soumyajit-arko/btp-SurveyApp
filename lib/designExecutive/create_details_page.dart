@@ -1,21 +1,21 @@
 import 'package:flutter/material.dart';
-import 'database_helper.dart';
+import '../backend/database_helper.dart';
 import 'dart:convert';
 
-import 'login_page.dart';
-
-class CreateFormsPage extends StatefulWidget {
+class CreateDetailsPage extends StatefulWidget {
   final String formName;
   final String formDescription;
-  CreateFormsPage(this.formName, this.formDescription);
+  final List<Map<String, dynamic>> questions;
+  CreateDetailsPage(this.formName, this.formDescription, this.questions,
+      {super.key});
 
   @override
-  State<CreateFormsPage> createState() => _CreateFormsPageState();
+  State<CreateDetailsPage> createState() => _CreateDetailsPageState();
 }
 
-class _CreateFormsPageState extends State<CreateFormsPage> {
+class _CreateDetailsPageState extends State<CreateDetailsPage> {
   // Questions
-  List<Map<String, dynamic>> questions = [];
+  List<Map<String, dynamic>> details = [];
   String? selectedType = 'Single Choice';
   List<String> options = [];
   TextEditingController questionController = TextEditingController();
@@ -50,7 +50,7 @@ class _CreateFormsPageState extends State<CreateFormsPage> {
       };
       Map<String, dynamic> q = deepCopyQuestion(question);
       setState(() {
-        questions.add(q);
+        details.add(q);
         questionController.clear();
         optionControllers.clear();
         options.clear();
@@ -61,8 +61,6 @@ class _CreateFormsPageState extends State<CreateFormsPage> {
     }
   }
 
-
-
   @override
   void dispose() {
     questionController.dispose();
@@ -70,44 +68,8 @@ class _CreateFormsPageState extends State<CreateFormsPage> {
     super.dispose();
   }
 
-  void createForm() async {
-    String formName = widget.formName;
-    String description = widget.formDescription;
-    String template = json.encode(questions);
-
-    await DatabaseHelper.instance.insertForm({
-      'Name': formName,
-      'Description': description,
-      'template_source': template
-    });
-    final sid = await DatabaseHelper.instance.getSidByName(formName);
-    print('sid : ');
-    print(sid);
-    int sid_int = int.parse(sid);
-    for (int i = 0; i < questions.length; ++i) {
-      final Map<String, dynamic> element = questions[i];
-      await DatabaseHelper.instance.insertField({
-        'Name': formName,
-        'sid': sid_int,
-        'attribute_name': element['question'],
-        'attribute_datatype': element['type'],
-        'attribute_unit': element['unit'],
-        'attribute_values': element['options'],
-        'required_value': element['required'],
-      });
-
-    }
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Created form successfully'),
-        ),
-      );
-
-    _clearFields();
-  }
-
   void _clearFields() async {
-    questions.clear();
+    details.clear();
   }
 
   Widget _buildSmallTextField(
@@ -127,9 +89,60 @@ class _CreateFormsPageState extends State<CreateFormsPage> {
 
   @override
   Widget build(BuildContext context) {
+    void createForm() async {
+      String formName = widget.formName;
+      String description = widget.formDescription;
+      String template = json.encode(widget.questions);
+      String details_source = json.encode(details);
+
+      await DatabaseHelper.instance.insertForm({
+        'Name': formName,
+        'Description': description,
+        'template_source': template,
+        'details_source': details_source,
+      });
+      final sid = await DatabaseHelper.instance.getSidByName(formName);
+      print('sid : ');
+      print(sid);
+      int sid_int = int.parse(sid);
+      for (int i = 0; i < details.length; ++i) {
+        final Map<String, dynamic> element = details[i];
+        await DatabaseHelper.instance.insertField({
+          'Name': formName,
+          'sid': sid_int,
+          'source_type': 1,
+          'attribute_name': element['question'],
+          'attribute_datatype': element['type'],
+          'attribute_unit': element['unit'],
+          'attribute_values': element['options'],
+          'required_value': element['required'],
+        });
+      }
+      for (int i = 0; i < widget.questions.length; ++i) {
+        final Map<String, dynamic> element = widget.questions[i];
+        await DatabaseHelper.instance.insertField({
+          'Name': formName,
+          'sid': sid_int,
+          'source_type': 0,
+          'attribute_name': element['question'],
+          'attribute_datatype': element['type'],
+          'attribute_unit': element['unit'],
+          'attribute_values': element['options'],
+          'required_value': element['required'],
+        });
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Created form successfully'),
+        ),
+      );
+
+      _clearFields();
+    }
+
     return Scaffold(
       appBar: AppBar(
-        title: Text('Create Form'),
+        title: Text('Create Details Form'),
       ),
       body: Stack(
         children: <Widget>[
@@ -252,22 +265,22 @@ class _CreateFormsPageState extends State<CreateFormsPage> {
               ],
             )),
           ),
-          Positioned(
-            top: 10, // Adjust top position as needed
-            right: 10, // Adjust right position as needed
-            child: ElevatedButton.icon(
-              onPressed: () {
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => LoginPage(),
-                  ),
-                );
-              },
-              icon: Icon(Icons.logout, size: 30), // Add a logout icon
-              label: Text('Logout'),
-            ),
-          ),
+          // Positioned(
+          //   top: 10, // Adjust top position as needed
+          //   right: 10, // Adjust right position as needed
+          //   child: ElevatedButton.icon(
+          //     onPressed: () {
+          //       Navigator.pushReplacement(
+          //         context,
+          //         MaterialPageRoute(
+          //           builder: (context) => LoginPage(),
+          //         ),
+          //       );
+          //     },
+          //     icon: Icon(Icons.logout, size: 30), // Add a logout icon
+          //     label: Text('Logout'),
+          //   ),
+          // ),
         ],
       ),
     );

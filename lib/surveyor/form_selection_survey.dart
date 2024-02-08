@@ -1,15 +1,16 @@
-import 'package:app_001/form_details.dart';
-import 'package:app_001/take_survey_page.dart';
+import 'package:app_001/surveyor/form_details.dart';
+import 'package:app_001/surveyor/selectTimePeriodPage.dart';
+import 'package:app_001/surveyor/take_survey_page.dart';
 import 'family_details.dart';
 import 'package:flutter/material.dart';
-import 'package:app_001/database_helper.dart';
-
-
+import 'package:app_001/backend/database_helper.dart';
 
 class FormDataTablePage extends StatefulWidget {
   final FamilyDetails family;
+  final String nextPage;
 
-  const FormDataTablePage({super.key, required this.family});
+  const FormDataTablePage(
+      {super.key, required this.family, required this.nextPage});
   @override
   _FormDataTablePageState createState() => _FormDataTablePageState();
 }
@@ -28,7 +29,15 @@ class _FormDataTablePageState extends State<FormDataTablePage> {
 
   Future<void> loadFormDetails() async {
     final dbHelper = DatabaseHelper.instance;
-    final formDetails = await dbHelper.getFormsNames();
+    List<String> formDetails;
+    if (widget.nextPage != 'survey') {
+      formDetails = await dbHelper.getFormsNames();
+    } else {
+      formDetails =
+          await dbHelper.getValidServicesForSubject(widget.family.subjectID);
+      // await dbHelper.getUniqueServicesEnrolledByID(widget.family.subjectID);
+      // await dbHelper.getServicesEnrolledByID(widget.family.subjectID);
+    }
 
     setState(() {
       formList = formDetails
@@ -61,8 +70,8 @@ class _FormDataTablePageState extends State<FormDataTablePage> {
       source: _FormDataSource(
         filteredList,
         onRowClicked: (form) {
-          navigateToDetailsPage(
-              context, form,widget.family); // Navigate to details page on row click
+          navigateToDetailsPage(context, form,
+              widget.family); // Navigate to details page on row click
         },
       ),
       rowsPerPage: 10,
@@ -116,13 +125,29 @@ class _FormDataTablePageState extends State<FormDataTablePage> {
     );
   }
 
-  void navigateToDetailsPage(BuildContext context, FormDetails form,FamilyDetails family) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => TakeSurveyPage(form, family),
-      ),
-    );
+  void navigateToDetailsPage(
+      BuildContext context, FormDetails form, FamilyDetails family) {
+    if (widget.nextPage != 'survey') {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => SelectTimePeriodPage(
+                formName: form,
+                familyDetails: family,
+                nextPage: widget.nextPage)),
+      );
+    } else {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => TakeSurveyPage(
+            formName: form,
+            familyDetails: family,
+            nextPage: widget.nextPage,
+          ),
+        ),
+      );
+    }
   }
 }
 

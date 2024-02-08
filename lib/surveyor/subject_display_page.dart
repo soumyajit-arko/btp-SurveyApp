@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'database_helper.dart';
-import 'login_page.dart';
+import '../backend/database_helper.dart';
+import '../login_page.dart';
 
 class SubjectDisplayPage extends StatefulWidget {
   @override
@@ -48,25 +48,31 @@ class _SubjectDisplayPageState extends State<SubjectDisplayPage> {
                           child: DataTable(
                             columns: const <DataColumn>[
                               DataColumn(
-                                label: Text('Mother Name'),
+                                label: Text('Beneficiary Name'),
+                              ),
+                              DataColumn(
+                                label: Text('Spouse Name'),
                               ),
                               DataColumn(
                                 label: Text('Child Name'),
                               ),
                               DataColumn(
-                                label: Text('Initial Date'),
+                                label: Text('Marital Status'),
                               ),
                               DataColumn(
-                                label: Text('Final Date'),
+                                label: Text('Village'),
+                              ),
+                              DataColumn(
+                                label: Text('ID Type'),
+                              ),
+                              DataColumn(
+                                label: Text('ID Number'),
                               ),
                               DataColumn(
                                 label: Text('Contact No.'),
                               ),
                               DataColumn(
                                 label: Text('Address'),
-                              ),
-                              DataColumn(
-                                label: Text('Husband Name'),
                               ),
                               DataColumn(
                                 label: Text('Age'),
@@ -83,21 +89,23 @@ class _SubjectDisplayPageState extends State<SubjectDisplayPage> {
                                   (subject) => DataRow(
                                     cells: <DataCell>[
                                       DataCell(Text(
-                                          subject['MotherNameBeneficiary']
-                                              .toString())),
+                                          subject['SubjectName'].toString())),
                                       DataCell(Text(
-                                          subject['ChildNameBeneficiary']
-                                              .toString())),
+                                          subject['SpouseName'].toString())),
                                       DataCell(Text(
-                                          subject['InitialDate'].toString())),
+                                          subject['ChildName'].toString())),
                                       DataCell(Text(
-                                          subject['FinalDate'].toString())),
+                                          subject['MaritalStatus'].toString())),
+                                      DataCell(
+                                          Text(subject['Village'].toString())),
+                                      DataCell(
+                                          Text(subject['IDType'].toString())),
+                                      DataCell(
+                                          Text(subject['IDNumber'].toString())),
                                       DataCell(Text(subject['Mobile']
                                           .toString())), // Assuming 'Mobile' is the contact number
                                       DataCell(
                                           Text(subject['Address'].toString())),
-                                      DataCell(Text(
-                                          subject['HusbandName'].toString())),
                                       DataCell(Text(subject['Age'].toString())),
                                       DataCell(Text(subject['Sex'].toString())),
                                       DataCell(

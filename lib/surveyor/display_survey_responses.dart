@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'database_helper.dart';
-import 'login_page.dart';
+import '../backend/database_helper.dart';
+import '../login_page.dart';
 import 'survey_data_page.dart';
 
 class DisplaySurveyResponses extends StatefulWidget {

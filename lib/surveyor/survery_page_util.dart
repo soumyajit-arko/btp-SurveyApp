@@ -1,11 +1,9 @@
-import 'package:app_001/display_survey_responses.dart';
-import 'package:app_001/subject_selection_survey.dart';
-
-import 'select_subject_survey.dart';
+import 'package:app_001/surveyor/display_survey_responses.dart';
+import 'package:app_001/surveyor/subject_selection_survey.dart';
 import 'subject_display_page.dart';
 import 'subject_register_page.dart';
 import 'package:flutter/material.dart';
-import 'login_page.dart';
+import '../login_page.dart';
 
 class SurveyorPageUtil extends StatefulWidget {
   @override
@@ -39,7 +37,7 @@ class _SurveyorPageUtilState extends State<SurveyorPageUtil> {
                         );
                       },
                       icon: Icon(Icons.add, size: 30), // Add an icon
-                      label: Text('Register New Subject'),
+                      label: Text('Beneficiary Enrollment'),
                     ),
                     SizedBox(height: 20),
                     ElevatedButton.icon(
@@ -52,7 +50,7 @@ class _SurveyorPageUtilState extends State<SurveyorPageUtil> {
                         );
                       },
                       icon: Icon(Icons.list, size: 30), // Add an icon
-                      label: Text('Display Subjects'),
+                      label: Text('Display Beneficiaries'),
                     ),
                     SizedBox(height: 20),
                     ElevatedButton.icon(
@@ -73,12 +71,27 @@ class _SurveyorPageUtilState extends State<SurveyorPageUtil> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => FamilyDataTablePage(),
+                            builder: (context) =>
+                                FamilyDataTablePage(nextPage: 'survey'),
                           ),
                         );
                       },
                       icon: Icon(Icons.assignment, size: 30), // Add an icon
                       label: Text('Take Survey'),
+                    ),
+                    SizedBox(height: 20),
+                    ElevatedButton.icon(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                FamilyDataTablePage(nextPage: 'service registraion'),
+                          ),
+                        );
+                      },
+                      icon: Icon(Icons.assignment, size: 30), // Add an icon
+                      label: Text('Enroll to a Service'),
                     ),
                     SizedBox(height: 20),
                   ],

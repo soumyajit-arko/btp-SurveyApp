@@ -1,4 +1,4 @@
-import 'package:app_001/family_details.dart';
+import 'package:app_001/surveyor/family_details.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
@@ -78,7 +78,7 @@ class DatabaseHelper {
   Future<Database> initDatabase() async {
     final dbpath = await getDatabasesPath();
     print('database path : $dbpath');
-    String path = join(dbpath, 'storage.db');
+    String path = join(dbpath, 'storage1.db');
     print('final path : $path');
     return await openDatabase(path, version: 1, onCreate: _createDb);
   }
@@ -162,16 +162,24 @@ class DatabaseHelper {
 //         ''');
     final subjectExists = await _isTableExists(db, 'Subject');
     if (!subjectExists) {
+      //beneficiary name - subject
+      //marital status
+      // village
+      // id type - Voter ,AAdhar, Pan, Driving, Ration, Other-Card
+      //and id number
+      //
       await db.execute('''
           CREATE TABLE Subject (
             subject_id INTEGER PRIMARY KEY AUTOINCREMENT,
-            MotherNameBeneficiary TEXT,
-            ChildNameBeneficiary TEXT,
+            SubjectName TEXT, 
+            SpouseName TEXT,
+            ChildName TEXT,
+            MaritalStatus TEXT,
+            Village TEXT,
+            IDType TEXT,
+            IDNumber TEXT,
             Mobile TEXT,
-            InitialDate TEXT,
-            FinalDate TEXT,
             Address TEXT,
-            HusbandName TEXT,
             Age INTEGER,
             Sex TEXT,
             Caste TEXT,
@@ -197,6 +205,7 @@ class DatabaseHelper {
             creation_date DATE  DEFAULT CURRENT_DATE,
             Description TEXT,
             template_source TEXT,
+            details_source TEXT,
             InstanceTime TIME DEFAULT CURRENT_TIME
           )
         ''');
@@ -212,6 +221,7 @@ class DatabaseHelper {
             Name TEXT,
             fid INTEGER PRIMARY KEY AUTOINCREMENT,
             sid INTEGER,
+            source_type INTEGER,
             attribute_name TEXT,
             attribute_datatype TEXT,
             attribute_unit TEXT,
@@ -233,6 +243,7 @@ class DatabaseHelper {
             subject_id INTEGER,
             survey_datetime DATETIME,
             sid INTEGER,
+            record_type INTEGER,
             survey_data TEXT,
             InstanceTime TIME DEFAULT CURRENT_TIME,
             FOREIGN KEY (sid) REFERENCES survey_project(sid),
@@ -261,6 +272,23 @@ class DatabaseHelper {
     } else {
       print('field_entry already exists');
     }
+    final serviceEnrollment = await _isTableExists(db, 'service_enrollment');
+    if (!serviceEnrollment) {
+      await db.execute('''
+          CREATE TABLE service_enrollment (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            subject_id INTEGER,
+            sid INTEGER,
+            start_date TEXT,
+            end_date TEXT,
+            FOREIGN KEY (subject_id) REFERENCES Subject(subject_id),
+            FOREIGN KEY (sid) REFERENCES survey_project(sid)
+          )
+        ''');
+      print('created service_enrollment');
+    } else {
+      print('service_enrollment already exists');
+    }
   }
 
   // Insert a new question
@@ -287,6 +315,32 @@ class DatabaseHelper {
   Future<List<Map<String, dynamic>>> getQuestions() async {
     final db = await database;
     return await db.query('questions');
+  }
+
+  Future<List<String>> getValidServicesForSubject(String subjectId) async {
+    // Get current date
+    final currentDate = DateTime.now().toIso8601String();
+    print('current Date : $currentDate');
+    // Open the database
+    final db = await database;
+    // Execute the query
+    final List<Map<String, dynamic>> maps = await db.rawQuery('''
+    SELECT service_enrollment.*, survey_project.Name
+    FROM service_enrollment
+    INNER JOIN survey_project ON service_enrollment.sid = survey_project.sid
+    WHERE service_enrollment.subject_id = ?
+    AND service_enrollment.end_date > ?
+  ''', [subjectId, currentDate]);
+    print('maps : $maps');
+    Set<String> uniqueProjectNames = {};
+    for (Map<String, dynamic> map in maps) {
+      uniqueProjectNames.add(map['Name'] as String);
+    }
+    List<String> names = [];
+    for (String s in uniqueProjectNames) {
+      names.add(s);
+    }
+    return names;
   }
 
   Future<Map<String, dynamic>?> getUser(
@@ -350,6 +404,13 @@ class DatabaseHelper {
     return await db.insert('record_log', response);
   }
 
+  Future<int> insertServiceEnrollment(Map<String, dynamic> response) async {
+    final db = await database;
+    print('service enrolled');
+    print(response);
+    return await db.insert('service_enrollment', response);
+  }
+
   Future<List<Map<String, dynamic>>> getFields() async {
     final db = await database;
     return await db.query('field_project');
@@ -362,7 +423,8 @@ class DatabaseHelper {
 
   Future<List<Map<String, dynamic>>> getResponses() async {
     final db = await database;
-    return await db.query('record_log');
+    return await db
+        .query('record_log', where: 'record_type = ?', whereArgs: [0]);
   }
 
   Future<String> getSidByName(String name) async {
@@ -408,13 +470,16 @@ class DatabaseHelper {
 
   Future<String> getsubjectIDByName(FamilyDetails? familyDetails) async {
     final db = await database;
-    
+
     final result = await db.query(
       'Subject',
       columns: ['subject_id'],
-      where:
-          'MotherNameBeneficiary = ? AND ChildNameBeneficiary =? AND HusbandName = ?',
-      whereArgs: [familyDetails?.motherName,familyDetails?.childName,familyDetails?.husbandName],
+      where: 'SubjectName = ? AND ChildName =? AND SpouseName = ?',
+      whereArgs: [
+        familyDetails?.subjectName,
+        familyDetails?.spouseName,
+        familyDetails?.childName
+      ],
     );
     // Return the sid as a String
     return result.first['subject_id'].toString();
@@ -435,7 +500,7 @@ class DatabaseHelper {
     final db = await database;
     final result = await db.query(
       'Subject',
-      columns: ['Name'],
+      columns: ['SubjectName'],
     );
     print(result);
     // Extract the 'Name' values from the result and store them in a list
@@ -465,11 +530,8 @@ class DatabaseHelper {
   // }
   Future<List<Map<String, Object?>>> getFamilyDetails() async {
     final db = await database;
-    final result = await db.query('Subject', columns: [
-      'MotherNameBeneficiary',
-      'ChildNameBeneficiary',
-      'HusbandName'
-    ]);
+    final result = await db.query('Subject',
+        columns: ['subject_id', 'SubjectName', 'ChildName', 'SpouseName']);
     return result;
   }
 
@@ -496,6 +558,57 @@ class DatabaseHelper {
     print('The result is ');
     print(result);
     return result;
+  }
+
+  // Future<List<String>> getServicesEnrolledByID(
+  //     String? subjectID) async {
+  //   final db = await database;
+  //   final result = await db.query(
+  //     'service_enrollment',
+  //     where: 'subject_id=?',
+  //     whereArgs: [subjectID],
+  //   );
+  //   final names = result.map((row) => row['Name'].toString()).toList();
+  //   print(names);
+  //   return names;
+  // }
+  Future<List<String>> getServicesEnrolledByID(String subjectId) async {
+    final db = await database;
+
+    final List<Map<String, dynamic>> maps = await db.rawQuery('''
+    SELECT survey_project.Name
+    FROM survey_project
+    INNER JOIN service_enrollment ON survey_project.sid = service_enrollment.sid
+    WHERE service_enrollment.subject_id = ?
+  ''', [subjectId]);
+
+    List<String> projectNames = [];
+    for (Map<String, dynamic> map in maps) {
+      projectNames.add(map['Name'] as String);
+    }
+
+    return projectNames;
+  }
+
+  Future<List<String>> getUniqueServicesEnrolledByID(String subjectId) async {
+    final db = await database;
+
+    final List<Map<String, dynamic>> maps = await db.rawQuery('''
+    SELECT DISTINCT survey_project.Name
+    FROM survey_project
+    INNER JOIN service_enrollment ON survey_project.sid = service_enrollment.sid
+    WHERE service_enrollment.subject_id = ?
+  ''', [subjectId]);
+
+    Set<String> uniqueProjectNames = {};
+    for (Map<String, dynamic> map in maps) {
+      uniqueProjectNames.add(map['Name'] as String);
+    }
+    List<String> names = [];
+    for (String s in uniqueProjectNames) {
+      names.add(s);
+    }
+    return names;
   }
 
   Future<List<Map<String, dynamic>>> getUsers() async {
@@ -542,7 +655,7 @@ class DatabaseHelper {
   }
 
   Future<void> deleteDatabaseUtil() async {
-    String path = join(await getDatabasesPath(), 'storage.db');
+    String path = join(await getDatabasesPath(), 'storage1.db');
 
     // Delete the database file
     await deleteDatabase(path);

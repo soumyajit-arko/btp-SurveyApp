@@ -1,8 +1,8 @@
-import 'package:app_001/design_executive_util_page.dart';
+import 'package:app_001/designExecutive/design_executive_util_page.dart';
 import 'package:flutter/material.dart';
-import 'database_helper.dart'; // Import your database helper
-import 'survery_page_util.dart';
-import 'admin_page_util.dart';
+import 'backend/database_helper.dart'; // Import your database helper
+import 'surveyor/survery_page_util.dart';
+import 'admin/admin_page_util.dart';
 
 class LoginPage extends StatefulWidget {
   @override
