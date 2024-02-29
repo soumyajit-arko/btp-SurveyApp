@@ -9,10 +9,12 @@ class SelectTimePeriodPage extends StatefulWidget {
   final FormDetails formName;
   final FamilyDetails familyDetails;
   final String nextPage;
+  // final String village;
   const SelectTimePeriodPage(
       {required this.formName,
       required this.familyDetails,
       required this.nextPage,
+      // required this.village,
       super.key});
   @override
   _SelectTimePeriodPageState createState() => _SelectTimePeriodPageState();
@@ -91,7 +93,7 @@ class _SelectTimePeriodPageState extends State<SelectTimePeriodPage> {
     TextEditingController dateController,
   ) {
     // if (selectedDate != null) {
-      dateController.text = _formatDate(selectedDate);
+    dateController.text = _formatDate(selectedDate);
     // }
 
     return Container(

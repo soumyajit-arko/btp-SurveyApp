@@ -1,11 +1,20 @@
-import 'package:app_001/surveyor/form_selection_survey.dart';
+// import 'package:app_001/surveyor/form_selection_survey.dart';
+import 'package:app_001/surveyor/selectTimePeriodPage.dart';
+import 'package:app_001/surveyor/take_survey_page.dart';
 import 'package:flutter/material.dart';
 import 'package:app_001/backend/database_helper.dart';
 import 'family_details.dart';
+import 'form_details.dart';
 
 class FamilyDataTablePage extends StatefulWidget {
   final String nextPage;
-  const FamilyDataTablePage({required this.nextPage,super.key});
+  final String village;
+  final FormDetails formName;
+  const FamilyDataTablePage(
+      {required this.formName,
+      required this.village,
+      required this.nextPage,
+      super.key});
   @override
   _FamilyDataTablePageState createState() => _FamilyDataTablePageState();
 }
@@ -25,7 +34,13 @@ class _FamilyDataTablePageState extends State<FamilyDataTablePage> {
 
   Future<void> loadFamilyDetails() async {
     final dbHelper = DatabaseHelper.instance;
-    final familyDetails = await dbHelper.getFamilyDetails();
+    List<Map<String, Object?>> familyDetails;
+    if (widget.nextPage == 'survey') {
+      familyDetails = await dbHelper.getFamilyDetailsByFormAndVillage(
+          widget.formName.formName, widget.village);
+    } else {
+      familyDetails = await dbHelper.getFamilyDetailsbyVillage(widget.village);
+    }
 
     setState(() {
       familyList = familyDetails
@@ -151,12 +166,33 @@ class _FamilyDataTablePageState extends State<FamilyDataTablePage> {
   }
 
   void navigateToDetailsPage(BuildContext context, FamilyDetails family) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => FormDataTablePage(family: family,nextPage: widget.nextPage),
-      ),
-    );
+    if (widget.nextPage == 'survey') {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => TakeSurveyPage(
+                  formName: widget.formName,
+                  familyDetails: family,
+                  nextPage: widget.nextPage,
+                  // village: widget.village
+                )
+            // FormDataTablePage(family: family, nextPage: widget.nextPage),
+            ),
+      );
+    } else {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => SelectTimePeriodPage(
+                  formName: widget.formName,
+                  familyDetails: family,
+                  nextPage: widget.nextPage,
+                  // village: widget.village
+                )
+            // FormDataTablePage(family: family, nextPage: widget.nextPage),
+            ),
+      );
+    }
   }
 }
 

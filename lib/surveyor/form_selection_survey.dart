@@ -1,17 +1,20 @@
 import 'package:app_001/surveyor/form_details.dart';
-import 'package:app_001/surveyor/selectTimePeriodPage.dart';
-import 'package:app_001/surveyor/take_survey_page.dart';
-import 'family_details.dart';
+// import 'package:app_001/surveyor/selectTimePeriodPage.dart';
+import 'package:app_001/surveyor/subject_selection_survey.dart';
+// import 'package:app_001/surveyor/take_survey_page.dart';
+// import 'family_details.dart';
 import 'package:flutter/material.dart';
 import 'package:app_001/backend/database_helper.dart';
 
-import 'service_enrolled_subjects.dart';
+// import 'service_enrolled_subjects.dart';
 
 class FormDataTablePage extends StatefulWidget {
-  final FamilyDetails family;
+  // final FamilyDetails family;
+  final String village;
   final String nextPage;
-
-  const FormDataTablePage({required this.family, required this.nextPage, super.key});
+  const FormDataTablePage(
+      {required this.village, required this.nextPage, super.key});
+  // const FormDataTablePage({required this.family, required this.nextPage, super.key});
   @override
   _FormDataTablePageState createState() => _FormDataTablePageState();
 }
@@ -31,14 +34,14 @@ class _FormDataTablePageState extends State<FormDataTablePage> {
   Future<void> loadFormDetails() async {
     final dbHelper = DatabaseHelper.instance;
     List<String> formDetails;
-    if (widget.nextPage == 'survey') {
-      formDetails =
-          await dbHelper.getValidServicesForSubject(widget.family.subjectID);
-    } else {
-      formDetails = await dbHelper.getFormsNames();
-      // await dbHelper.getUniqueServicesEnrolledByID(widget.family.subjectID);
-      // await dbHelper.getServicesEnrolledByID(widget.family.subjectID);
-    }
+    // if (widget.nextPage == 'survey') {
+    //   formDetails =
+    //       await dbHelper.getValidServicesForSubject(widget.family.subjectID);
+    // } else {
+    formDetails = await dbHelper.getFormsNames();
+    // await dbHelper.getUniqueServicesEnrolledByID(widget.family.subjectID);
+    // await dbHelper.getServicesEnrolledByID(widget.family.subjectID);
+    // }
 
     setState(() {
       formList = formDetails
@@ -71,8 +74,9 @@ class _FormDataTablePageState extends State<FormDataTablePage> {
       source: _FormDataSource(
         filteredList,
         onRowClicked: (form) {
-          navigateToDetailsPage(context, form,
-              widget.family); // Navigate to details page on row click
+          navigateToDetailsPage(context, form);
+          // navigateToDetailsPage(context, form,
+          //     widget.family); // Navigate to details page on row click
         },
       ),
       rowsPerPage: 10,
@@ -126,39 +130,46 @@ class _FormDataTablePageState extends State<FormDataTablePage> {
     );
   }
 
-  void navigateToDetailsPage(
-      BuildContext context, FormDetails form, FamilyDetails family) {
-    if (widget.nextPage == 'service registraion') {
+  void navigateToDetailsPage(BuildContext context, FormDetails form) {
+    // if (widget.nextPage == 'service registraion') {
       Navigator.push(
         context,
         MaterialPageRoute(
-            builder: (context) => SelectTimePeriodPage(
+            builder: (context) => FamilyDataTablePage(
                 formName: form,
-                familyDetails: family,
+                village: widget.village,
                 nextPage: widget.nextPage)),
       );
-    } else if (widget.nextPage == "survey") {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => TakeSurveyPage(
-            formName: form,
-            familyDetails: family,
-            nextPage: widget.nextPage,
-          ),
-        ),
-      );
-    } else {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => ServiceEnrolledPage(
-            nextPage: widget.nextPage,
-            formDetails: form,
-          ),
-        ),
-      );
-    }
+  //   } else if (widget.nextPage == "survey") {
+  //     Navigator.push(
+  //       context,
+  //       MaterialPageRoute(
+  //           builder: (context) => FamilyDataTablePage(
+  //               formName: form,
+  //               village: widget.village,
+  //               nextPage: widget.nextPage)),
+  //     );
+  //     // Navigator.push(
+  //     //   context,
+  //     //   MaterialPageRoute(
+  //     //     builder: (context) => TakeSurveyPage(
+  //     //       formName: form,
+  //     //       // familyDetails: family,
+  //     //       nextPage: widget.nextPage,
+  //     //     ),
+  //     //   ),
+  //     // );
+  //   } else {
+  //     Navigator.push(
+  //       context,
+  //       MaterialPageRoute(
+  //         builder: (context) => ServiceEnrolledPage(
+  //           nextPage: widget.nextPage,
+  //           formDetails: form,
+  //         ),
+  //       ),
+  //     );
+  //   }
   }
 }
 

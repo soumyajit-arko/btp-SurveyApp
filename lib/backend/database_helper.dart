@@ -336,6 +336,21 @@ class DatabaseHelper {
     return result;
   }
 
+  Future<List<Map<String, Object?>>> getFamilyDetailsByFormAndVillage(
+      String formName, String village) async {
+    final db = await database;
+    print('halo');
+    final result = await db.rawQuery('''
+    SELECT DISTINCT Subject.subject_id, Subject.SubjectName, Subject.ChildName, Subject.SpouseName
+    FROM Subject
+    INNER JOIN service_enrollment ON Subject.subject_id = service_enrollment.subject_id
+    INNER JOIN survey_project ON service_enrollment.sid = survey_project.sid
+    WHERE survey_project.Name = ? AND Subject.Village = ? 
+  ''', [formName, village]);
+    print(result);
+    return result;
+  }
+
   Future<List<Map<String, Object?>>> getFamilyDetailsByServiceName(
       String formName) async {
     final db = await database;
@@ -566,6 +581,28 @@ class DatabaseHelper {
     final db = await database;
     final result = await db.query('Subject',
         columns: ['subject_id', 'SubjectName', 'ChildName', 'SpouseName']);
+    return result;
+  }
+
+  Future<List<Map<String, Object?>>> getFamilyDetailsbyVillage(
+      String village) async {
+    final db = await database;
+    final result = await db.query(
+      'Subject',
+      columns: ['subject_id', 'SubjectName', 'ChildName', 'SpouseName'],
+      where: 'Village = ?',
+      whereArgs: [village],
+    );
+    print('village memebers : $result');
+    return result;
+  }
+
+  Future<List<Map<String, Object?>>> getVillageNames() async {
+    final db = await database;
+    final List<Map<String, Object?>> result = await db.rawQuery('''
+    SELECT DISTINCT Village FROM Subject
+  ''');
+    print('villages : $result');
     return result;
   }
 
