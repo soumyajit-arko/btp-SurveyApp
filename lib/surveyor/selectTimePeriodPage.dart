@@ -90,9 +90,9 @@ class _SelectTimePeriodPageState extends State<SelectTimePeriodPage> {
     Function(DateTime) onDateSelected,
     TextEditingController dateController,
   ) {
-    if (selectedDate != null) {
+    // if (selectedDate != null) {
       dateController.text = _formatDate(selectedDate);
-    }
+    // }
 
     return Container(
       margin: EdgeInsets.symmetric(vertical: 10),
@@ -140,7 +140,8 @@ class _SelectTimePeriodPageState extends State<SelectTimePeriodPage> {
   ) async {
     final DateTime? pickedDate = await showDatePicker(
       context: context,
-      initialDate: selectedDate ?? DateTime.now(),
+      // initialDate: selectedDate ?? DateTime.now(),
+      initialDate: DateTime.now(),
       firstDate: DateTime(1900),
       lastDate: DateTime(2101),
     );
