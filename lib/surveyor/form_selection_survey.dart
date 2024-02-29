@@ -5,12 +5,13 @@ import 'family_details.dart';
 import 'package:flutter/material.dart';
 import 'package:app_001/backend/database_helper.dart';
 
+import 'service_enrolled_subjects.dart';
+
 class FormDataTablePage extends StatefulWidget {
   final FamilyDetails family;
   final String nextPage;
 
-  const FormDataTablePage(
-      {super.key, required this.family, required this.nextPage});
+  const FormDataTablePage({required this.family, required this.nextPage, super.key});
   @override
   _FormDataTablePageState createState() => _FormDataTablePageState();
 }
@@ -30,11 +31,11 @@ class _FormDataTablePageState extends State<FormDataTablePage> {
   Future<void> loadFormDetails() async {
     final dbHelper = DatabaseHelper.instance;
     List<String> formDetails;
-    if (widget.nextPage != 'survey') {
-      formDetails = await dbHelper.getFormsNames();
-    } else {
+    if (widget.nextPage == 'survey') {
       formDetails =
           await dbHelper.getValidServicesForSubject(widget.family.subjectID);
+    } else {
+      formDetails = await dbHelper.getFormsNames();
       // await dbHelper.getUniqueServicesEnrolledByID(widget.family.subjectID);
       // await dbHelper.getServicesEnrolledByID(widget.family.subjectID);
     }
@@ -127,7 +128,7 @@ class _FormDataTablePageState extends State<FormDataTablePage> {
 
   void navigateToDetailsPage(
       BuildContext context, FormDetails form, FamilyDetails family) {
-    if (widget.nextPage != 'survey') {
+    if (widget.nextPage == 'service registraion') {
       Navigator.push(
         context,
         MaterialPageRoute(
@@ -136,7 +137,7 @@ class _FormDataTablePageState extends State<FormDataTablePage> {
                 familyDetails: family,
                 nextPage: widget.nextPage)),
       );
-    } else {
+    } else if (widget.nextPage == "survey") {
       Navigator.push(
         context,
         MaterialPageRoute(
@@ -144,6 +145,16 @@ class _FormDataTablePageState extends State<FormDataTablePage> {
             formName: form,
             familyDetails: family,
             nextPage: widget.nextPage,
+          ),
+        ),
+      );
+    } else {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ServiceEnrolledPage(
+            nextPage: widget.nextPage,
+            formDetails: form,
           ),
         ),
       );

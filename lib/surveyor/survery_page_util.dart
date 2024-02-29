@@ -1,5 +1,7 @@
 import 'package:app_001/surveyor/display_survey_responses.dart';
+import 'package:app_001/surveyor/family_details.dart';
 import 'package:app_001/surveyor/subject_selection_survey.dart';
+import 'form_selection_survey.dart';
 import 'subject_display_page.dart';
 import 'subject_register_page.dart';
 import 'package:flutter/material.dart';
@@ -92,6 +94,20 @@ class _SurveyorPageUtilState extends State<SurveyorPageUtil> {
                       },
                       icon: Icon(Icons.assignment, size: 30), // Add an icon
                       label: Text('Enroll to a Service'),
+                    ),
+                    SizedBox(height: 20),
+                    ElevatedButton.icon(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                FormDataTablePage(nextPage: 'Service Enrolled Subjects',family: FamilyDetails(subjectID: '', subjectName: '', spouseName: '', childName: ''),),
+                          ),
+                        );
+                      },
+                      icon: Icon(Icons.assignment, size: 30), // Add an icon
+                      label: Text('Service Enrolled List'),
                     ),
                     SizedBox(height: 20),
                   ],

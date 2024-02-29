@@ -317,6 +317,40 @@ class DatabaseHelper {
     return await db.query('questions');
   }
 
+  Future<List<Map<String, Object?>>> getSubjectsValidForService(
+      String serviceName) async {
+    // Get current date
+    final currentDate = DateTime.now().toIso8601String();
+    // Open the database
+    final db = await database;
+    // Execute the query
+    final List<Map<String, Object?>> result = await db.rawQuery('''
+    SELECT Subject.*
+    FROM Subject
+    INNER JOIN service_enrollment ON Subject.subject_id = service_enrollment.subject_id
+    INNER JOIN survey_project ON service_enrollment.sid = survey_project.sid
+    WHERE survey_project.Name = ?
+    AND service_enrollment.end_date > ?
+  ''', [serviceName, currentDate]);
+
+    return result;
+  }
+
+  Future<List<Map<String, Object?>>> getFamilyDetailsByServiceName(
+      String formName) async {
+    final db = await database;
+
+    final result = await db.rawQuery('''
+    SELECT Subject.subject_id, Subject.SubjectName, Subject.ChildName, Subject.SpouseName
+    FROM Subject
+    INNER JOIN service_enrollment ON Subject.subject_id = service_enrollment.subject_id
+    INNER JOIN survey_project ON service_enrollment.sid = survey_project.sid
+    WHERE survey_project.Name = ?
+  ''', [formName]);
+
+    return result;
+  }
+
   Future<List<String>> getValidServicesForSubject(String subjectId) async {
     // Get current date
     final currentDate = DateTime.now().toIso8601String();

@@ -7,9 +7,11 @@ import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 // import 'package:record/record.dart';
+import 'package:record/record.dart';
 
 import '../backend/database_helper.dart';
-import '../login_page.dart';
+import '../Audio/audio_player.dart';
+import '../Audio/audio_recorder.dart';
 
 class SubjectRegisterPage extends StatefulWidget {
   @override
@@ -51,7 +53,6 @@ class _SubjectRegisterPageState extends State<SubjectRegisterPage> {
 
   bool showPlayer = false;
   String? audioPath;
-
   // Future<void> _getImage() async {
   //   final picker = ImagePicker();
   //   final pickedFile = await picker.pickImage(source: ImageSource.gallery);
@@ -66,6 +67,7 @@ class _SubjectRegisterPageState extends State<SubjectRegisterPage> {
   @override
   void initState() {
     showPlayer = false;
+
     super.initState();
   }
 
@@ -130,12 +132,11 @@ class _SubjectRegisterPageState extends State<SubjectRegisterPage> {
     String sex = sexController.text;
     String caste = casteController.text;
     String image = filename;
-    // String voice = voiceController.text;
+    String? voice = audioPath;
     String religion = religionController.text;
     String occupation = occupationController.text;
     String zoneid = zoneidController.text;
     String email = emailController.text;
-
     await DatabaseHelper.instance.insertSubject({
       'SubjectName': subjectName,
       'SpouseName': spouseName,
@@ -152,7 +153,7 @@ class _SubjectRegisterPageState extends State<SubjectRegisterPage> {
       'Sex': sex,
       'Caste': caste,
       'Image': image,
-      'Voice': '',
+      'Voice': voice,
       'Religion': religion,
       'Occupation': occupation,
       'Zone_ID': zoneid,
@@ -160,10 +161,10 @@ class _SubjectRegisterPageState extends State<SubjectRegisterPage> {
     });
     _clearFields();
     ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Benificary Enrolled successfully'),
-        ),
-      );
+      SnackBar(
+        content: Text('Benificary Enrolled successfully'),
+      ),
+    );
   }
 
   // void tempFun() async {
@@ -443,19 +444,34 @@ class _SubjectRegisterPageState extends State<SubjectRegisterPage> {
                           width: 100,
                         ),
                   const SizedBox(height: 20),
-                  // ElevatedButton(
-                  //   onPressed: _getImage,
-                  //   child: Text('Pick Image'),
-                  // ),
                   ElevatedButton(
-                    // onPressed: () async {
-                    //   await availableCameras().then((value) => Navigator.push(
-                    //       context,
-                    //       MaterialPageRoute(
-                    //           builder: (_) => CameraPage(cameras: value))));
-                    // },
                     onPressed: _getImageFromCamera,
                     child: const Text("Take a Picture"),
+                  ),
+                  SizedBox(
+                    height: 200,
+                    child: Center(
+                      child: showPlayer
+                          ? Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 25),
+                              child: AudioPlayer(
+                                source: audioPath!,
+                                onDelete: () {
+                                  setState(() => showPlayer = false);
+                                },
+                              ),
+                            )
+                          : Recorder(
+                              onStop: (path) {
+                                print('Recorded file path: $path');
+                                setState(() {
+                                  audioPath = path;
+                                  showPlayer = true;
+                                });
+                              },
+                            ),
+                    ),
                   ),
                   const SizedBox(height: 20),
                   ElevatedButton.icon(
@@ -463,27 +479,10 @@ class _SubjectRegisterPageState extends State<SubjectRegisterPage> {
                     icon: const Icon(Icons.person, size: 30),
                     label: const Text('Create Subject'),
                   ),
-                  // ElevatedButton(onPressed: tempFun, child: Text('Temp')),
                 ],
               ),
             ),
           ),
-          // Positioned(
-          //   top: 10,
-          //   right: 10,
-          //   child: ElevatedButton.icon(
-          //     onPressed: () {
-          //       Navigator.pushReplacement(
-          //         context,
-          //         MaterialPageRoute(
-          //           builder: (context) => LoginPage(),
-          //         ),
-          //       );
-          //     },
-          //     icon: Icon(Icons.logout, size: 30),
-          //     label: Text('Logout'),
-          //   ),
-          // ),
         ],
       ),
     );
