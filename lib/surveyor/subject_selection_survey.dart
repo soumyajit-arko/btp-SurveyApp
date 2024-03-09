@@ -22,7 +22,6 @@ class FamilyDataTablePage extends StatefulWidget {
 class _FamilyDataTablePageState extends State<FamilyDataTablePage> {
   List<FamilyDetails> familyList = [];
   List<FamilyDetails> filteredList = [];
-
   TextEditingController searchController = TextEditingController();
   String selectedCategory = 'Beneficiary Name';
 
@@ -43,17 +42,35 @@ class _FamilyDataTablePageState extends State<FamilyDataTablePage> {
     }
 
     setState(() {
-      familyList = familyDetails
-          .map(
-            (family) => FamilyDetails(
-              subjectID: family['subject_id'].toString(),
-              subjectName: family['SubjectName'].toString(),
-              spouseName: family['SpouseName'].toString(),
-              childName: family['ChildName'].toString(),
-            ),
-          )
-          .toList();
-      filteredList = familyList;
+      if (widget.nextPage == 'survey') {
+        familyList = familyDetails
+            .map(
+              (family) => FamilyDetails(
+                subjectID: family['subject_id'].toString(),
+                subjectName: family['SubjectName'].toString(),
+                spouseName: family['SpouseName'].toString(),
+                childName: family['ChildName'].toString(),
+                startDate: family['start_date'].toString(),
+                endDate: family['end_date'].toString(),
+              ),
+            )
+            .toList();
+        filteredList = familyList;
+      } else {
+        familyList = familyDetails
+            .map(
+              (family) => FamilyDetails(
+                subjectID: family['subject_id'].toString(),
+                subjectName: family['SubjectName'].toString(),
+                spouseName: family['SpouseName'].toString(),
+                childName: family['ChildName'].toString(),
+                startDate: '',
+                endDate: '',
+              ),
+            )
+            .toList();
+        filteredList = familyList;
+      }
     });
   }
 
@@ -82,10 +99,13 @@ class _FamilyDataTablePageState extends State<FamilyDataTablePage> {
   Widget build(BuildContext context) {
     var dataTable = PaginatedDataTable(
       showCheckboxColumn: false,
-      columns: const <DataColumn>[
-        DataColumn(label: Text('Beneficiary Name')),
-        DataColumn(label: Text('Child Name')),
-        DataColumn(label: Text('Spouse Name')),
+
+      columns: <DataColumn>[
+        DataColumn(label: Text('Beneficiary Name/Spouse Name/Child Name')),
+        // DataColumn(label: Text('Child Name')),
+        // DataColumn(label: Text('Spouse Name')),
+        DataColumn(label: Text('Start Date')),
+        DataColumn(label: Text('End Date')),
       ],
       source: _FamilyDataSource(
         filteredList,
@@ -212,9 +232,11 @@ class FamilyDetailsPage extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text('Mother Name: ${family.subjectName}'),
-              Text('Child Name: ${family.childName}'),
-              Text('Husband Name: ${family.spouseName}'),
+              Text('Mother Name: ${family.subjectName}/${family.spouseName}/${family.childName}'),
+              // Text('Child Name: ${family.childName}'),
+              // Text('Husband Name: ${family.spouseName}'),
+              Text('Start Date: ${family.startDate}'),
+              Text('End Date: ${family.endDate}'),
             ],
           ),
         ),
@@ -237,9 +259,11 @@ class _FamilyDataSource extends DataTableSource {
     final family = _familyList[index];
     return DataRow(
       cells: [
-        DataCell(Text(family.subjectName)),
-        DataCell(Text(family.childName)),
-        DataCell(Text(family.spouseName)),
+        DataCell(Text("${family.subjectName}/${family.spouseName}/${family.childName}")),
+        // DataCell(Text(family.childName)),
+        // DataCell(Text(family.spouseName)),
+        DataCell(Text(family.startDate!)),
+        DataCell(Text(family.endDate!)),
       ],
       onSelectChanged: (isSelected) {
         if (isSelected != null && isSelected) {

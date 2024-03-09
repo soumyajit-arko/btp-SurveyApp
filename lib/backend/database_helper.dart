@@ -341,7 +341,7 @@ class DatabaseHelper {
     final db = await database;
     print('halo');
     final result = await db.rawQuery('''
-    SELECT DISTINCT Subject.subject_id, Subject.SubjectName, Subject.ChildName, Subject.SpouseName
+    SELECT DISTINCT Subject.subject_id, Subject.SubjectName, Subject.ChildName, Subject.SpouseName, service_enrollment.start_date, service_enrollment.end_date
     FROM Subject
     INNER JOIN service_enrollment ON Subject.subject_id = service_enrollment.subject_id
     INNER JOIN survey_project ON service_enrollment.sid = survey_project.sid
