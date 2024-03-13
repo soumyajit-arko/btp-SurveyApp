@@ -1,5 +1,6 @@
 import 'package:app_001/surveyor/family_details.dart';
 import 'package:app_001/surveyor/form_details.dart';
+import 'package:app_001/surveyor/survery_page_util.dart';
 import 'package:flutter/material.dart';
 import '../backend/database_helper.dart';
 import 'dart:convert';
@@ -14,8 +15,8 @@ class TakeSurveyPage extends StatefulWidget {
       {required this.formName,
       required this.familyDetails,
       required this.nextPage,
-      this.startDate="",
-      this.endDate="",
+      this.startDate = "",
+      this.endDate = "",
       super.key});
   @override
   _TakeSurveyPageState createState() => _TakeSurveyPageState();
@@ -89,7 +90,7 @@ class _TakeSurveyPageState extends State<TakeSurveyPage> {
     });
   }
 
-  void saveResponse() async {
+  Future<void> saveResponse() async {
     final responsesMap = Map<String, dynamic>.from(responses);
     final responsesJson = json.encode(responsesMap);
     final subjectID = widget.familyDetails.subjectID;
@@ -262,7 +263,35 @@ class _TakeSurveyPageState extends State<TakeSurveyPage> {
                 SizedBox(height: 20),
                 for (var question in questions) _buildQuestionWidget(question),
                 ElevatedButton.icon(
-                  onPressed: saveResponse,
+                  onPressed: () async {
+                    await saveResponse();
+                    if (widget.nextPage != "survey") {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => TakeSurveyPage(
+                            formName: widget.formName,
+                            familyDetails: widget.familyDetails,
+                            nextPage: "survey",
+                          ),
+                        ),
+                      );
+                    } else {
+                      // Navigator.push(
+                      //   context,
+                      //   MaterialPageRoute(
+                      //       builder: (context) => FamilyDataTablePage(
+                      //           formName: widget.formName,
+                      //           // village: widget.,
+                      //           nextPage: widget.nextPage)),
+                      // );
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => SurveyorPageUtil()),
+                      );
+                    }
+                  },
                   icon: Icon(Icons.save, size: 30),
                   label: Text(saveText),
                 ),

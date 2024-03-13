@@ -1,6 +1,8 @@
 import 'dart:io';
 // import 'package:audioplayers/audioplayers.dart';
 // import 'package:camera/camera.dart';
+import 'package:app_001/surveyor/form_selection_survey.dart';
+import 'package:app_001/surveyor/village_data_table_page.dart';
 import 'package:path/path.dart' as path;
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -109,7 +111,7 @@ class _SubjectRegisterPageState extends State<SubjectRegisterPage> {
   //   mobileController.clear();
   //   emailController.clear();
   // }
-  void addSubject() async {
+  Future<void> addSubject() async {
     Directory documentDirectory = await getApplicationDocumentsDirectory();
     String filename = subjectNameController.text + ".jpg";
     String pathutil = path.join(documentDirectory.path, filename);
@@ -163,6 +165,13 @@ class _SubjectRegisterPageState extends State<SubjectRegisterPage> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text('Benificary Enrolled successfully'),
+      ),
+    );
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) =>
+            FormDataTablePage(village: village, nextPage: "service registration"),
       ),
     );
   }
@@ -475,7 +484,9 @@ class _SubjectRegisterPageState extends State<SubjectRegisterPage> {
                   ),
                   const SizedBox(height: 20),
                   ElevatedButton.icon(
-                    onPressed: addSubject,
+                    onPressed: () async {
+                      addSubject;
+                    },
                     icon: const Icon(Icons.person, size: 30),
                     label: const Text('Create Subject'),
                   ),

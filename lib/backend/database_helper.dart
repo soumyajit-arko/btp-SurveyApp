@@ -341,7 +341,7 @@ class DatabaseHelper {
     final db = await database;
     print('halo');
     final result = await db.rawQuery('''
-    SELECT DISTINCT Subject.subject_id, Subject.SubjectName, Subject.ChildName, Subject.SpouseName, service_enrollment.start_date, service_enrollment.end_date
+    SELECT DISTINCT Subject.subject_id, Subject.SubjectName, Subject.ChildName, Subject.SpouseName, Subject.Mobile, service_enrollment.start_date, service_enrollment.end_date
     FROM Subject
     INNER JOIN service_enrollment ON Subject.subject_id = service_enrollment.subject_id
     INNER JOIN survey_project ON service_enrollment.sid = survey_project.sid
@@ -470,10 +470,21 @@ class DatabaseHelper {
     return await db.query('Subject');
   }
 
+  // Future<List<Map<String, dynamic>>> getResponses() async {
+  //   final db = await database;
+  //   return await db
+  //       .query('record_log', where: 'record_type = ?', whereArgs: [0]);
+  // }
+
   Future<List<Map<String, dynamic>>> getResponses() async {
     final db = await database;
-    return await db
-        .query('record_log', where: 'record_type = ?', whereArgs: [0]);
+    return await db.rawQuery('''
+    SELECT s.SubjectName, s.Mobile, s.Village,s.Age, sp.Name AS FormName, rl.*
+    FROM record_log rl
+    INNER JOIN survey_project sp ON rl.sid = sp.sid
+    INNER JOIN Subject s ON rl.subject_id = s.subject_id
+    WHERE rl.record_type = 0
+  ''');
   }
 
   Future<String> getSidByName(String name) async {
@@ -589,7 +600,13 @@ class DatabaseHelper {
     final db = await database;
     final result = await db.query(
       'Subject',
-      columns: ['subject_id', 'SubjectName', 'ChildName', 'SpouseName'],
+      columns: [
+        'subject_id',
+        'SubjectName',
+        'ChildName',
+        'SpouseName',
+        'Mobile'
+      ],
       where: 'Village = ?',
       whereArgs: [village],
     );

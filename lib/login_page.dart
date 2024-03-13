@@ -5,6 +5,8 @@ import 'surveyor/survery_page_util.dart';
 import 'admin/admin_page_util.dart';
 
 class LoginPage extends StatefulWidget {
+  static String jwtToken = "";
+  static String userId = "";
   @override
   _LoginPageState createState() => _LoginPageState();
 }

@@ -1,5 +1,6 @@
 // import 'package:app_001/surveyor/form_selection_survey.dart';
 // import 'package:app_001/surveyor/subject_selection_survey.dart';
+import 'package:app_001/surveyor/data_upload_page.dart';
 import 'package:flutter/material.dart';
 import 'login_page.dart';
 import 'backend/database_helper.dart';
@@ -23,7 +24,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Login App',
-      home: LoginPage(),
+      home: DataUploadPage(),
+      // home: LoginPage(),
       // home: FamilyDataTablePage(),
       // home: FormDataTablePage(),
       debugShowCheckedModeBanner: false,

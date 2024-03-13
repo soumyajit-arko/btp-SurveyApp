@@ -20,7 +20,7 @@ class _DisplaySurveyResponsesState extends State<DisplaySurveyResponses> {
 
   void _loadResponses() async {
     responsesList = await DatabaseHelper.instance.getResponses();
-
+    print(responsesList);
     setState(() {});
   }
 
@@ -50,8 +50,14 @@ class _DisplaySurveyResponsesState extends State<DisplaySurveyResponses> {
                         child: DataTable(
                           columns: const <DataColumn>[
                             DataColumn(label: Text('rid')),
-                            DataColumn(label: Text('sid')),
-                            DataColumn(label: Text('subject_id')),
+                            DataColumn(label: Text('Beneficiary Name')),
+                            DataColumn(label: Text('Service Name')),
+                            DataColumn(label: Text('Mobile')),
+                            DataColumn(label: Text('Age')),
+                            DataColumn(label: Text('Village')),
+                            
+                            // DataColumn(label: Text('sid')),
+                            // DataColumn(label: Text('subject_id')),
                             DataColumn(label: Text('survey datetime')),
                             DataColumn(label: Text('survey data')),
                           ],
@@ -60,9 +66,15 @@ class _DisplaySurveyResponsesState extends State<DisplaySurveyResponses> {
                                 (form_) => DataRow(
                                   cells: <DataCell>[
                                     DataCell(Text(form_['rid'].toString())),
-                                    DataCell(Text(form_['sid'].toString())),
                                     DataCell(
-                                        Text(form_['subject_id'].toString())),
+                                        Text(form_['SubjectName'].toString())),
+                                    DataCell(
+                                        Text(form_['FormName'].toString())),
+                                    DataCell(Text(form_['Mobile'].toString())),
+                                    DataCell(Text(form_['Age'].toString())),
+                                    DataCell(Text(form_['Village'].toString())),
+                                    // DataCell(Text(form_['sid'].toString())),
+                                    // DataCell(      Text(form_['subject_id'].toString())),
                                     DataCell(Text(
                                         form_['survey_datetime'].toString())),
                                     DataCell(

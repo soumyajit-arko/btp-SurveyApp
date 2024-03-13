@@ -44,6 +44,7 @@ dependencies:
   sqlite3_flutter_libs: ^0.5.19+1
   record: ^5.0.4
   audioplayers: ^5.2.1
+  http: ^1.1.0
 
 
 dev_dependencies:

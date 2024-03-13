@@ -50,6 +50,7 @@ class _FamilyDataTablePageState extends State<FamilyDataTablePage> {
                 subjectName: family['SubjectName'].toString(),
                 spouseName: family['SpouseName'].toString(),
                 childName: family['ChildName'].toString(),
+                mobile: family['Mobile'].toString(),
                 startDate: family['start_date'].toString(),
                 endDate: family['end_date'].toString(),
               ),
@@ -64,6 +65,7 @@ class _FamilyDataTablePageState extends State<FamilyDataTablePage> {
                 subjectName: family['SubjectName'].toString(),
                 spouseName: family['SpouseName'].toString(),
                 childName: family['ChildName'].toString(),
+                mobile: family['Mobile'].toString(),
                 startDate: '',
                 endDate: '',
               ),
@@ -102,6 +104,7 @@ class _FamilyDataTablePageState extends State<FamilyDataTablePage> {
 
       columns: <DataColumn>[
         DataColumn(label: Text('Beneficiary Name/Spouse Name/Child Name')),
+        DataColumn(label: Text('Mobile')),
         // DataColumn(label: Text('Child Name')),
         // DataColumn(label: Text('Spouse Name')),
         DataColumn(label: Text('Start Date')),
@@ -232,7 +235,9 @@ class FamilyDetailsPage extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text('Mother Name: ${family.subjectName}/${family.spouseName}/${family.childName}'),
+              Text(
+                  'Mother Name: ${family.subjectName}/${family.spouseName}/${family.childName}'),
+              Text('${family.mobile}'),
               // Text('Child Name: ${family.childName}'),
               // Text('Husband Name: ${family.spouseName}'),
               Text('Start Date: ${family.startDate}'),
@@ -259,7 +264,9 @@ class _FamilyDataSource extends DataTableSource {
     final family = _familyList[index];
     return DataRow(
       cells: [
-        DataCell(Text("${family.subjectName}/${family.spouseName}/${family.childName}")),
+        DataCell(Text(
+            "${family.subjectName}/${family.spouseName}/${family.childName}")),
+        DataCell(Text(family.mobile!)),
         // DataCell(Text(family.childName)),
         // DataCell(Text(family.spouseName)),
         DataCell(Text(family.startDate!)),

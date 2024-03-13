@@ -50,8 +50,8 @@ class _RecorderState extends State<Recorder> with AudioRecorderMixin {
           return;
         }
 
-        final devs = await _audioRecorder.listInputDevices();
-        debugPrint(devs.toString());
+        // final devs = await _audioRecorder.listInputDevices();
+        // debugPrint(devs.toString());
 
         const config = RecordConfig(encoder: encoder, numChannels: 1);
 
@@ -66,9 +66,9 @@ class _RecorderState extends State<Recorder> with AudioRecorderMixin {
         _startTimer();
       }
     } catch (e) {
-      if (kDebugMode) {
-        print(e);
-      }
+      // if (kDebugMode) {
+      //   print(e);
+      // }
     }
   }
 
@@ -108,16 +108,16 @@ class _RecorderState extends State<Recorder> with AudioRecorderMixin {
       encoder,
     );
 
-    if (!isSupported) {
-      debugPrint('${encoder.name} is not supported on this platform.');
-      debugPrint('Supported encoders are:');
+    // if (!isSupported) {
+    //   debugPrint('${encoder.name} is not supported on this platform.');
+    //   debugPrint('Supported encoders are:');
 
-      for (final e in AudioEncoder.values) {
-        if (await _audioRecorder.isEncoderSupported(e)) {
-          debugPrint('- ${encoder.name}');
-        }
-      }
-    }
+    //   for (final e in AudioEncoder.values) {
+    //     if (await _audioRecorder.isEncoderSupported(e)) {
+    //       debugPrint('- ${encoder.name}');
+    //     }
+    //   }
+    // }
 
     return isSupported;
   }
