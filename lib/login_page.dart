@@ -3,10 +3,14 @@ import 'package:flutter/material.dart';
 import 'backend/database_helper.dart'; // Import your database helper
 import 'surveyor/survery_page_util.dart';
 import 'admin/admin_page_util.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class LoginPage extends StatefulWidget {
   static String jwtToken = "";
   static String userId = "";
+  static String IP_Address = "10.5.29.229";
+  static String Port = "8080";
   @override
   _LoginPageState createState() => _LoginPageState();
 }
@@ -14,54 +18,71 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final TextEditingController usernameController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-  String? userType;
-  // List<String> userTypes = [
-  //   'Admin',
-  //   'Center Admin',
-  //   'Surveyor',
-  //   'Design Executive'
-  // ];
+  // String? userType;
+
+  @override
+  void initState() {
+    super.initState();
+    setState(() {
+      LoginPage.jwtToken = "";
+      LoginPage.userId = "";
+    });
+  }
 
   void handleLogin() async {
     String username = usernameController.text;
     String password = passwordController.text;
 
-    final databaseHelper = DatabaseHelper.instance;
+    // final databaseHelper = DatabaseHelper.instance;
 
-    final user = await databaseHelper.getUser(username, password);
+    // final user = await databaseHelper.getUser(username, password);
+    String url =
+        "http://${LoginPage.IP_Address}:${LoginPage.Port}/api/user/login";
+    Map<String, dynamic> payload = {"username": username, "password": password};
+    String jsonPayload = jsonEncode(payload);
+    var response = await http.post(
+      Uri.parse(url),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonPayload,
+    );
 
-    if (user != null) {
-      // User exists
-      print('Login successful for user: ${user['Name']}');
-      userType = user['User_Type'];
-
-      if (userType == 'Admin') {
-        // Navigate to the AdminPage
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => AdminPageUtil()),
-        );
-      }
-      //else if (userType == 'Center Admin') {
-      //   // Navigate to the CenterAdminPage
-      //   Navigator.pushReplacement(
-      //     context,
-      //     MaterialPageRoute(builder: (context) => CenterAdminPage()),
-      //   );
-      // }
-      else if (userType == 'Surveyor') {
-        // Navigate to the SurveyorPage
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => SurveyorPageUtil()),
-        );
-      } else if (userType == 'Design Executive') {
-        // Navigate to the DesignExecutivePage
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => DesignExecutiveUtilPage()),
-        );
+    if (response.statusCode == 200) {
+      var json = jsonDecode(response.body);
+      String userType = "";
+      setState(() {
+        LoginPage.jwtToken = json["jwtToken"];
+        LoginPage.userId = json["userid"];
+        userType = json["type"];
+      });
+      print("response body : $json");
+      if (userType != "") {
+        if (userType == 'adm') {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => AdminPageUtil()),
+          );
+          print('logging in as adm');
+        } else if (userType == 'svy') {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => SurveyorPageUtil()),
+          );
+          print('logging in as svy');
+        } else if (userType == 'dex') {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => DesignExecutiveUtilPage()),
+          );
+          print('logging in as dex');
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Cannot Login!!!'),
+            ),
+          );
+        }
       } else {
+        // print('Login failed. User not found.');
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Incorrect credentials!!!'),
@@ -69,12 +90,12 @@ class _LoginPageState extends State<LoginPage> {
         );
       }
     } else {
-      print('Login failed. User not found.');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Incorrect credentials!!!'),
+          content: Text('Problem Connecting to the server!!!'),
         ),
       );
+      // print('Error Connecting to the server : ${response.statusCode}');
     }
   }
 
@@ -102,28 +123,11 @@ class _LoginPageState extends State<LoginPage> {
                 height: 250,
               ),
               SizedBox(height: 20),
-              // DropdownButton<String>(
-              //   hint: Text('Select User Type'),
-              //   value: selectedUserType,
-              //   items: userTypes.map((String userType) {
-              //     return DropdownMenuItem<String>(
-              //       value: userType,
-              //       child: Text(userType),
-              //     );
-              //   }).toList(),
-              //   onChanged: (String? newValue) {
-              //     setState(() {
-              //       selectedUserType = newValue;
-              //     });
-              //   },
-              // ),
-              // SizedBox(height: 20),
               Container(
                 width: 200,
                 height: 40,
                 child: Row(
                   children: [
-                    // const Text('Username\t\t'),
                     Expanded(
                       child: TextField(
                         controller: usernameController,
@@ -144,7 +148,6 @@ class _LoginPageState extends State<LoginPage> {
                 height: 40,
                 child: Row(
                   children: [
-                    // const Text('Password\t\t'),
                     Expanded(
                       child: TextField(
                         controller: passwordController,

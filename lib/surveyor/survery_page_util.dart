@@ -1,8 +1,5 @@
 import 'package:app_001/surveyor/display_survey_responses.dart';
-// import 'package:app_001/surveyor/family_details.dart';
-// import 'package:app_001/surveyor/subject_selection_survey.dart';
 import 'package:app_001/surveyor/village_data_table_page.dart';
-// import 'form_selection_survey.dart';
 import 'subject_display_page.dart';
 import 'subject_register_page.dart';
 import 'package:flutter/material.dart';
@@ -14,6 +11,12 @@ class SurveyorPageUtil extends StatefulWidget {
 }
 
 class _SurveyorPageUtilState extends State<SurveyorPageUtil> {
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
