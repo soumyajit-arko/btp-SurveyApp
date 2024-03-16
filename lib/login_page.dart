@@ -36,8 +36,8 @@ class _LoginPageState extends State<LoginPage> {
     // final databaseHelper = DatabaseHelper.instance;
 
     // final user = await databaseHelper.getUser(username, password);
-    String url =
-        "http://${LoginPage.IP_Address}:${LoginPage.Port}/api/user/login";
+    String url = "https://csjitsi.iitkgp.ac.in/api/user/login";
+    // "https://${LoginPage.IP_Address}:${LoginPage.Port}/api/user/login";
     Map<String, dynamic> payload = {"username": username, "password": password};
     String jsonPayload = jsonEncode(payload);
     var response = await http.post(

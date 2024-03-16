@@ -58,8 +58,8 @@ class _DisplaySurveyResponsesState extends State<DisplaySurveyResponses> {
                             
                             // DataColumn(label: Text('sid')),
                             // DataColumn(label: Text('subject_id')),
-                            DataColumn(label: Text('survey datetime')),
-                            DataColumn(label: Text('survey data')),
+                            DataColumn(label: Text('Service datetime')),
+                            DataColumn(label: Text('Service data')),
                           ],
                           rows: responsesList
                               .map(

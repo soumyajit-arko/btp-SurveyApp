@@ -23,12 +23,13 @@ class _VillageDataTablePageState extends State<VillageDataTablePage> {
 
   Future<void> loadVillageDetails() async {
     final dbHelper = DatabaseHelper.instance;
-    final villageDetails = await dbHelper.getVillageNames();
+    // final villageDetails = await dbHelper.getVillageNames();
+    final villageDetails = await dbHelper.getZoneNames();
 
     setState(() {
       Villages = villageDetails
           .map(
-            (village) => village['Village'].toString(),
+            (village) => village['name'].toString(),
           )
           .toList();
       filteredList = Villages;

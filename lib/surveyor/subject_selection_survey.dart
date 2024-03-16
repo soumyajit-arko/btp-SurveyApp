@@ -1,5 +1,6 @@
 // import 'package:app_001/surveyor/form_selection_survey.dart';
 import 'package:app_001/surveyor/selectTimePeriodPage.dart';
+import 'package:app_001/surveyor/subject_register_page.dart';
 import 'package:app_001/surveyor/take_survey_page.dart';
 import 'package:flutter/material.dart';
 import 'package:app_001/backend/database_helper.dart';
@@ -35,8 +36,10 @@ class _FamilyDataTablePageState extends State<FamilyDataTablePage> {
     final dbHelper = DatabaseHelper.instance;
     List<Map<String, Object?>> familyDetails;
     if (widget.nextPage == 'survey') {
-      familyDetails = await dbHelper.getFamilyDetailsByFormAndVillage(
+      familyDetails = await dbHelper.getFamilyDetailsByFormAndVillageMod(
           widget.formName.formName, widget.village);
+      // familyDetails = await dbHelper.getFamilyDetailsByFormAndVillage(
+      //     widget.formName.formName, widget.village);
     } else {
       familyDetails = await dbHelper.getFamilyDetailsbyVillage(widget.village);
     }
@@ -51,8 +54,10 @@ class _FamilyDataTablePageState extends State<FamilyDataTablePage> {
                 spouseName: family['SpouseName'].toString(),
                 childName: family['ChildName'].toString(),
                 mobile: family['Mobile'].toString(),
-                startDate: family['start_date'].toString(),
-                endDate: family['end_date'].toString(),
+                startDate: '',
+                endDate: '',
+                // startDate: family['start_date'].toString(),
+                // endDate: family['end_date'].toString(),
               ),
             )
             .toList();
@@ -185,6 +190,16 @@ class _FamilyDataTablePageState extends State<FamilyDataTablePage> {
           ],
         ),
       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => SubjectRegisterPage()),
+          );
+        },
+        tooltip: 'Add Beneficiary',
+        child: Icon(Icons.add),
+      ),
     );
   }
 
@@ -197,7 +212,7 @@ class _FamilyDataTablePageState extends State<FamilyDataTablePage> {
                   formName: widget.formName,
                   familyDetails: family,
                   nextPage: widget.nextPage,
-                  // village: widget.village
+                  village: widget.village
                 )
             // FormDataTablePage(family: family, nextPage: widget.nextPage),
             ),
@@ -245,7 +260,7 @@ class FamilyDetailsPage extends StatelessWidget {
             ],
           ),
         ),
-      ),
+      ), //
     );
   }
 }

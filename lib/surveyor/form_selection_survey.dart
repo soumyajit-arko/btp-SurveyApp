@@ -1,6 +1,10 @@
+import 'package:app_001/surveyor/biometric_page.dart';
 import 'package:app_001/surveyor/form_details.dart';
+import 'package:app_001/surveyor/subject_display_page.dart';
 // import 'package:app_001/surveyor/selectTimePeriodPage.dart';
 import 'package:app_001/surveyor/subject_selection_survey.dart';
+import 'package:app_001/surveyor/survery_page_util.dart';
+import 'package:app_001/utils/user_details_page.dart';
 // import 'package:app_001/surveyor/take_survey_page.dart';
 // import 'family_details.dart';
 import 'package:flutter/material.dart';
@@ -38,7 +42,11 @@ class _FormDataTablePageState extends State<FormDataTablePage> {
     //   formDetails =
     //       await dbHelper.getValidServicesForSubject(widget.family.subjectID);
     // } else {
+
     formDetails = await dbHelper.getFormsNames();
+
+    // formDetails = await dbHelper.get
+
     // await dbHelper.getUniqueServicesEnrolledByID(widget.family.subjectID);
     // await dbHelper.getServicesEnrolledByID(widget.family.subjectID);
     // }
@@ -62,6 +70,50 @@ class _FormDataTablePageState extends State<FormDataTablePage> {
               form.formName.toLowerCase().contains(query.toLowerCase()))
           .toList();
     });
+  }
+
+  Widget _demo(String username, String email) {
+    return Drawer(
+      child: ListView(
+        padding: EdgeInsets.zero,
+        children: <Widget>[
+          UserAccountsDrawerHeader(
+            accountName: Text(username),
+            accountEmail: Text(email),
+            currentAccountPicture: CircleAvatar(
+              backgroundColor: Colors.orange,
+              child: Text(
+                "J",
+                style: TextStyle(fontSize: 40.0),
+              ),
+            ),
+            onDetailsPressed: () {
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => UserDetailsPage()));
+            },
+          ),
+          ListTile(
+            leading: Icon(Icons.home),
+            title: Text('Home'),
+            onTap: () {
+              // Navigator.pop(context);
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => SurveyorPageUtil()));
+            },
+          ),
+          ListTile(
+            leading: Icon(Icons.settings),
+            title: Text('Display Beneficiaries'),
+            onTap: () {
+              // Navigator.pop(context);
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => SubjectDisplayPage()));
+            },
+          ),
+          // Rest of the drawer content
+        ],
+      ),
+    );
   }
 
   @override
@@ -88,6 +140,7 @@ class _FormDataTablePageState extends State<FormDataTablePage> {
       appBar: AppBar(
         title: Text('Form Data Table'),
       ),
+      drawer: _demo("user1", "user1@gmail.com"),
       body: Container(
         child: Column(
           children: [
@@ -132,44 +185,45 @@ class _FormDataTablePageState extends State<FormDataTablePage> {
 
   void navigateToDetailsPage(BuildContext context, FormDetails form) {
     // if (widget.nextPage == 'service registraion') {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (context) => FamilyDataTablePage(
-                formName: form,
-                village: widget.village,
-                nextPage: widget.nextPage)),
-      );
-  //   } else if (widget.nextPage == "survey") {
-  //     Navigator.push(
-  //       context,
-  //       MaterialPageRoute(
-  //           builder: (context) => FamilyDataTablePage(
-  //               formName: form,
-  //               village: widget.village,
-  //               nextPage: widget.nextPage)),
-  //     );
-  //     // Navigator.push(
-  //     //   context,
-  //     //   MaterialPageRoute(
-  //     //     builder: (context) => TakeSurveyPage(
-  //     //       formName: form,
-  //     //       // familyDetails: family,
-  //     //       nextPage: widget.nextPage,
-  //     //     ),
-  //     //   ),
-  //     // );
-  //   } else {
-  //     Navigator.push(
-  //       context,
-  //       MaterialPageRoute(
-  //         builder: (context) => ServiceEnrolledPage(
-  //           nextPage: widget.nextPage,
-  //           formDetails: form,
-  //         ),
-  //       ),
-  //     );
-  //   }
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+          builder: (context) => FamilyDataTablePage(
+              formName: form,
+              village: widget.village,
+              nextPage: widget.nextPage)),
+    );
+
+    //   } else if (widget.nextPage == "survey") {
+    //     Navigator.push(
+    //       context,
+    //       MaterialPageRoute(
+    //           builder: (context) => FamilyDataTablePage(
+    //               formName: form,
+    //               village: widget.village,
+    //               nextPage: widget.nextPage)),
+    //     );
+    //     // Navigator.push(
+    //     //   context,
+    //     //   MaterialPageRoute(
+    //     //     builder: (context) => TakeSurveyPage(
+    //     //       formName: form,
+    //     //       // familyDetails: family,
+    //     //       nextPage: widget.nextPage,
+    //     //     ),
+    //     //   ),
+    //     // );
+    //   } else {
+    //     Navigator.push(
+    //       context,
+    //       MaterialPageRoute(
+    //         builder: (context) => ServiceEnrolledPage(
+    //           nextPage: widget.nextPage,
+    //           formDetails: form,
+    //         ),
+    //       ),
+    //     );
+    //   }
   }
 }
 

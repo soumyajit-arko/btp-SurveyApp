@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../backend/database_helper.dart';
 import 'dart:convert';
+import 'dart:math';
 
 class CreateDetailsPage extends StatefulWidget {
   final String formName;
@@ -96,6 +97,7 @@ class _CreateDetailsPageState extends State<CreateDetailsPage> {
       String details_source = json.encode(details);
 
       await DatabaseHelper.instance.insertForm({
+        'sid': Random().nextInt(1000),
         'Name': formName,
         'Description': description,
         'template_source': template,

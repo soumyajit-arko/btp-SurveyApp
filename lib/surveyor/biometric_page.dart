@@ -18,42 +18,16 @@ import '../backend/database_helper.dart';
 import '../Audio/audio_player.dart';
 import '../Audio/audio_recorder.dart';
 
-class SubjectRegisterPage extends StatefulWidget {
+class BiometricPage extends StatefulWidget {
+  final String village;
+  final String nextPage;
+  const BiometricPage(
+      {required this.village, required this.nextPage, super.key});
   @override
-  _SubjectRegisterPageState createState() => _SubjectRegisterPageState();
+  _BiometricPageState createState() => _BiometricPageState();
 }
 
-class _SubjectRegisterPageState extends State<SubjectRegisterPage> {
-  // final TextEditingController nameController = TextEditingController();
-  // final TextEditingController ageController = TextEditingController();
-  // final TextEditingController sexController = TextEditingController();
-  // final TextEditingController occupationController = TextEditingController();
-  // final TextEditingController zoneIDController = TextEditingController();
-  // final TextEditingController addressController = TextEditingController();
-  // final TextEditingController mobileController = TextEditingController();
-  // final TextEditingController emailController = TextEditingController();
-  final TextEditingController subjectNameController = TextEditingController();
-  final TextEditingController childNameController = TextEditingController();
-  final TextEditingController mobileController = TextEditingController();
-  final TextEditingController maritalStatusController = TextEditingController();
-  final TextEditingController villageController = TextEditingController();
-  final TextEditingController idTypeController = TextEditingController();
-  final TextEditingController idNumberController = TextEditingController();
-
-  // final TextEditingController initialDateController = TextEditingController();
-  // final TextEditingController finalDateController = TextEditingController();
-  final TextEditingController addressController = TextEditingController();
-  final TextEditingController spouseNameController = TextEditingController();
-  final TextEditingController ageController = TextEditingController();
-  final TextEditingController sexController = TextEditingController();
-  final TextEditingController casteController = TextEditingController();
-  final TextEditingController imageController = TextEditingController();
-  final TextEditingController voiceController = TextEditingController();
-  final TextEditingController religionController = TextEditingController();
-  final TextEditingController occupationController = TextEditingController();
-  final TextEditingController zoneidController = TextEditingController();
-  final TextEditingController emailController = TextEditingController();
-
+class _BiometricPageState extends State<BiometricPage> {
   File? _image;
 
   bool showPlayer = false;
@@ -123,112 +97,23 @@ class _SubjectRegisterPageState extends State<SubjectRegisterPage> {
     // _image.
     // print(te);
     print('done');
-    String subjectName = subjectNameController.text;
-    String spouseName = spouseNameController.text;
-    String childName = childNameController.text;
-    String maritalStatus = maritalStatusController.text;
-    String village = villageController.text;
-    String idType = idTypeController.text;
-    String idNumber = idNumberController.text;
-    String mobile = mobileController.text;
-    // String initialDate = initialDateController.text;
-    // String finalDate = finalDateController.text;
-    String address = addressController.text;
-    String age = ageController.text;
-    String sex = sexController.text;
-    String caste = casteController.text;
+
     // String image = filename;
     // String? voice = audioPath;
-    String religion = religionController.text;
-    String occupation = occupationController.text;
-    String zoneid = zoneidController.text;
-    String email = emailController.text;
-    // await DatabaseHelper.instance.insertSubject({
-    //   'SubjectName': subjectName,
-    //   'SpouseName': spouseName,
-    //   'ChildName': childName,
-    //   'MaritalStatus': maritalStatus,
-    //   'Village': village,
-    //   'IDType': idType,
-    //   'IDNumber': idNumber,
-    //   'Mobile': mobile,
-    //   // 'InitialDate': initialDate,
-    //   // 'FinalDate': finalDate,
-    //   'Address': address,
-    //   'Age': age,
-    //   'Sex': sex,
-    //   'Caste': caste,
-    //   // 'Image': image,
-    //   // 'Voice': voice,
-    //   'Religion': religion,
-    //   'Occupation': occupation,
-    //   'Zone_ID': zoneid,
-    //   'Email': email,
-    // });
 
-    String url =
-        "https://csjitsi.iitkgp.ac.in/api/user/create-subject-new";
-    Map<String, dynamic> payload = {
-      "name": subjectName,
-      "age": age,
-      "sex": sex,
-      "zone_id": zoneid,
-      "occupation": occupation,
-      "address": address,
-      "email": email,
-      "mobile": mobile
-    };
-    String jsonPayload = jsonEncode(payload);
-    var response = await http.post(
-      Uri.parse(url),
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ${LoginPage.jwtToken}',
-      },
-      body: jsonPayload,
-    );
-    if (response.statusCode == 200) {
-      var json = jsonDecode(response.body);
-      print('${json['subject_id']}');
-      await DatabaseHelper.instance.insertSubject({
-        'subject_id': json['subject_id'],
-        'SubjectName': subjectName,
-        'SpouseName': spouseName,
-        'ChildName': childName,
-        'MaritalStatus': maritalStatus,
-        'Village': village,
-        'IDType': idType,
-        'IDNumber': idNumber,
-        'Mobile': mobile,
-        // 'InitialDate': initialDate,
-        // 'FinalDate': finalDate,
-        'Address': address,
-        'Age': age,
-        'Sex': sex,
-        'Caste': caste,
-        // 'Image': image,
-        // 'Voice': voice,
-        'Religion': religion,
-        'Occupation': occupation,
-        'Zone_ID': zoneid,
-        'Email': email,
-      });
-    } else {
-      print('Error Connecting to the server : ${response.statusCode}');
-    }
-
-    _clearFields();
+    // _clearFields();
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('Benificary Enrolled successfully'),
+        content: Text('Biometric Saved Successfully'),
       ),
     );
     Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) =>
+
             // FormDataTablePage(village: village, nextPage: "service registration"),
-            FormDataTablePage(village: village, nextPage: "survey"),
+            FormDataTablePage(village: widget.village, nextPage: "survey"),
       ),
     );
   }
@@ -251,26 +136,26 @@ class _SubjectRegisterPageState extends State<SubjectRegisterPage> {
   // }
 
   void _clearFields() {
-    subjectNameController.clear();
-    childNameController.clear();
-    mobileController.clear();
-    maritalStatusController.clear();
-    villageController.clear();
-    idTypeController.clear();
-    idNumberController.clear();
+    // subjectNameController.clear();
+    // childNameController.clear();
+    // mobileController.clear();
+    // maritalStatusController.clear();
+    // villageController.clear();
+    // idTypeController.clear();
+    // idNumberController.clear();
     // initialDateController.clear();
     // finalDateController.clear();
-    addressController.clear();
-    spouseNameController.clear();
-    ageController.clear();
-    sexController.clear();
-    casteController.clear();
-    imageController.clear();
-    voiceController.clear();
-    religionController.clear();
-    occupationController.clear();
-    zoneidController.clear();
-    emailController.clear();
+    // addressController.clear();
+    // spouseNameController.clear();
+    // ageController.clear();
+    // sexController.clear();
+    // casteController.clear();
+    // imageController.clear();
+    // voiceController.clear();
+    // religionController.clear();
+    // occupationController.clear();
+    // zoneidController.clear();
+    // emailController.clear();
     // _image.delete()
   }
 
@@ -450,7 +335,7 @@ class _SubjectRegisterPageState extends State<SubjectRegisterPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Beneficiary Enrollment Page'),
+        title: Text('Biometric Page'),
       ),
       body: Stack(
         children: <Widget>[
@@ -461,47 +346,13 @@ class _SubjectRegisterPageState extends State<SubjectRegisterPage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
                   const Text(
-                    'Enroll New Beneficiary',
+                    'Take Biometric',
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   const SizedBox(height: 20),
-                  _buildFormField('Beneficiary Name', subjectNameController),
-                  _buildFormField('Spouse Name', spouseNameController),
-                  _buildFormField('Child Name', childNameController),
-                  _buildFormField('Marital Status', maritalStatusController),
-                  _buildFormField('Village', villageController),
-                  _buildFormField('ID Type', idTypeController),
-                  _buildFormField('ID Number', idNumberController),
-                  _buildFormField('Mobile', mobileController,
-                      keyboardType: TextInputType.phone),
-                  // _buildDateSelector('Initial Date', initialDateSelected,
-                  //     (DateTime date) {
-                  //   setState(() {
-                  //     initialDateSelected = date;
-                  //   });
-                  // }, initialDateController),
-                  // _buildDateSelector('Final Date', finalDateSelected,
-                  //     (DateTime date) {
-                  //   setState(() {
-                  //     finalDateSelected = date;
-                  //   });
-                  // }, finalDateController),
-
-                  _buildFormField('Address', addressController),
-                  _buildFormField('Age', ageController,
-                      keyboardType: TextInputType.number),
-                  _buildFormField('Sex', sexController),
-                  _buildFormField('Caste', casteController),
-                  // _buildFormField('Image', imageController),
-                  // _buildFormField('Voice', voiceController),
-                  _buildFormField('Religion', religionController),
-                  _buildFormField('Occupation', occupationController),
-                  _buildFormField('Zone ID', zoneidController),
-                  _buildFormField('Email', emailController,
-                      keyboardType: TextInputType.emailAddress),
                   _image == null
                       ? const Text('No image selected.')
                       : Image.file(
@@ -547,7 +398,7 @@ class _SubjectRegisterPageState extends State<SubjectRegisterPage> {
                       print('came out');
                     },
                     icon: const Icon(Icons.person, size: 30),
-                    label: const Text('Create Subject'),
+                    label: const Text('Take Biometric'),
                   ),
                 ],
               ),

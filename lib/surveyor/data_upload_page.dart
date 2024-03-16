@@ -1,4 +1,8 @@
 import 'dart:convert';
+import 'package:app_001/admin/admin_page_util.dart';
+import 'package:app_001/login_page.dart';
+import 'package:app_001/surveyor/survery_page_util.dart';
+import 'package:app_001/utils/user_details_page.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 
@@ -16,13 +20,13 @@ class _DataUploadPageState extends State<DataUploadPage> {
   void initState() {
     super.initState();
     // login();
-    createNewSurvey();
+    // createNewSurvey();
     // getSubjectInfo();
   }
 
   // design1, user1
   Future<void> login() async {
-    String url = "http://$IP_Address:$Port/api/user/login";
+    String url = "https://csjitsi.iitkgp.ac.in/api/user/login";
     Map<String, dynamic> payload = {"username": "user1", "password": "user1"};
     String jsonPayload = jsonEncode(payload);
     var response = await http.post(
@@ -89,12 +93,57 @@ class _DataUploadPageState extends State<DataUploadPage> {
     }
   }
 
+  Widget _demo(String username, String email) {
+    return Drawer(
+      child: ListView(
+        padding: EdgeInsets.zero,
+        children: <Widget>[
+          UserAccountsDrawerHeader(
+            accountName: Text(username),
+            accountEmail: Text(email),
+            currentAccountPicture: CircleAvatar(
+              backgroundColor: Colors.orange,
+              child: Text(
+                "J",
+                style: TextStyle(fontSize: 40.0),
+              ),
+            ),
+            onDetailsPressed: () {
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => UserDetailsPage()));
+            },
+          ),
+          ListTile(
+            leading: Icon(Icons.home),
+            title: Text('Home'),
+            onTap: () {
+              // Navigator.pop(context);
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => SurveyorPageUtil()));
+            },
+          ),
+          ListTile(
+            leading: Icon(Icons.settings),
+            title: Text('Admin'),
+            onTap: () {
+              // Navigator.pop(context);
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => AdminPageUtil()));
+            },
+          ),
+          // Rest of the drawer content
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
           title: Text('Data Upload'),
         ),
+        drawer: _demo("Ramesh", "Ramesh@123.com"),
         body: Container());
   }
 }

@@ -27,7 +27,7 @@ class _SurveyDataState extends State<SurveyData> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Survey Data'),
+        title: Text('Service Data'),
       ),
       body: SingleChildScrollView(
         child: Column(

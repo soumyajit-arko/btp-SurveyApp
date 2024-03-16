@@ -21,6 +21,7 @@ class _DisplayFormsPageState extends State<DisplayFormsPage> {
   void _loadForms() async {
     print('loaded forms list : ');
     final fL = await DatabaseHelper.instance.getForms();
+    print(fL);
     print(formsList);
     setState(() {
       formsList = fL;

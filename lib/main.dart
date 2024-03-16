@@ -24,8 +24,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Login App',
-      home: DataUploadPage(),
-      // home: LoginPage(),
+      // home: DataUploadPage(),
+      home: LoginPage(),
       // home: FamilyDataTablePage(),
       // home: FormDataTablePage(),
       debugShowCheckedModeBanner: false,

@@ -1,3 +1,6 @@
+import 'dart:math';
+
+import 'package:app_001/surveyor/biometric_page.dart';
 import 'package:app_001/surveyor/family_details.dart';
 import 'package:app_001/surveyor/form_details.dart';
 import 'package:app_001/surveyor/survery_page_util.dart';
@@ -11,12 +14,14 @@ class TakeSurveyPage extends StatefulWidget {
   final String nextPage;
   final String startDate;
   final String endDate;
+  final String village;
   const TakeSurveyPage(
       {required this.formName,
       required this.familyDetails,
       required this.nextPage,
       this.startDate = "",
       this.endDate = "",
+      this.village = "",
       super.key});
   @override
   _TakeSurveyPageState createState() => _TakeSurveyPageState();
@@ -56,20 +61,33 @@ class _TakeSurveyPageState extends State<TakeSurveyPage> {
   void displayForm() async {
     final details =
         await DatabaseHelper.instance.getFormWithName(widget.formName.formName);
-    String jsonContent = "";
-
+    dynamic jsonContent = "";
+    final d = jsonDecode(details[0]['template_source']);
+    // print('details :  : ${details[0]['template_source']}');
+    print('d :::: ${d['template_source']}');
     if (widget.nextPage != "survey") {
       jsonContent = details[0]['details_source'];
     } else {
-      jsonContent = details[0]['template_source'];
+      jsonContent =
+          jsonDecode(details[0]['template_source'])['template_source'];
     }
-    final data = json.decode(jsonContent);
+    // print(jsonEncode(jsonContent));
     List<Map<String, dynamic>> mapList =
-        data.cast<Map<String, dynamic>>().toList();
+        List<Map<String, dynamic>>.from(jsonContent);
+    print(mapList);
+    // final data = json.decode(jsonContent);
+    // print('data : $data');
+    // print(jsonContent);
+    // List<Map<String, dynamic>> mapList =
+    //     data.cast<Map<String, dynamic>>().toList();
 
     setState(() {
       questions = mapList;
     });
+
+    for (var e in mapList) {
+      print('e : $e : ${e['attrtype']}');
+    }
   }
 
   void handleOptionSelected(String question, String selectedOption) {
@@ -97,12 +115,13 @@ class _TakeSurveyPageState extends State<TakeSurveyPage> {
     // await DatabaseHelper.instance.getsubjectIDByName(widget.familyDetails);
     final sid_ =
         await DatabaseHelper.instance.getSidByName(widget.formName.formName);
-    final subID = int.parse(subjectID);
-    final sid = int.parse(sid_);
+    final subID = (subjectID);
+    final sid = (sid_);
     DateTime now = DateTime.now();
     final formattedDatetime = now.toUtc().toIso8601String();
     if (widget.nextPage != "survey") {
       final b = await DatabaseHelper.instance.insertResponse({
+        'rid': Random().nextInt(1000),
         'subject_id': subID,
         'survey_datetime': formattedDatetime,
         'sid': sid,
@@ -119,6 +138,7 @@ class _TakeSurveyPageState extends State<TakeSurveyPage> {
       print('doen : $c');
     } else {
       final b = await DatabaseHelper.instance.insertResponse({
+        'rid': Random().nextInt(1000),
         'subject_id': subID,
         'survey_datetime': formattedDatetime,
         'sid': sid,
@@ -129,12 +149,14 @@ class _TakeSurveyPageState extends State<TakeSurveyPage> {
     }
     final rid_ =
         await DatabaseHelper.instance.getridBysubjectIDandDatetime(subID, now);
-    final rid = int.parse(rid_);
+    final rid = rid_;
+    print('found rid : $rid');
     for (var key in responsesMap.keys) {
       dynamic value = responsesMap[key];
       final fid_ =
           await DatabaseHelper.instance.getfidBysidandAttributeName(sid, key);
-      final fid = int.parse(fid_);
+      final fid = fid_;
+      print('fo fid : $fid');
       await DatabaseHelper.instance.insertFieldEntry({
         'rid': rid,
         'fid': fid,
@@ -177,10 +199,15 @@ class _TakeSurveyPageState extends State<TakeSurveyPage> {
   }
 
   Widget _buildQuestionWidget(Map<String, dynamic> question) {
-    final questionText = question['question'];
-    final questionType = question['type'];
-    final options_ = question['options'];
-    final options = options_.split(',');
+    final questionText = question['attrname'];
+    // final questionType = question['attrtype'];
+    // final options_ = question['options'];
+    // dynamic options;
+    // if (options_ == null) {
+    //   options = null;
+    // } else {
+    //   options = options_.split(',');
+    // }
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 16.0),
@@ -199,34 +226,34 @@ class _TakeSurveyPageState extends State<TakeSurveyPage> {
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
               SizedBox(height: 10),
-              if (questionType == 'Single Choice')
-                for (var option in options)
-                  RadioListTile<String>(
-                    title: Text(option),
-                    value: option,
-                    groupValue: responses[questionText],
-                    onChanged: (value) {
-                      handleOptionSelected(questionText, value ?? '');
-                    },
-                  ),
-              if (questionType == 'Multiple Choice')
-                for (var option in options)
-                  CheckboxListTile(
-                    title: Text(option),
-                    value: responses[questionText]?.contains(option) ?? false,
-                    onChanged: (selected) {
-                      if (selected != null) {
-                        handleMultipleChoiceOptionSelected(
-                          questionText,
-                          option,
-                          selected,
-                        );
-                      }
-                    },
-                  ),
-              if (questionType == 'Text Answer' ||
-                  questionType == 'Integer Answer')
-                _buildSmallTextField(questionText, 'Enter your answer'),
+              // if (questionType == 'Single Choice')
+              //   for (var option in options)
+              //     RadioListTile<String>(
+              //       title: Text(option),
+              //       value: option,
+              //       groupValue: responses[questionText],
+              //       onChanged: (value) {
+              //         handleOptionSelected(questionText, value ?? '');
+              //       },
+              //     ),
+              // if (questionType == 'Multiple Choice')
+              //   for (var option in options)
+              //     CheckboxListTile(
+              //       title: Text(option),
+              //       value: responses[questionText]?.contains(option) ?? false,
+              //       onChanged: (selected) {
+              //         if (selected != null) {
+              //           handleMultipleChoiceOptionSelected(
+              //             questionText,
+              //             option,
+              //             selected,
+              //           );
+              //         }
+              //       },
+              //     ),
+              // if (questionType == 'Text Answer' ||
+              //     questionType == 'Integer Answer')
+              _buildSmallTextField(questionText, 'Enter your answer'),
             ],
           ),
         ),
@@ -247,19 +274,6 @@ class _TakeSurveyPageState extends State<TakeSurveyPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                SizedBox(height: 20),
-                // ElevatedButton.icon(
-                //   onPressed: () {
-                //     Navigator.pushReplacement(
-                //       context,
-                //       MaterialPageRoute(
-                //         builder: (context) => LoginPage(),
-                //       ),
-                //     );
-                //   },
-                //   icon: Icon(Icons.logout, size: 30),
-                //   label: Text('Logout'),
-                // ),
                 SizedBox(height: 20),
                 for (var question in questions) _buildQuestionWidget(question),
                 ElevatedButton.icon(
@@ -285,10 +299,17 @@ class _TakeSurveyPageState extends State<TakeSurveyPage> {
                       //           // village: widget.,
                       //           nextPage: widget.nextPage)),
                       // );
-                      Navigator.pushReplacement(
+                      // Navigator.pushReplacement(
+                      //   context,
+                      //   MaterialPageRoute(
+                      //       builder: (context) => SurveyorPageUtil()),
+                      // );
+                      Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => SurveyorPageUtil()),
+                            builder: (context) => BiometricPage(
+                                village: widget.village,
+                                nextPage: widget.nextPage)),
                       );
                     }
                   },
