@@ -170,7 +170,7 @@ class DatabaseHelper {
       //
       await db.execute('''
           CREATE TABLE Subject (
-            subject_id INTEGER PRIMARY KEY AUTOINCREMENT,
+            subject_id TEXT PRIMARY KEY,
             SubjectName TEXT, 
             SpouseName TEXT,
             ChildName TEXT,
@@ -201,7 +201,7 @@ class DatabaseHelper {
       await db.execute('''
           CREATE TABLE survey_project (
             Name TEXT,
-            sid INTEGER PRIMARY KEY AUTOINCREMENT,
+            sid TEXT PRIMARY KEY,
             creation_date DATE  DEFAULT CURRENT_DATE,
             Description TEXT,
             template_source TEXT,
@@ -219,8 +219,8 @@ class DatabaseHelper {
       await db.execute('''
           CREATE TABLE field_project (
             Name TEXT,
-            fid INTEGER PRIMARY KEY AUTOINCREMENT,
-            sid INTEGER,
+            fid TEXT PRIMARY KEY,
+            sid TEXT,
             source_type INTEGER,
             attribute_name TEXT,
             attribute_datatype TEXT,
@@ -239,8 +239,8 @@ class DatabaseHelper {
     if (!recordLogs) {
       await db.execute('''
           CREATE TABLE record_log (
-            rid INTEGER PRIMARY KEY AUTOINCREMENT,
-            subject_id INTEGER,
+            rid TEXT PRIMARY KEY,
+            subject_id TEXT,
             survey_datetime DATETIME,
             sid INTEGER,
             record_type INTEGER,
@@ -260,8 +260,8 @@ class DatabaseHelper {
       await db.execute('''
           CREATE TABLE field_entry (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            rid INTEGER,
-            fid INTEGER,
+            rid TEXT,
+            fid TEXT,
             value TEXT,
             InstanceTime TIME DEFAULT CURRENT_TIME,
             FOREIGN KEY (rid) REFERENCES record_log(rid),
@@ -277,8 +277,8 @@ class DatabaseHelper {
       await db.execute('''
           CREATE TABLE service_enrollment (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            subject_id INTEGER,
-            sid INTEGER,
+            subject_id TEXT,
+            sid TEXT,
             start_date TEXT,
             end_date TEXT,
             FOREIGN KEY (subject_id) REFERENCES Subject(subject_id),
@@ -706,7 +706,12 @@ class DatabaseHelper {
 
   Future<List<Map<String, dynamic>>> getForms() async {
     final db = await database;
-    return await db.query('survey_project');
+    final f = await db.query('survey_project');
+    for (var e in f) {
+      print(e);
+    }
+    // print('$f');
+    return f;
   }
 
   Future<Map<String, dynamic>?> getUserById(String userId) async {

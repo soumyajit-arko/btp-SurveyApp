@@ -1,38 +1,91 @@
-# app_001
+# WORK FLOW
 
-A new Flutter project.
+User Login 
+-> Store the user data of whoever will be loggin in the device in the table.
+Note : First time login should happen with internet connection
 
-## Getting Started
+After logging in 
+-> Get the user info from the server if logging in for the first time
 
-This project is a starting point for a Flutter application.
+```
+    users (
+        Name TEXT,
+        Userid TEXT PRIMARY KEY,
+        Password TEXT,
+        Age INTEGER,
+        Sex TEXT,
+        Center_code TEXT,
+        User_Type TEXT,
+        Address TEXT,
+        Mobile TEXT UNIQUE,
+        Email TEXT UNIQUE,
+        Instance_time TEXT
+      )
+```
+Health Care Worker
+--
+Download Data
 
-A few resources to get you started if this is your first Flutter project:
+1. Download the survey forms
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+```
+        survey_project (
+            name TEXT,
+            sid TEXT PRIMARY KEY ,
+            creation_date DATE  DEFAULT CURRENT_DATE,
+            description TEXT,
+            template_source TEXT,
+            details_source TEXT,
+            instance_time TIME DEFAULT CURRENT_TIME
+          )
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+template_source:[
+    {
+        "question": "How many times did you come to hospital",
+        "type": "Single Choice",
+        "unit": "",
+        "options": "1,2,3,more than 3 ",
+        "required": 0
+    },
+    {
+        "question": "Do you have any of the following problems",
+        "type": "Multiple Choice",
+        "unit": "",
+        "options": "Diabetics,Cancer,Ulcer",
+        "required": 0
+    },
+    {
+        "question": "Any previous medical history",
+        "type": "Text Answer",
+        "unit": "",
+        "options": "",
+        "required": 0
+    },
+    {
+        "question": "Age when you first found this problem",
+        "type": "Integer Answer",
+        "unit": "",
+        "options": "",
+        "required": 0
+    }
+]
 
 
-Current Tasks 
 
-Login Page
-User registration page
-Subject register page
-Form maker page
-Survey taker page
+```
+2. Download the services list
+```
+service_enrollment (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            subject_id INTEGER,
+            sid TEXT,
+            start_date TEXT,
+            end_date TEXT,
+            FOREIGN KEY (subject_id) REFERENCES Subject(subject_id),
+            FOREIGN KEY (sid) REFERENCES survey_project(sid)
+          )
+```
 
-Detailed
 
-Form maker page
 
-Take name of the form to be made
-Give a drop down list of items to select which type of query it is going to be
-If options are there give him choice to choose them
-If multiselect answer, give choice to select multiple options
-If text answer, then set answer as text
-If integer answer, then set answer as int
 
-30 - 1 - 2024
