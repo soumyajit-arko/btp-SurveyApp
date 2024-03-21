@@ -1,3 +1,5 @@
+import 'package:app_001/surveyor/data_download_page.dart';
+import 'package:app_001/surveyor/data_upload_page.dart';
 import 'package:app_001/surveyor/display_survey_responses.dart';
 // import 'package:app_001/surveyor/family_details.dart';
 // import 'package:app_001/surveyor/subject_selection_survey.dart';
@@ -81,7 +83,7 @@ class _SurveyorPageUtilState extends State<SurveyorPageUtil> {
                         );
                       },
                       icon: Icon(Icons.assignment, size: 30), // Add an icon
-                      label: Text('Take Survey'),
+                      label: Text('Take Service'),
                     ),
                     SizedBox(height: 20),
                     ElevatedButton.icon(
@@ -99,6 +101,32 @@ class _SurveyorPageUtilState extends State<SurveyorPageUtil> {
                       label: Text('Enroll to a Service'),
                     ),
                     SizedBox(height: 20),
+                    ElevatedButton.icon(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => DataUploadPage(),
+                          ),
+                        );
+                      },
+                      icon: Icon(Icons.assignment, size: 30), // Add an icon
+                      label: Text('Upload Data'),
+                    ),
+                    SizedBox(height: 20),
+                    ElevatedButton.icon(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => DataDownloadPage(),
+                          ),
+                        );
+                      },
+                      icon: Icon(Icons.assignment, size: 30), // Add an icon
+                      label: Text('Download Data'),
+                    ),
+                    // SizedBox(height: 20),
                     // ElevatedButton.icon(
                     //   onPressed: () {
                     //     Navigator.push(

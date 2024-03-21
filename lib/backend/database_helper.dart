@@ -78,7 +78,7 @@ class DatabaseHelper {
   Future<Database> initDatabase() async {
     final dbpath = await getDatabasesPath();
     print('database path : $dbpath');
-    String path = join(dbpath, 'storage1.db');
+    String path = join(dbpath, 's1.db');
     print('final path : $path');
     return await openDatabase(path, version: 1, onCreate: _createDb);
   }
@@ -116,39 +116,56 @@ class DatabaseHelper {
         Instance_time TEXT
       )
     ''');
-
-      await db.rawInsert('''
-      INSERT INTO users (Name, Userid,Password, Age, Sex, Center_code, User_Type, Address, Mobile, Email, Instance_time)
-      VALUES (?, ?, ?, ?, ?, ?, ?,?, ?, ?, CURRENT_TIMESTAMP)
-    ''', [
-        'admin',
-        'admin123',
-        'admin123',
-        30,
-        'Male',
-        'Center123',
-        'Admin',
-        '123 Main St',
-        '1234567890',
-        'admin@example.com'
-      ]);
-      print('added user');
-      await db.rawInsert('''
-      INSERT INTO users (Name, Userid, Password,Age, Sex, Center_code, User_Type, Address, Mobile, Email, Instance_time)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?,CURRENT_TIMESTAMP)
-    ''', [
-        'design_executive',
-        'design123',
-        'design123',
-        35,
-        'Female',
-        'Center456',
-        'Design Executive',
-        '456 Elm St',
-        '9876543210',
-        'design@example.com'
-      ]);
-      print('added another user');
+      await db.execute('''
+          CREATE TABLE Zone (
+            name TEXT,
+            zone_id TEXT PRIMARY KEY,
+            type TEXT,
+            latitude DOUBLE,
+            longitude DOUBLE,
+            area TEXT,
+            population TEXT,
+            police_station TEXT,
+            town TEXT,
+            district TEXT,
+            state TEXT,
+            pin_code TEXT,
+            instance_time TIME DEFAULT CURRENT_TIME
+          )
+        ''');
+      print('created Zone Table');
+      //   await db.rawInsert('''
+      //   INSERT INTO users (Name, Userid,Password, Age, Sex, Center_code, User_Type, Address, Mobile, Email, Instance_time)
+      //   VALUES (?, ?, ?, ?, ?, ?, ?,?, ?, ?, CURRENT_TIMESTAMP)
+      // ''', [
+      //     'admin',
+      //     'admin123',
+      //     'admin123',
+      //     30,
+      //     'Male',
+      //     'Center123',
+      //     'Admin',
+      //     '123 Main St',
+      //     '1234567890',
+      //     'admin@example.com'
+      //   ]);
+      //   print('added user');
+      //   await db.rawInsert('''
+      //   INSERT INTO users (Name, Userid, Password,Age, Sex, Center_code, User_Type, Address, Mobile, Email, Instance_time)
+      //   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?,CURRENT_TIMESTAMP)
+      // ''', [
+      //     'design_executive',
+      //     'design123',
+      //     'design123',
+      //     35,
+      //     'Female',
+      //     'Center456',
+      //     'Design Executive',
+      //     '456 Elm St',
+      //     '9876543210',
+      //     'design@example.com'
+      //   ]);
+      //   print('added another user');
     }
 // '''
 //           CREATE TABLE survey_project (
@@ -206,7 +223,7 @@ class DatabaseHelper {
             Description TEXT,
             template_source TEXT,
             details_source TEXT,
-            InstanceTime TIME DEFAULT CURRENT_TIME
+            instance_time TIME DEFAULT CURRENT_TIME
           )
         ''');
       print('Created survey project');
@@ -272,17 +289,28 @@ class DatabaseHelper {
     } else {
       print('field_entry already exists');
     }
+    await db.execute('''
+      CREATE TABLE service (
+            service_id TEXT PRIMARY KEY,
+            sname TEXT,
+            description TEXT,
+            sid TEXT, 
+            FOREIGN KEY (sid) REFERENCES survey_project(sid)
+          )
+      ''');
     final serviceEnrollment = await _isTableExists(db, 'service_enrollment');
     if (!serviceEnrollment) {
       await db.execute('''
           CREATE TABLE service_enrollment (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
+            service_id TEXT,
             subject_id TEXT,
             sid TEXT,
             start_date TEXT,
             end_date TEXT,
             FOREIGN KEY (subject_id) REFERENCES Subject(subject_id),
-            FOREIGN KEY (sid) REFERENCES survey_project(sid)
+            FOREIGN KEY (sid) REFERENCES survey_project(sid),
+            FOREIGN KEY (service_id) REFERENCES service(service_id)
           )
         ''');
       print('created service_enrollment');
@@ -748,12 +776,144 @@ class DatabaseHelper {
   }
 
   Future<void> deleteDatabaseUtil() async {
-    String path = join(await getDatabasesPath(), 'storage1.db');
+    String path = join(await getDatabasesPath(), 's1.db');
 
     // Delete the database file
     await deleteDatabase(path);
-    path = join(await getDatabasesPath(), 'storage1.db');
+    path = join(await getDatabasesPath(), 's1.db');
     await deleteDatabase(path);
     print('deleted database successfully');
   }
+
+  Future<bool> zoneExists(String zone) async {
+    final db = await database;
+    final List<Map<String, dynamic>> maps = await db.rawQuery('''
+    SELECT zone_id from Zone where zone_id = ?
+  ''', [zone]);
+    return maps.isNotEmpty;
+  }
+
+  Future<int> storeTheZones(Map<String, dynamic> zoneInfo) async {
+    final db = await database;
+    bool flag = await zoneExists(zoneInfo['zone_id']);
+    if (flag) {
+      print('already there');
+      return 1;
+    } else {
+      print('inserting the zone');
+      return await db.insert('Zone', zoneInfo);
+    }
+  }
+
+  void checkZones() async {
+    final db = await database;
+    final res = await db.rawQuery('''select * from Zone''');
+    print(res);
+  }
+
+  Future<bool> surveyFormExists(String sid) async {
+    final db = await database;
+    final List<Map<String, dynamic>> maps = await db.rawQuery('''
+    SELECT sid from survey_project where sid = ?
+  ''', [sid]);
+    return maps.isNotEmpty;
+  }
+
+  Future<int> storeTheSurveyForms(Map<String, dynamic> surveyForm) async {
+    final db = await database;
+    bool flag = await surveyFormExists(surveyForm['sid']);
+    if (flag) {
+      print('already there');
+      return 1;
+    } else {
+      print('inserting the form');
+      return await db.insert('survey_project', surveyForm);
+    }
+  }
+
+  void checkSurveyForms() async {
+    final db = await database;
+    final res = await db.rawQuery('''select * from survey_project''');
+    print(res);
+  }
+
+  Future<bool> fieldExists(String fid) async {
+    final db = await database;
+    final List<Map<String, dynamic>> maps = await db.rawQuery('''
+    SELECT sid from field_project where fid = ?
+  ''', [fid]);
+    return maps.isNotEmpty;
+  }
+
+  Future<int> insertFieldUtil(Map<String, dynamic> value) async {
+    final db = await database;
+    bool flag = await fieldExists(value['fid']);
+    if (flag) {
+      print('already there');
+      return 1;
+    } else {
+      print('inserting the field');
+      return await db.insert('field_project', value);
+    }
+  }
+
+  void checkFields() async {
+    final db = await database;
+    final res = await db.rawQuery('''select * from field_project''');
+    print(res);
+  }
+
+  Future<bool> subjectExists(String subjectid) async {
+    final db = await database;
+    final List<Map<String, dynamic>> maps = await db.rawQuery('''
+    SELECT subject_id from Subject where subject_id = ?
+  ''', [subjectid]);
+    return maps.isNotEmpty;
+  }
+
+  Future<int> insertSubjectUtil(Map<String, dynamic> subject) async {
+    final db = await database;
+    bool flag = await subjectExists(subject['subject_id']);
+    if (flag) {
+      print('already there');
+      return 1;
+    } else {
+      print('inserting the subject');
+      return await db.insert('Subject', subject);
+    }
+  }
+
+  void checkSubjects() async {
+    final db = await database;
+    final res = await db.rawQuery('''select * from Subject''');
+    print(res);
+  }
+
+  Future<bool> serviceExists(String serviceid) async {
+    final db = await database;
+    final List<Map<String, dynamic>> maps = await db.rawQuery('''
+    SELECT service_id from service where service_id = ?
+  ''', [serviceid]);
+    return maps.isNotEmpty;
+  }
+
+  Future<int> insertServiceUtil(Map<String, dynamic> service) async {
+    final db = await database;
+    bool flag = await serviceExists(service['service_id']);
+    if (flag) {
+      print('already there');
+      return 1;
+    } else {
+      print('inserting the service');
+      return await db.insert('service', service);
+    }
+  }
+
+  void checkServices() async {
+    final db = await database;
+    final res = await db.rawQuery('''select * from service''');
+    print(res);
+  }
+
+
 }
