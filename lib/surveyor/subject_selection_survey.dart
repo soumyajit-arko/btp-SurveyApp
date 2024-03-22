@@ -1,5 +1,6 @@
 // import 'package:app_001/surveyor/form_selection_survey.dart';
 import 'package:app_001/surveyor/selectTimePeriodPage.dart';
+import 'package:app_001/surveyor/subject_register_page.dart';
 import 'package:app_001/surveyor/take_survey_page.dart';
 import 'package:flutter/material.dart';
 import 'package:app_001/backend/database_helper.dart';
@@ -33,6 +34,7 @@ class _FamilyDataTablePageState extends State<FamilyDataTablePage> {
 
   Future<void> loadFamilyDetails() async {
     final dbHelper = DatabaseHelper.instance;
+    await dbHelper.ba();
     List<Map<String, Object?>> familyDetails;
     if (widget.nextPage == 'survey') {
       familyDetails = await dbHelper.getFamilyDetailsByFormAndVillage(
@@ -40,7 +42,7 @@ class _FamilyDataTablePageState extends State<FamilyDataTablePage> {
     } else {
       familyDetails = await dbHelper.getFamilyDetailsbyVillage(widget.village);
     }
-
+    print('family details : $familyDetails');
     setState(() {
       if (widget.nextPage == 'survey') {
         familyList = familyDetails
@@ -184,6 +186,16 @@ class _FamilyDataTablePageState extends State<FamilyDataTablePage> {
             ),
           ],
         ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => SubjectRegisterPage()),
+          );
+        },
+        tooltip: 'Add Beneficiary',
+        child: Icon(Icons.add),
       ),
     );
   }

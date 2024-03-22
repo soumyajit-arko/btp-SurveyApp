@@ -63,6 +63,7 @@ class _TakeSurveyPageState extends State<TakeSurveyPage> {
     } else {
       jsonContent = details[0]['template_source'];
     }
+    // if (jsonContent.isNotEmpty) {
     final data = json.decode(jsonContent);
     List<Map<String, dynamic>> mapList =
         data.cast<Map<String, dynamic>>().toList();
@@ -70,6 +71,39 @@ class _TakeSurveyPageState extends State<TakeSurveyPage> {
     setState(() {
       questions = mapList;
     });
+    // } else {
+    // if (widget.nextPage != 'survey') {
+    //   final subID = widget.familyDetails.subjectID;
+    //   // await DatabaseHelper.instance.getsubjectIDByName(widget.familyDetails);
+    //   // final sid = await DatabaseHelper.instance
+    //   //     .getSidByName(widget.formName.formName);
+    //   final data = await DatabaseHelper.instance
+    //       .getSidServiceIdByName(widget.formName.formName);
+    //   final c = await DatabaseHelper.instance.insertServiceEnrollment({
+    //     'subject_id': subID,
+    //     'service_id': data['service_id'],
+    //     'sid': data['sid'],
+    //     'start_date': widget.startDate,
+    //     'end_date': widget.endDate,
+    //   });
+    //   print(c);
+    //   ScaffoldMessenger.of(context).showSnackBar(
+    //     SnackBar(
+    //       content: Text('Successfully Enrolled To Service'),
+    //     ),
+    //   );
+    //   Navigator.push(
+    //     context,
+    //     MaterialPageRoute(
+    //       builder: (context) => TakeSurveyPage(
+    //         formName: widget.formName,
+    //         familyDetails: widget.familyDetails,
+    //         nextPage: "survey",
+    //       ),
+    //     ),
+    //   );
+    // }
+    // }
   }
 
   void handleOptionSelected(String question, String selectedOption) {
@@ -95,50 +129,57 @@ class _TakeSurveyPageState extends State<TakeSurveyPage> {
     final responsesJson = json.encode(responsesMap);
     final subjectID = widget.familyDetails.subjectID;
     // await DatabaseHelper.instance.getsubjectIDByName(widget.familyDetails);
-    final sid_ =
+    final sid =
         await DatabaseHelper.instance.getSidByName(widget.formName.formName);
-    final subID = int.parse(subjectID);
-    final sid = int.parse(sid_);
+    // final subID = int.parse(subjectID);
+    // final sid = int.parse(sid_);
+    // final data = await DatabaseHelper.instance
+    //         .getSidServiceIdByName(widget.formName.formName);
     DateTime now = DateTime.now();
     final formattedDatetime = now.toUtc().toIso8601String();
     if (widget.nextPage != "survey") {
       final b = await DatabaseHelper.instance.insertResponse({
-        'subject_id': subID,
+        'subject_id': subjectID,
         'survey_datetime': formattedDatetime,
         'sid': sid,
         'record_type': 1,
         'survey_data': responsesJson,
+        'upload_time': 0,
       });
       print('B : : : $b');
       final c = await DatabaseHelper.instance.insertServiceEnrollment({
-        'subject_id': subID,
+        // 'service_id':,
+        'subject_id': subjectID,
         'sid': sid,
         'start_date': widget.startDate,
         'end_date': widget.endDate,
+        'upload_time': 0,
       });
       print('doen : $c');
     } else {
       final b = await DatabaseHelper.instance.insertResponse({
-        'subject_id': subID,
+        'subject_id': subjectID,
         'survey_datetime': formattedDatetime,
         'sid': sid,
         'record_type': 0,
         'survey_data': responsesJson,
+        'upload_time': 0,
       });
       print('B : : : $b');
     }
-    final rid_ =
-        await DatabaseHelper.instance.getridBysubjectIDandDatetime(subID, now);
-    final rid = int.parse(rid_);
+    final rid =
+        await DatabaseHelper.instance.getridBysubjectIDandDatetime(subjectID, now);
+    // final rid = int.parse(rid_);
     for (var key in responsesMap.keys) {
       dynamic value = responsesMap[key];
-      final fid_ =
+      final fid =
           await DatabaseHelper.instance.getfidBysidandAttributeName(sid, key);
-      final fid = int.parse(fid_);
+      // final fid = int.parse(fid_);
       await DatabaseHelper.instance.insertFieldEntry({
         'rid': rid,
         'fid': fid,
         'value': value,
+        'upload_time': 0,
       });
     }
 
@@ -154,7 +195,7 @@ class _TakeSurveyPageState extends State<TakeSurveyPage> {
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Survey Successfuly Saved'),
+          content: Text('Service Successfuly Saved'),
         ),
       );
     }

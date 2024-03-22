@@ -64,9 +64,9 @@ class _DisplayFormsPageState extends State<DisplayFormsPage> {
                                   (form_) => DataRow(
                                     cells: <DataCell>[
                                       DataCell(Text(form_['sid'].toString())),
-                                      DataCell(Text(form_['Name'].toString())),
+                                      DataCell(Text(form_['name'].toString())),
                                       DataCell(Text(
-                                          form_['Description'].toString())),
+                                          form_['description'].toString())),
                                       DataCell(
                                         const Text("View the survey form"),
                                         onTap: () {

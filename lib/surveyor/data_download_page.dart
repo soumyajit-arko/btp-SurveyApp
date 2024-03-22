@@ -23,6 +23,8 @@ class _DataDownloadPageState extends State<DataDownloadPage> {
   }
 
   Future<void> download_villages() async {
+    final databaseHelper = DatabaseHelper.instance;
+      await databaseHelper.check_service_enrollment();
     await getAllocatedZone();
     for (String zone in zones_allocated) {
       await getZoneInfo(zone);
@@ -141,6 +143,7 @@ class _DataDownloadPageState extends State<DataDownloadPage> {
     if (response.statusCode == 200) {
       var json = jsonDecode(response.body);
       final databaseHelper = DatabaseHelper.instance;
+      json['survey-info']['upload_time'] = "1";
       int flag = await databaseHelper.storeTheSurveyForms(json['survey-info']);
       print(flag);
     } else {
@@ -171,6 +174,7 @@ class _DataDownloadPageState extends State<DataDownloadPage> {
       print(json['FieldProject-info']);
       final databaseHelper = DatabaseHelper.instance;
       for (var element in json['FieldProject-info']) {
+        element['upload_time'] = "1";
         var flag = await databaseHelper.insertFieldUtil(element);
         print(flag);
       }
@@ -207,6 +211,7 @@ class _DataDownloadPageState extends State<DataDownloadPage> {
       var json = jsonDecode(response.body);
       final databaseHelper = DatabaseHelper.instance;
       for (var subject in json['subject-log']) {
+        subject['upload_time'] = "1";
         int flag = await databaseHelper.insertSubjectUtil(subject);
         print(flag);
       }
@@ -242,6 +247,7 @@ class _DataDownloadPageState extends State<DataDownloadPage> {
       print(json['service-log']);
       final databaseHelper = DatabaseHelper.instance;
       for (var service in json['service-log']) {
+        service['upload_time'] = "1";
         int flag = await databaseHelper.insertServiceUtil(service);
         print(flag);
       }
@@ -277,6 +283,7 @@ class _DataDownloadPageState extends State<DataDownloadPage> {
             ElevatedButton(
               onPressed: () async {
                 await download_forms();
+                // DatabaseHelper.instance.checkUploadTime();
                 // DatabaseHelper.instance.checkSurveyForms();
                 // DatabaseHelper.instance.checkFields();
                 // print('Download Forms');
@@ -287,7 +294,7 @@ class _DataDownloadPageState extends State<DataDownloadPage> {
             ElevatedButton(
               onPressed: () async {
                 await getSubjects();
-                // DatabaseHelper.instance.checkSubjects();
+                DatabaseHelper.instance.checkSubjects();
                 print('Download Beneficiaries');
               },
               child: Text('Download Beneficiaries'),

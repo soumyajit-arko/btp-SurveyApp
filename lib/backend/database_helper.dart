@@ -91,17 +91,7 @@ class DatabaseHelper {
   }
 
   Future<void> _createDb(Database db, int version) async {
-    // await db.execute('''
-    //   CREATE TABLE questions(
-    //     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    //     question TEXT,
-    //     type TEXT,
-    //     options TEXT
-    //   )
-    // ''');
-    final tableExists = await _isTableExists(db, 'users');
-    if (!tableExists) {
-      await db.execute('''
+    await db.execute('''
       CREATE TABLE users (
         Name TEXT,
         Userid TEXT PRIMARY KEY,
@@ -116,7 +106,7 @@ class DatabaseHelper {
         Instance_time TEXT
       )
     ''');
-      await db.execute('''
+    await db.execute('''
           CREATE TABLE Zone (
             name TEXT,
             zone_id TEXT PRIMARY KEY,
@@ -133,59 +123,9 @@ class DatabaseHelper {
             instance_time TIME DEFAULT CURRENT_TIME
           )
         ''');
-      print('created Zone Table');
-      //   await db.rawInsert('''
-      //   INSERT INTO users (Name, Userid,Password, Age, Sex, Center_code, User_Type, Address, Mobile, Email, Instance_time)
-      //   VALUES (?, ?, ?, ?, ?, ?, ?,?, ?, ?, CURRENT_TIMESTAMP)
-      // ''', [
-      //     'admin',
-      //     'admin123',
-      //     'admin123',
-      //     30,
-      //     'Male',
-      //     'Center123',
-      //     'Admin',
-      //     '123 Main St',
-      //     '1234567890',
-      //     'admin@example.com'
-      //   ]);
-      //   print('added user');
-      //   await db.rawInsert('''
-      //   INSERT INTO users (Name, Userid, Password,Age, Sex, Center_code, User_Type, Address, Mobile, Email, Instance_time)
-      //   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?,CURRENT_TIMESTAMP)
-      // ''', [
-      //     'design_executive',
-      //     'design123',
-      //     'design123',
-      //     35,
-      //     'Female',
-      //     'Center456',
-      //     'Design Executive',
-      //     '456 Elm St',
-      //     '9876543210',
-      //     'design@example.com'
-      //   ]);
-      //   print('added another user');
-    }
-// '''
-//           CREATE TABLE survey_project (
-//             Name TEXT,
-//             sid TEXT PRIMARY KEY AUTOINCREMENT,
-//             creation_date DATETIME DEFAULT CURRENT_TIMESTAMP,
-//             Description TEXT,
-//             template_source TEXT,
-//             InstanceTIme TEXT
-//           )
-//         ''');
-    final subjectExists = await _isTableExists(db, 'Subject');
-    if (!subjectExists) {
-      //beneficiary name - subject
-      //marital status
-      // village
-      // id type - Voter ,AAdhar, Pan, Driving, Ration, Other-Card
-      //and id number
-      //
-      await db.execute('''
+    print('created Zone Table');
+
+    await db.execute('''
           CREATE TABLE Subject (
             subject_id TEXT PRIMARY KEY,
             SubjectName TEXT, 
@@ -206,36 +146,27 @@ class DatabaseHelper {
             Occupation TEXT,
             Zone_ID TEXT,
             Email TEXT,
-            Instance_time TIME DEFAULT CURRENT_TIME
+            Instance_time TIME DEFAULT CURRENT_TIME,
+            upload_time TEXT
           )
         ''');
-      print('Created Subject');
-    } else {
-      print('Subject Already Exists');
-    }
-    final surveyProjectExists = await _isTableExists(db, 'survey_project');
-    if (!surveyProjectExists) {
-      await db.execute('''
+
+    await db.execute('''
           CREATE TABLE survey_project (
-            Name TEXT,
+            name TEXT,
             sid TEXT PRIMARY KEY,
             creation_date DATE  DEFAULT CURRENT_DATE,
-            Description TEXT,
+            description TEXT,
             template_source TEXT,
             details_source TEXT,
-            instance_time TIME DEFAULT CURRENT_TIME
+            instance_time TIME DEFAULT CURRENT_TIME,
+            upload_time TEXT
           )
         ''');
-      print('Created survey project');
-    } else {
-      print('survey_project Already Exists');
-    }
 
-    final fieldProjectExists = await _isTableExists(db, 'field_project');
-    if (!fieldProjectExists) {
-      await db.execute('''
+    await db.execute('''
           CREATE TABLE field_project (
-            Name TEXT,
+            name TEXT,
             fid TEXT PRIMARY KEY,
             sid TEXT,
             source_type INTEGER,
@@ -245,16 +176,12 @@ class DatabaseHelper {
             attribute_values TEXT,
             required_value INTEGER,
             InstanceTime TIME DEFAULT CURRENT_TIME,
+            upload_time TEXT,
             FOREIGN KEY (sid) REFERENCES survey_project(sid)
           )
         ''');
-      print('created field_project');
-    } else {
-      print('field_project already exists');
-    }
-    final recordLogs = await _isTableExists(db, 'record_log');
-    if (!recordLogs) {
-      await db.execute('''
+
+    await db.execute('''
           CREATE TABLE record_log (
             rid TEXT PRIMARY KEY,
             subject_id TEXT,
@@ -263,44 +190,38 @@ class DatabaseHelper {
             record_type INTEGER,
             survey_data TEXT,
             InstanceTime TIME DEFAULT CURRENT_TIME,
+            upload_time TEXT,
             FOREIGN KEY (sid) REFERENCES survey_project(sid),
             FOREIGN KEY (subject_id) REFERENCES Subject(subject_id)
 
           )
         ''');
-      print('created record_log');
-    } else {
-      print('record_log already exists');
-    }
-    final fieldEntryTable = await _isTableExists(db, 'field_entry');
-    if (!fieldEntryTable) {
-      await db.execute('''
+
+    await db.execute('''
           CREATE TABLE field_entry (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             rid TEXT,
             fid TEXT,
             value TEXT,
             InstanceTime TIME DEFAULT CURRENT_TIME,
+            upload_time TEXT,
             FOREIGN KEY (rid) REFERENCES record_log(rid),
             FOREIGN KEY (fid) REFERENCES field_project(fid)
           )
         ''');
-      print('created field_entry');
-    } else {
-      print('field_entry already exists');
-    }
+
     await db.execute('''
       CREATE TABLE service (
             service_id TEXT PRIMARY KEY,
             sname TEXT,
             description TEXT,
             sid TEXT, 
+            upload_time TEXT,
             FOREIGN KEY (sid) REFERENCES survey_project(sid)
           )
       ''');
-    final serviceEnrollment = await _isTableExists(db, 'service_enrollment');
-    if (!serviceEnrollment) {
-      await db.execute('''
+
+    await db.execute('''
           CREATE TABLE service_enrollment (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             service_id TEXT,
@@ -308,15 +229,59 @@ class DatabaseHelper {
             sid TEXT,
             start_date TEXT,
             end_date TEXT,
+            upload_time TEXT,
             FOREIGN KEY (subject_id) REFERENCES Subject(subject_id),
             FOREIGN KEY (sid) REFERENCES survey_project(sid),
             FOREIGN KEY (service_id) REFERENCES service(service_id)
           )
         ''');
-      print('created service_enrollment');
-    } else {
-      print('service_enrollment already exists');
-    }
+    print('created service_enrollment');
+
+    // await db.execute('''
+    //       CREATE TABLE survey_project_upload (
+    //         sid TEXT PRIMARY KEY,
+    //         upload_time TEXT,
+    //         FOREIGN KEY (sid) REFERENCES survey_project(sid),
+    //       )
+    //     ''');
+    // await db.execute('''
+    //       CREATE TABLE field_project_upload (
+    //         fid TEXT PRIMARY KEY,
+    //         upload_time TEXT,
+    //         FOREIGN KEY (fid) REFERENCES field_project(fid),
+    //       )
+    //     ''');
+
+    // await db.execute('''
+    //       CREATE TABLE services_enrollment_upload (
+    //         id INTEGER PRIMARY KEY,
+    //         upload_time TEXT,
+    //         FOREIGN KEY (id) REFERENCES service_enrollment(id),
+    //       )
+    //     ''');
+    // await db.execute('''
+    //       CREATE TABLE subject_upload (
+    //         subject_id TEXT PRIMARY KEY,
+    //         upload_time TEXT,
+    //         FOREIGN KEY (subject_id) REFERENCES Subject(subject_id),
+    //       )
+    //     ''');
+
+    // await db.execute('''
+    //       CREATE TABLE responses_upload (
+    //         rid TEXT PRIMARY KEY,
+    //         upload_time TEXT,
+    //         FOREIGN KEY (rid) REFERENCES record_log(rid),
+    //       )
+    //     ''');
+
+    // await db.execute('''
+    //       CREATE TABLE field_entry_upload (
+    //         id INTEGER PRIMARY KEY,
+    //         upload_time TEXT,
+    //         FOREIGN KEY (id) REFERENCES field_entry(id),
+    //       )
+    //     ''');
   }
 
   // Insert a new question
@@ -357,11 +322,17 @@ class DatabaseHelper {
     FROM Subject
     INNER JOIN service_enrollment ON Subject.subject_id = service_enrollment.subject_id
     INNER JOIN survey_project ON service_enrollment.sid = survey_project.sid
-    WHERE survey_project.Name = ?
+    WHERE survey_project.name = ?
     AND service_enrollment.end_date > ?
   ''', [serviceName, currentDate]);
 
     return result;
+  }
+
+  Future<void> ba() async {
+    final db = await database;
+    final res = await db.rawQuery('select * from service_enrollment');
+    print(res);
   }
 
   Future<List<Map<String, Object?>>> getFamilyDetailsByFormAndVillage(
@@ -373,7 +344,7 @@ class DatabaseHelper {
     FROM Subject
     INNER JOIN service_enrollment ON Subject.subject_id = service_enrollment.subject_id
     INNER JOIN survey_project ON service_enrollment.sid = survey_project.sid
-    WHERE survey_project.Name = ? AND Subject.Village = ? 
+    WHERE survey_project.name = ? AND Subject.Village = ? 
   ''', [formName, village]);
     print(result);
     return result;
@@ -388,7 +359,7 @@ class DatabaseHelper {
     FROM Subject
     INNER JOIN service_enrollment ON Subject.subject_id = service_enrollment.subject_id
     INNER JOIN survey_project ON service_enrollment.sid = survey_project.sid
-    WHERE survey_project.Name = ?
+    WHERE survey_project.name = ?
   ''', [formName]);
 
     return result;
@@ -402,7 +373,7 @@ class DatabaseHelper {
     final db = await database;
     // Execute the query
     final List<Map<String, dynamic>> maps = await db.rawQuery('''
-    SELECT service_enrollment.*, survey_project.Name
+    SELECT service_enrollment.*, survey_project.name
     FROM service_enrollment
     INNER JOIN survey_project ON service_enrollment.sid = survey_project.sid
     WHERE service_enrollment.subject_id = ?
@@ -411,7 +382,7 @@ class DatabaseHelper {
     print('maps : $maps');
     Set<String> uniqueProjectNames = {};
     for (Map<String, dynamic> map in maps) {
-      uniqueProjectNames.add(map['Name'] as String);
+      uniqueProjectNames.add(map['name'] as String);
     }
     List<String> names = [];
     for (String s in uniqueProjectNames) {
@@ -507,7 +478,7 @@ class DatabaseHelper {
   Future<List<Map<String, dynamic>>> getResponses() async {
     final db = await database;
     return await db.rawQuery('''
-    SELECT s.SubjectName, s.Mobile, s.Village,s.Age, sp.Name AS FormName, rl.*
+    SELECT s.SubjectName, s.Mobile, s.Village,s.Age, sp.name AS FormName, rl.*
     FROM record_log rl
     INNER JOIN survey_project sp ON rl.sid = sp.sid
     INNER JOIN Subject s ON rl.subject_id = s.subject_id
@@ -520,15 +491,30 @@ class DatabaseHelper {
     final result = await db.query(
       'survey_project',
       columns: ['sid'],
-      where: 'Name = ?',
+      where: 'name = ?',
       whereArgs: [name],
     );
     // Return the sid as a String
     return result.first['sid'].toString();
   }
 
+  Future<Map<String, String>> getSidServiceIdByName(String name) async {
+    final db = await database;
+    final List<Map<String, dynamic>> result = await db.rawQuery('''
+    SELECT service.service_id, service.sid
+    FROM service
+    INNER JOIN survey_project ON service.sid = survey_project.sid
+    WHERE survey_project.name = ?
+  ''', [name]);
+
+    return {
+      'service_id': result.first['service_id'].toString(),
+      'sid': result.first['sid'].toString(),
+    };
+  }
+
   Future<String> getridBysubjectIDandDatetime(
-      int subjectID, DateTime currTime) async {
+      String subjectID, DateTime currTime) async {
     final db = await database;
     final formattedDatetime = currTime.toUtc().toIso8601String();
     print("${currTime.runtimeType}");
@@ -544,7 +530,7 @@ class DatabaseHelper {
   }
 
   Future<String> getfidBysidandAttributeName(
-      int sid, String attribute_name) async {
+      String sid, String attribute_name) async {
     final db = await database;
     final result = await db.query(
       'field_project',
@@ -592,7 +578,7 @@ class DatabaseHelper {
     );
     print(result);
     // Extract the 'Name' values from the result and store them in a list
-    final names = result.map((row) => row['Name'].toString()).toList();
+    final names = result.map((row) => row['name'].toString()).toList();
     print(names);
     return names;
   }
@@ -645,21 +631,29 @@ class DatabaseHelper {
   Future<List<Map<String, Object?>>> getVillageNames() async {
     final db = await database;
     final List<Map<String, Object?>> result = await db.rawQuery('''
-    SELECT DISTINCT Village FROM Subject
+    SELECT DISTINCT name as Village FROM Zone
   ''');
     print('villages : $result');
     return result;
   }
+  // Future<List<Map<String, Object?>>> getVillageNames() async {
+  //   final db = await database;
+  //   final List<Map<String, Object?>> result = await db.rawQuery('''
+  //   SELECT DISTINCT Village FROM Subject
+  // ''');
+  //   print('villages : $result');
+  //   return result;
+  // }
 
   Future<List<String>> getFormsNames() async {
     final db = await database;
     final result = await db.query(
       'survey_project',
-      columns: ['Name'],
+      columns: ['name'],
     );
     print(result);
     // Extract the 'Name' values from the result and store them in a list
-    final names = result.map((row) => row['Name'].toString()).toList();
+    final names = result.map((row) => row['name'].toString()).toList();
     print(names);
     return names;
   }
@@ -668,7 +662,7 @@ class DatabaseHelper {
     final db = await database;
     final result = await db.query(
       'survey_project',
-      where: 'Name = ?',
+      where: 'name = ?',
       whereArgs: [name],
     );
     print('The result is ');
@@ -692,7 +686,7 @@ class DatabaseHelper {
     final db = await database;
 
     final List<Map<String, dynamic>> maps = await db.rawQuery('''
-    SELECT survey_project.Name
+    SELECT survey_project.name
     FROM survey_project
     INNER JOIN service_enrollment ON survey_project.sid = service_enrollment.sid
     WHERE service_enrollment.subject_id = ?
@@ -700,7 +694,7 @@ class DatabaseHelper {
 
     List<String> projectNames = [];
     for (Map<String, dynamic> map in maps) {
-      projectNames.add(map['Name'] as String);
+      projectNames.add(map['name'] as String);
     }
 
     return projectNames;
@@ -710,7 +704,7 @@ class DatabaseHelper {
     final db = await database;
 
     final List<Map<String, dynamic>> maps = await db.rawQuery('''
-    SELECT DISTINCT survey_project.Name
+    SELECT DISTINCT survey_project.name
     FROM survey_project
     INNER JOIN service_enrollment ON survey_project.sid = service_enrollment.sid
     WHERE service_enrollment.subject_id = ?
@@ -718,7 +712,7 @@ class DatabaseHelper {
 
     Set<String> uniqueProjectNames = {};
     for (Map<String, dynamic> map in maps) {
-      uniqueProjectNames.add(map['Name'] as String);
+      uniqueProjectNames.add(map['name'] as String);
     }
     List<String> names = [];
     for (String s in uniqueProjectNames) {
@@ -915,5 +909,33 @@ class DatabaseHelper {
     print(res);
   }
 
+  // void checkUploadTime() async {
+  //   final db = await database;
+  //   final res = await db.rawQuery('''select subject_id,upload_time from Subject where upload_time=1''');
+  //   print(res);
+  // }
 
+  Future<List<Map<String, Object?>>> uploadFormsData() async {
+    final db = await database;
+    final res = await db.rawQuery('''
+      select * from survey_project where upload_time=0
+    ''');
+    return res;
+  }
+
+  Future<List<Map<String, Object?>>> uploadFieldsData() async {
+    final db = await database;
+    final res = await db.rawQuery('''
+      select * from field_project where upload_time=0
+    ''');
+    return res;
+  }
+
+  Future<void> check_service_enrollment() async {
+    final db = await database;
+    final res = await db.rawQuery('''
+      select * from service_enrollment
+    ''');
+    print(res);
+  }
 }

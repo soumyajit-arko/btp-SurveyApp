@@ -94,41 +94,51 @@ class _CreateDetailsPageState extends State<CreateDetailsPage> {
       String description = widget.formDescription;
       String template = json.encode(widget.questions);
       String details_source = json.encode(details);
+      final sid = 's21';
 
       await DatabaseHelper.instance.insertForm({
-        'Name': formName,
-        'Description': description,
+
+        'sid': sid,
+        'name': formName,
+        'description': description,
         'template_source': template,
         'details_source': details_source,
+        'upload_time': "0",
       });
-      final sid = await DatabaseHelper.instance.getSidByName(formName);
+      // final sid = await DatabaseHelper.instance.getSidByName(formName);
       print('sid : ');
       print(sid);
-      int sid_int = int.parse(sid);
+      int count = 0;
       for (int i = 0; i < details.length; ++i) {
         final Map<String, dynamic> element = details[i];
+        count++;
         await DatabaseHelper.instance.insertField({
-          'Name': formName,
-          'sid': sid_int,
+          'name': formName,
+          'sid': sid,
+          'fid': "${sid}_f$count",
           'source_type': 1,
           'attribute_name': element['question'],
           'attribute_datatype': element['type'],
           'attribute_unit': element['unit'],
           'attribute_values': element['options'],
           'required_value': element['required'],
+          'upload_time': "0",
         });
       }
       for (int i = 0; i < widget.questions.length; ++i) {
         final Map<String, dynamic> element = widget.questions[i];
+        count++;
         await DatabaseHelper.instance.insertField({
-          'Name': formName,
-          'sid': sid_int,
+          'name': formName,
+          'fid': '${sid}_f$count',
+          'sid': sid,
           'source_type': 0,
           'attribute_name': element['question'],
           'attribute_datatype': element['type'],
           'attribute_unit': element['unit'],
           'attribute_values': element['options'],
           'required_value': element['required'],
+          'upload_time': "0",
         });
       }
       ScaffoldMessenger.of(context).showSnackBar(

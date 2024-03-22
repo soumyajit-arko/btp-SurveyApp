@@ -140,6 +140,7 @@ class _SubjectRegisterPageState extends State<SubjectRegisterPage> {
     String zoneid = zoneidController.text;
     String email = emailController.text;
     await DatabaseHelper.instance.insertSubject({
+      'subject_id': "$subjectName/$spouseName/$childName",
       'SubjectName': subjectName,
       'SpouseName': spouseName,
       'ChildName': childName,
@@ -485,7 +486,7 @@ class _SubjectRegisterPageState extends State<SubjectRegisterPage> {
                   const SizedBox(height: 20),
                   ElevatedButton.icon(
                     onPressed: () async {
-                      addSubject;
+                      addSubject();
                     },
                     icon: const Icon(Icons.person, size: 30),
                     label: const Text('Create Subject'),

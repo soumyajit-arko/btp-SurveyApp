@@ -1,6 +1,7 @@
 import 'package:app_001/designExecutive/display_fields_page.dart';
 import 'package:app_001/designExecutive/display_forms_page.dart';
 import 'package:app_001/designExecutive/forms_name_details_page.dart';
+import 'package:app_001/designExecutive/upload_data_page.dart';
 import 'package:flutter/material.dart';
 import '../login_page.dart';
 
@@ -64,6 +65,19 @@ class _DesignExecutiveUtilPageState extends State<DesignExecutiveUtilPage> {
                       },
                       icon: Icon(Icons.create, size: 30),
                       label: Text('Create Form'),
+                    ),
+                    SizedBox(height: 20),
+                    ElevatedButton.icon(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => DesignDataUploadPage(),
+                          ),
+                        );
+                      },
+                      icon: Icon(Icons.create, size: 30),
+                      label: Text('Upload Data'),
                     ),
                     SizedBox(height: 20),
                   ],

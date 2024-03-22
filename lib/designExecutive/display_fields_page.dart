@@ -29,7 +29,7 @@ class _DisplayFieldsPageState extends State<DisplayFieldsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Create Form'),
+        title: Text('Display Fields'),
       ),
       body: Stack(
         children: <Widget>[
@@ -67,7 +67,7 @@ class _DisplayFieldsPageState extends State<DisplayFieldsPage> {
                                   cells: <DataCell>[
                                     DataCell(Text(form_['fid'].toString())),
                                     DataCell(Text(form_['sid'].toString())),
-                                    DataCell(Text(form_['Name'].toString())),
+                                    DataCell(Text(form_['name'].toString())),
                                     DataCell(Text(form_['source_type'].toString())),
                                     DataCell(Text(
                                         form_['attribute_name'].toString())),
