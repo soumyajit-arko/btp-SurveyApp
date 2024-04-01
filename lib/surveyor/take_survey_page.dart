@@ -1,3 +1,6 @@
+import 'dart:math';
+
+import 'package:app_001/surveyor/biometric_page.dart';
 import 'package:app_001/surveyor/family_details.dart';
 import 'package:app_001/surveyor/form_details.dart';
 import 'package:app_001/surveyor/survery_page_util.dart';
@@ -11,10 +14,12 @@ class TakeSurveyPage extends StatefulWidget {
   final String nextPage;
   final String startDate;
   final String endDate;
+  final String village;
   const TakeSurveyPage(
       {required this.formName,
       required this.familyDetails,
       required this.nextPage,
+      required this.village,
       this.startDate = "",
       this.endDate = "",
       super.key});
@@ -25,6 +30,7 @@ class TakeSurveyPage extends StatefulWidget {
 class _TakeSurveyPageState extends State<TakeSurveyPage> {
   List<Map<String, dynamic>> questions = [];
   Map<String, dynamic> responses = {};
+  Map<String, dynamic> pastResponse = {};
   String pageTitle = "Take Survey";
   String saveText = "Save Survey";
   @override
@@ -56,53 +62,53 @@ class _TakeSurveyPageState extends State<TakeSurveyPage> {
   void displayForm() async {
     final details =
         await DatabaseHelper.instance.getFormWithName(widget.formName.formName);
-    String jsonContent = "";
-
+    dynamic jsonContent = "";
+    // final d = jsonDecode(details[0]['template_source']);
+    // print('details :  : ${details[0]['template_source']}');
+    // print('d :::: ${d['template_source']}');
     if (widget.nextPage != "survey") {
-      jsonContent = details[0]['details_source'];
+      jsonContent = jsonDecode(details[0]['details_source'])['details_source'];
     } else {
-      jsonContent = details[0]['template_source'];
+      print('halo : ');
+      jsonContent =
+          jsonDecode(details[0]['template_source'])['template_source'];
+      // print(jsonContent[0]);
+      // for (var r in jsonContent) {
+      //   print(r['attrname']);
+      // }
+      print(details[0]['sid']);
+      print(widget.familyDetails.subjectID);
+      final pR = await DatabaseHelper.instance.getPreviousResponses(
+          widget.familyDetails.subjectID, details[0]['sid']);
+      print('ROWS : : : ');
+      // for (var e in pR) {
+      //   print(e['survey_data']);
+      // }
+      if (pR.isNotEmpty) {
+        print(pR[0]['survey_data'].runtimeType);
+        print(pR[0]['survey_data']);
+        var x = jsonDecode(pR[0]['survey_data']);
+        setState(() {
+          pastResponse = x;
+        });
+      }
     }
-    // if (jsonContent.isNotEmpty) {
-    final data = json.decode(jsonContent);
+    // print(jsonEncode(jsonContent));
     List<Map<String, dynamic>> mapList =
-        data.cast<Map<String, dynamic>>().toList();
+        List<Map<String, dynamic>>.from(jsonContent);
+    // print(mapList);
+    // final data = json.decode(jsonContent);
+    // print('data : $data');
+    // print(jsonContent);
+    // List<Map<String, dynamic>> mapList =
+    //     data.cast<Map<String, dynamic>>().toList();
 
     setState(() {
       questions = mapList;
     });
-    // } else {
-    // if (widget.nextPage != 'survey') {
-    //   final subID = widget.familyDetails.subjectID;
-    //   // await DatabaseHelper.instance.getsubjectIDByName(widget.familyDetails);
-    //   // final sid = await DatabaseHelper.instance
-    //   //     .getSidByName(widget.formName.formName);
-    //   final data = await DatabaseHelper.instance
-    //       .getSidServiceIdByName(widget.formName.formName);
-    //   final c = await DatabaseHelper.instance.insertServiceEnrollment({
-    //     'subject_id': subID,
-    //     'service_id': data['service_id'],
-    //     'sid': data['sid'],
-    //     'start_date': widget.startDate,
-    //     'end_date': widget.endDate,
-    //   });
-    //   print(c);
-    //   ScaffoldMessenger.of(context).showSnackBar(
-    //     SnackBar(
-    //       content: Text('Successfully Enrolled To Service'),
-    //     ),
-    //   );
-    //   Navigator.push(
-    //     context,
-    //     MaterialPageRoute(
-    //       builder: (context) => TakeSurveyPage(
-    //         formName: widget.formName,
-    //         familyDetails: widget.familyDetails,
-    //         nextPage: "survey",
-    //       ),
-    //     ),
-    //   );
-    // }
+
+    // for (var e in mapList) {
+    //   print('e : $e : ${e['attrtype']}');
     // }
   }
 
@@ -129,57 +135,54 @@ class _TakeSurveyPageState extends State<TakeSurveyPage> {
     final responsesJson = json.encode(responsesMap);
     final subjectID = widget.familyDetails.subjectID;
     // await DatabaseHelper.instance.getsubjectIDByName(widget.familyDetails);
-    final sid =
+    final sid_ =
         await DatabaseHelper.instance.getSidByName(widget.formName.formName);
-    // final subID = int.parse(subjectID);
-    // final sid = int.parse(sid_);
-    // final data = await DatabaseHelper.instance
-    //         .getSidServiceIdByName(widget.formName.formName);
+    final subID = (subjectID);
+    final sid = (sid_);
     DateTime now = DateTime.now();
     final formattedDatetime = now.toUtc().toIso8601String();
     if (widget.nextPage != "survey") {
       final b = await DatabaseHelper.instance.insertResponse({
-        'subject_id': subjectID,
+        'rid': Random().nextInt(1000),
+        'subject_id': subID,
         'survey_datetime': formattedDatetime,
         'sid': sid,
         'record_type': 1,
         'survey_data': responsesJson,
-        'upload_time': 0,
       });
       print('B : : : $b');
       final c = await DatabaseHelper.instance.insertServiceEnrollment({
-        // 'service_id':,
-        'subject_id': subjectID,
+        'subject_id': subID,
         'sid': sid,
         'start_date': widget.startDate,
         'end_date': widget.endDate,
-        'upload_time': 0,
       });
       print('doen : $c');
     } else {
       final b = await DatabaseHelper.instance.insertResponse({
-        'subject_id': subjectID,
+        'rid': Random().nextInt(1000),
+        'subject_id': subID,
         'survey_datetime': formattedDatetime,
         'sid': sid,
         'record_type': 0,
         'survey_data': responsesJson,
-        'upload_time': 0,
       });
       print('B : : : $b');
     }
-    final rid =
-        await DatabaseHelper.instance.getridBysubjectIDandDatetime(subjectID, now);
-    // final rid = int.parse(rid_);
+    final rid_ =
+        await DatabaseHelper.instance.getridBysubjectIDandDatetime(subID, now);
+    final rid = rid_;
+    print('found rid : $rid');
     for (var key in responsesMap.keys) {
       dynamic value = responsesMap[key];
-      final fid =
+      final fid_ =
           await DatabaseHelper.instance.getfidBysidandAttributeName(sid, key);
-      // final fid = int.parse(fid_);
+      final fid = fid_;
+      print('fo fid : $fid');
       await DatabaseHelper.instance.insertFieldEntry({
         'rid': rid,
         'fid': fid,
         'value': value,
-        'upload_time': 0,
       });
     }
 
@@ -195,7 +198,7 @@ class _TakeSurveyPageState extends State<TakeSurveyPage> {
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Service Successfuly Saved'),
+          content: Text('Survey Successfuly Saved'),
         ),
       );
     }
@@ -217,11 +220,27 @@ class _TakeSurveyPageState extends State<TakeSurveyPage> {
     );
   }
 
+  Widget questionTextWithResponse(String questionText) {
+    String prevText = "";
+    if (pastResponse[questionText] != null) {
+      prevText = "(" + pastResponse[questionText] + ")";
+    }
+    return Text(
+      "$questionText $prevText",
+      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+    );
+  }
+
   Widget _buildQuestionWidget(Map<String, dynamic> question) {
-    final questionText = question['question'];
-    final questionType = question['type'];
-    final options_ = question['options'];
-    final options = options_.split(',');
+    final questionText = question['attrname'];
+    // final questionType = question['attrtype'];
+    // final options_ = question['options'];
+    // dynamic options;
+    // if (options_ == null) {
+    //   options = null;
+    // } else {
+    //   options = options_.split(',');
+    // }
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 16.0),
@@ -235,39 +254,40 @@ class _TakeSurveyPageState extends State<TakeSurveyPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                questionText,
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
+              questionTextWithResponse(questionText),
+              // Text(
+              //   questionText,
+              //   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              // ),
               SizedBox(height: 10),
-              if (questionType == 'Single Choice')
-                for (var option in options)
-                  RadioListTile<String>(
-                    title: Text(option),
-                    value: option,
-                    groupValue: responses[questionText],
-                    onChanged: (value) {
-                      handleOptionSelected(questionText, value ?? '');
-                    },
-                  ),
-              if (questionType == 'Multiple Choice')
-                for (var option in options)
-                  CheckboxListTile(
-                    title: Text(option),
-                    value: responses[questionText]?.contains(option) ?? false,
-                    onChanged: (selected) {
-                      if (selected != null) {
-                        handleMultipleChoiceOptionSelected(
-                          questionText,
-                          option,
-                          selected,
-                        );
-                      }
-                    },
-                  ),
-              if (questionType == 'Text Answer' ||
-                  questionType == 'Integer Answer')
-                _buildSmallTextField(questionText, 'Enter your answer'),
+              // if (questionType == 'Single Choice')
+              //   for (var option in options)
+              //     RadioListTile<String>(
+              //       title: Text(option),
+              //       value: option,
+              //       groupValue: responses[questionText],
+              //       onChanged: (value) {
+              //         handleOptionSelected(questionText, value ?? '');
+              //       },
+              //     ),
+              // if (questionType == 'Multiple Choice')
+              //   for (var option in options)
+              //     CheckboxListTile(
+              //       title: Text(option),
+              //       value: responses[questionText]?.contains(option) ?? false,
+              //       onChanged: (selected) {
+              //         if (selected != null) {
+              //           handleMultipleChoiceOptionSelected(
+              //             questionText,
+              //             option,
+              //             selected,
+              //           );
+              //         }
+              //       },
+              //     ),
+              // if (questionType == 'Text Answer' ||
+              //     questionType == 'Integer Answer')
+              _buildSmallTextField(questionText, 'Enter your answer'),
             ],
           ),
         ),
@@ -289,19 +309,6 @@ class _TakeSurveyPageState extends State<TakeSurveyPage> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 SizedBox(height: 20),
-                // ElevatedButton.icon(
-                //   onPressed: () {
-                //     Navigator.pushReplacement(
-                //       context,
-                //       MaterialPageRoute(
-                //         builder: (context) => LoginPage(),
-                //       ),
-                //     );
-                //   },
-                //   icon: Icon(Icons.logout, size: 30),
-                //   label: Text('Logout'),
-                // ),
-                SizedBox(height: 20),
                 for (var question in questions) _buildQuestionWidget(question),
                 ElevatedButton.icon(
                   onPressed: () async {
@@ -314,6 +321,7 @@ class _TakeSurveyPageState extends State<TakeSurveyPage> {
                             formName: widget.formName,
                             familyDetails: widget.familyDetails,
                             nextPage: "survey",
+                            village: widget.village,
                           ),
                         ),
                       );
@@ -326,10 +334,17 @@ class _TakeSurveyPageState extends State<TakeSurveyPage> {
                       //           // village: widget.,
                       //           nextPage: widget.nextPage)),
                       // );
-                      Navigator.pushReplacement(
+                      // Navigator.pushReplacement(
+                      //   context,
+                      //   MaterialPageRoute(
+                      //       builder: (context) => SurveyorPageUtil()),
+                      // );
+                      Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => SurveyorPageUtil()),
+                            builder: (context) => BiometricPage(
+                                village: widget.village,
+                                nextPage: widget.nextPage)),
                       );
                     }
                   },

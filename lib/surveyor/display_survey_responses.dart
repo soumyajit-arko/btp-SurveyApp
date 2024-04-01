@@ -49,7 +49,7 @@ class _DisplaySurveyResponsesState extends State<DisplaySurveyResponses> {
                         scrollDirection: Axis.horizontal,
                         child: DataTable(
                           columns: const <DataColumn>[
-                            DataColumn(label: Text('rid')),
+                            // DataColumn(label: Text('rid')),
                             DataColumn(label: Text('Beneficiary Name')),
                             DataColumn(label: Text('Service Name')),
                             DataColumn(label: Text('Mobile')),
@@ -65,7 +65,7 @@ class _DisplaySurveyResponsesState extends State<DisplaySurveyResponses> {
                               .map(
                                 (form_) => DataRow(
                                   cells: <DataCell>[
-                                    DataCell(Text(form_['rid'].toString())),
+                                    // DataCell(Text(form_['rid'].toString())),
                                     DataCell(
                                         Text(form_['SubjectName'].toString())),
                                     DataCell(

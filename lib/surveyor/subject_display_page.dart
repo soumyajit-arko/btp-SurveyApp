@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sqflite/sqflite.dart';
 import '../backend/database_helper.dart';
 // import '../login_page.dart';
 
@@ -18,7 +19,13 @@ class _SubjectDisplayPageState extends State<SubjectDisplayPage> {
   }
 
   void _loadsubjects() async {
+    int val = await DatabaseHelper.instance.getCountForZone('zone1');
+    print(val);
     subjects = await DatabaseHelper.instance.getSubjects();
+    for (var e in subjects) {
+      print(e['Zone_ID']);
+      print(e['Village']);
+    }
     setState(() {});
   }
 
@@ -26,7 +33,7 @@ class _SubjectDisplayPageState extends State<SubjectDisplayPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Subjects Display Page'),
+        title: Text('Beneficiary Display Page'),
       ),
       body: Stack(
         children: <Widget>[
@@ -36,7 +43,7 @@ class _SubjectDisplayPageState extends State<SubjectDisplayPage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
                   Text(
-                    'Display Details of subjects',
+                    'Display Details of Beneficiaries',
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,

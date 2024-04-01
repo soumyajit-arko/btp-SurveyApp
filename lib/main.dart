@@ -15,6 +15,7 @@ void main() {
   final dbHelper = DatabaseHelper.instance;
   // dbHelper.deleteDatabaseUtil();
   dbHelper.initDatabase();
+  
   runApp(const MyApp());
 }
 

@@ -31,22 +31,22 @@ class _CreateDetailsPageState extends State<CreateDetailsPage> {
 
   Map<String, dynamic> deepCopyQuestion(Map<String, dynamic> originalQuestion) {
     return {
-      'question': originalQuestion['question'],
-      'type': originalQuestion['type'],
-      'unit': originalQuestion['unit'],
-      'options': originalQuestion['options'],
-      'required': originalQuestion['required']
+      'attrname': originalQuestion['attrname'],
+      'attrtype': originalQuestion['attrtype'],
+      'attrunit': originalQuestion['attrunit'],
+      'attrvalues': originalQuestion['attrvalues'],
+      'attrreq': originalQuestion['attrreq']
     };
   }
 
   void addQuestion() {
     if (questionController.text.isNotEmpty) {
       final question = {
-        'question': questionController.text,
-        'type': selectedType,
-        'unit': attributeUnitController.text,
-        'options': options.join(','),
-        'required': isRequired ? 1 : 0
+        'attrname': questionController.text,
+        'attrtype': selectedType,
+        'attrunit': attributeUnitController.text,
+        'attrvalues': options.join(','),
+        'attrreq': isRequired ? 1 : 0
       };
       Map<String, dynamic> q = deepCopyQuestion(question);
       setState(() {
@@ -92,12 +92,11 @@ class _CreateDetailsPageState extends State<CreateDetailsPage> {
     void createForm() async {
       String formName = widget.formName;
       String description = widget.formDescription;
-      String template = json.encode(widget.questions);
-      String details_source = json.encode(details);
-      final sid = 's21';
+      String template = json.encode({"template_source": widget.questions});
+      String details_source = json.encode({"details_source": details});
+      final sid = 's31';
 
       await DatabaseHelper.instance.insertForm({
-
         'sid': sid,
         'name': formName,
         'description': description,
@@ -117,11 +116,11 @@ class _CreateDetailsPageState extends State<CreateDetailsPage> {
           'sid': sid,
           'fid': "${sid}_f$count",
           'source_type': 1,
-          'attribute_name': element['question'],
-          'attribute_datatype': element['type'],
-          'attribute_unit': element['unit'],
-          'attribute_values': element['options'],
-          'required_value': element['required'],
+          'attribute_name': element['attrname'],
+          'attribute_datatype': element['attrtype'],
+          'attribute_unit': element['attrunit'],
+          'attribute_values': element['attrvalues'],
+          'required_value': element['attrreq'],
           'upload_time': "0",
         });
       }
@@ -133,11 +132,11 @@ class _CreateDetailsPageState extends State<CreateDetailsPage> {
           'fid': '${sid}_f$count',
           'sid': sid,
           'source_type': 0,
-          'attribute_name': element['question'],
-          'attribute_datatype': element['type'],
-          'attribute_unit': element['unit'],
-          'attribute_values': element['options'],
-          'required_value': element['required'],
+          'attribute_name': element['attrname'],
+          'attribute_datatype': element['attrtype'],
+          'attribute_unit': element['attrunit'],
+          'attribute_values': element['attrvalues'],
+          'required_value': element['attrreq'],
           'upload_time': "0",
         });
       }

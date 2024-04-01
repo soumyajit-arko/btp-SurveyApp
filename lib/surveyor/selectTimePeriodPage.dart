@@ -9,12 +9,12 @@ class SelectTimePeriodPage extends StatefulWidget {
   final FormDetails formName;
   final FamilyDetails familyDetails;
   final String nextPage;
-  // final String village;
+  final String village;
   const SelectTimePeriodPage(
       {required this.formName,
       required this.familyDetails,
       required this.nextPage,
-      // required this.village,
+      required this.village,
       super.key});
   @override
   _SelectTimePeriodPageState createState() => _SelectTimePeriodPageState();
@@ -72,6 +72,7 @@ class _SelectTimePeriodPageState extends State<SelectTimePeriodPage> {
                       formName: widget.formName,
                       familyDetails: widget.familyDetails,
                       nextPage: widget.nextPage,
+                      village: widget.village,
                       startDate: _formatDate(initialDateSelected),
                       endDate: _formatDate(finalDateSelected),
                     ),

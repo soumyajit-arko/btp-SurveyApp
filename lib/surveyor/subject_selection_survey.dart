@@ -1,6 +1,7 @@
 // import 'package:app_001/surveyor/form_selection_survey.dart';
 import 'package:app_001/surveyor/selectTimePeriodPage.dart';
 import 'package:app_001/surveyor/subject_register_page.dart';
+import 'package:app_001/surveyor/survery_page_util.dart';
 import 'package:app_001/surveyor/take_survey_page.dart';
 import 'package:flutter/material.dart';
 import 'package:app_001/backend/database_helper.dart';
@@ -184,19 +185,75 @@ class _FamilyDataTablePageState extends State<FamilyDataTablePage> {
                 ),
               ),
             ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => SurveyorPageUtil()),
+                    );
+                  },
+                  child: Text('Home'),
+                ),
+                SizedBox(
+                  height: 20,
+                  width: 20,
+                ), // Adding some space between buttons
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => SubjectRegisterPage()),
+                    );
+                  },
+                  child: Text('Add Beneficiary'),
+                ),
+                SizedBox(
+                  height: 20,
+                  width: 20,
+                ), // Adding some space between buttons
+                // if(widget.nextPage!='survey'){}
+                Visibility(
+                  visible: widget.nextPage == 'survey',
+                  child: ElevatedButton(
+                    onPressed: () {
+                      // Handle enrollment to service
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => FamilyDataTablePage(
+                                  formName: widget.formName,
+                                  village: widget.village,
+                                  nextPage: 'service registration',
+                                )),
+                      );
+                    },
+                    child: Text('Enroll to this Service'),
+                  ),
+                )
+              ],
+            ),
+            SizedBox(
+              height: 20,
+            ),
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => SubjectRegisterPage()),
-          );
-        },
-        tooltip: 'Add Beneficiary',
-        child: Icon(Icons.add),
-      ),
+
+      // floatingActionButton: FloatingActionButton(
+      //   onPressed: () {
+      //     Navigator.push(
+      //       context,
+      //       MaterialPageRoute(builder: (context) => SubjectRegisterPage()),
+      //     );
+      //   },
+      //   tooltip: 'Add Beneficiary',
+      //   child: Icon(Icons.add),
+      // ),
     );
   }
 
@@ -206,11 +263,10 @@ class _FamilyDataTablePageState extends State<FamilyDataTablePage> {
         context,
         MaterialPageRoute(
             builder: (context) => TakeSurveyPage(
-                  formName: widget.formName,
-                  familyDetails: family,
-                  nextPage: widget.nextPage,
-                  // village: widget.village
-                )
+                formName: widget.formName,
+                familyDetails: family,
+                nextPage: widget.nextPage,
+                village: widget.village)
             // FormDataTablePage(family: family, nextPage: widget.nextPage),
             ),
       );
@@ -222,7 +278,7 @@ class _FamilyDataTablePageState extends State<FamilyDataTablePage> {
                   formName: widget.formName,
                   familyDetails: family,
                   nextPage: widget.nextPage,
-                  // village: widget.village
+                  village: widget.village
                 )
             // FormDataTablePage(family: family, nextPage: widget.nextPage),
             ),
@@ -236,6 +292,20 @@ class FamilyDetailsPage extends StatelessWidget {
 
   FamilyDetailsPage({required this.family});
 
+  Widget subjectNameTextField(FamilyDetails familyDetails) {
+    // print('hello')
+    String name = familyDetails.subjectName;
+    name += "/";
+    if (familyDetails.spouseName != "null") {
+      name += familyDetails.spouseName;
+    }
+    name += "/";
+    if (familyDetails.childName != "null") {
+      name += familyDetails.childName;
+    }
+    return Text(name);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -247,8 +317,9 @@ class FamilyDetailsPage extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text(
-                  'Mother Name: ${family.subjectName}/${family.spouseName}/${family.childName}'),
+              subjectNameTextField(family),
+              // Text(
+              //     'Mother Name: ${family.subjectName}/${family.spouseName}/${family.childName}'),
               Text('${family.mobile}'),
               // Text('Child Name: ${family.childName}'),
               // Text('Husband Name: ${family.spouseName}'),
@@ -267,6 +338,19 @@ class _FamilyDataSource extends DataTableSource {
   final Function(FamilyDetails) onRowClicked; // Add this callback
 
   _FamilyDataSource(this._familyList, {required this.onRowClicked});
+  Widget subjectNameTextField(FamilyDetails familyDetails) {
+    // print('hello')
+    String name = familyDetails.subjectName;
+    if (familyDetails.spouseName != "null") {
+      name += "/";
+      name += familyDetails.spouseName;
+    }
+    if (familyDetails.childName != "null") {
+      name += "/";
+      name += familyDetails.childName;
+    }
+    return Text(name);
+  }
 
   @override
   DataRow? getRow(int index) {
@@ -276,8 +360,9 @@ class _FamilyDataSource extends DataTableSource {
     final family = _familyList[index];
     return DataRow(
       cells: [
-        DataCell(Text(
-            "${family.subjectName}/${family.spouseName}/${family.childName}")),
+        DataCell(subjectNameTextField(family)),
+        // DataCell(Text(
+        //     "${family.subjectName}/${family.spouseName}/${family.childName}")),
         DataCell(Text(family.mobile!)),
         // DataCell(Text(family.childName)),
         // DataCell(Text(family.spouseName)),

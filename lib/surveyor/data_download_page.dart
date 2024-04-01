@@ -24,11 +24,16 @@ class _DataDownloadPageState extends State<DataDownloadPage> {
 
   Future<void> download_villages() async {
     final databaseHelper = DatabaseHelper.instance;
-      await databaseHelper.check_service_enrollment();
+    await databaseHelper.check_service_enrollment();
     await getAllocatedZone();
     for (String zone in zones_allocated) {
       await getZoneInfo(zone);
     }
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Successfully Downloaded Villages'),
+      ),
+    );
   }
 
   Future<void> getAllocatedZone() async {
@@ -76,6 +81,7 @@ class _DataDownloadPageState extends State<DataDownloadPage> {
     );
     if (response.statusCode == 200) {
       var json = jsonDecode(response.body);
+      print(json);
       final databaseHelper = DatabaseHelper.instance;
       int flag = await databaseHelper.storeTheZones(json['zone-info']);
       print('$flag');
@@ -95,6 +101,11 @@ class _DataDownloadPageState extends State<DataDownloadPage> {
       await getSurveyInfo(surveyId);
       await getFieldInfo(surveyId);
     }
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Successfully Downloaded forms'),
+      ),
+    );
   }
 
   Future<void> getAllocatedSurveyorForms() async {
@@ -192,6 +203,11 @@ class _DataDownloadPageState extends State<DataDownloadPage> {
     for (String zone in zones_allocated) {
       await getBeneficiariesByZone(zone);
     }
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Successfully Downloaded Beneficiaries'),
+      ),
+    );
   }
 
   Future<void> getBeneficiariesByZone(String zone) async {
@@ -211,8 +227,28 @@ class _DataDownloadPageState extends State<DataDownloadPage> {
       var json = jsonDecode(response.body);
       final databaseHelper = DatabaseHelper.instance;
       for (var subject in json['subject-log']) {
-        subject['upload_time'] = "1";
-        int flag = await databaseHelper.insertSubjectUtil(subject);
+        int flag = await databaseHelper.insertSubjectUtil({
+          "subject_id": subject["subject_id"],
+          "SubjectName": subject["subjectname"],
+          "SpouseName": subject["spousename"],
+          "ChildName": subject["childname"],
+          "MaritalStatus": subject["maritalstatus"],
+          "Village": subject["village"],
+          "IDType": subject["idtype"],
+          "IDNumber": subject["idnumber"],
+          "Age": subject["age"],
+          "Sex": subject["sex"],
+          "Caste": subject["caste"],
+          "Religion": subject["religion"],
+          "Image": subject["image"],
+          "Voice": subject["voice"],
+          "Occupation": subject["occupation"],
+          "Zone_ID": subject["zone_id"],
+          "Address": subject["address"],
+          "Mobile": subject["mobile"],
+          "Email": subject["email"],
+          "upload_time": 1
+        });
         print(flag);
       }
     } else {
@@ -227,6 +263,11 @@ class _DataDownloadPageState extends State<DataDownloadPage> {
 
   Future<void> getAllServices() async {
     await getServicesList();
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Successfully Downloaded Services'),
+      ),
+    );
   }
 
   Future<void> getServicesList() async {

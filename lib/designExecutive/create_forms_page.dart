@@ -2,6 +2,7 @@ import 'package:app_001/designExecutive/create_details_page.dart';
 import 'package:flutter/material.dart';
 import '../backend/database_helper.dart';
 import 'dart:convert';
+
 class CreateFormsPage extends StatefulWidget {
   final String formName;
   final String formDescription;
@@ -29,22 +30,68 @@ class _CreateFormsPageState extends State<CreateFormsPage> {
 
   Map<String, dynamic> deepCopyQuestion(Map<String, dynamic> originalQuestion) {
     return {
-      'question': originalQuestion['question'],
-      'type': originalQuestion['type'],
-      'unit': originalQuestion['unit'],
-      'options': originalQuestion['options'],
-      'required': originalQuestion['required']
+      'attrname': originalQuestion['attrname'],
+      'attrtype': originalQuestion['attrtype'],
+      'attrunit': originalQuestion['attrunit'],
+      'attrvalues': originalQuestion['attrvalues'],
+      'attrreq': originalQuestion['attrreq']
     };
   }
 
+/*
+{
+    "template_source": [
+        {
+            "attrunit": "none",
+            "attrreq": "true",
+            "attrname": "Name",
+            "attrtype": "MEDIUMTEXT",
+            "attrvalues": "",
+        },
+        {
+            "attrunit": "Kg",
+            "attrreq": "false",
+            "attrname": "Weight",
+            "attrtype": "INTEGER",
+            "attrvalues": "",
+        },
+        {
+            "attrunit": "none",
+            "attrreq": "true",
+            "attrname": "Food Habits",
+            "attrtype": "MEDIUMTEXT"
+            "attrvalues": "",
+        }
+    ]
+}
+
+vs
+
+[
+    {
+        "question": "Q1",
+        "type": "Single Choice",
+        "unit": "",
+        "options": "1,2",
+        "required": 0
+    },
+    {
+        "question": "L",
+        "type": "Text Answer",
+        "unit": "",
+        "options": "",
+        "required": 0
+    }
+]
+*/
   void addQuestion() {
     if (questionController.text.isNotEmpty) {
       final question = {
-        'question': questionController.text,
-        'type': selectedType,
-        'unit': attributeUnitController.text,
-        'options': options.join(','),
-        'required': isRequired ? 1 : 0
+        'attrname': questionController.text,
+        'attrtype': selectedType,
+        'attrunit': attributeUnitController.text,
+        'attrvalues': options.join(','),
+        'attrreq': isRequired ? 1 : 0
       };
       Map<String, dynamic> q = deepCopyQuestion(question);
       setState(() {
@@ -66,7 +113,6 @@ class _CreateFormsPageState extends State<CreateFormsPage> {
     super.dispose();
   }
 
-
   void createForm() async {
     String formName = widget.formName;
     String description = widget.formDescription;
@@ -86,11 +132,11 @@ class _CreateFormsPageState extends State<CreateFormsPage> {
       await DatabaseHelper.instance.insertField({
         'Name': formName,
         'sid': sid_int,
-        'attribute_name': element['question'],
-        'attribute_datatype': element['type'],
-        'attribute_unit': element['unit'],
-        'attribute_values': element['options'],
-        'required_value': element['required'],
+        'attribute_name': element['attrname'],
+        'attribute_datatype': element['attrtype'],
+        'attribute_unit': element['attrunit'],
+        'attribute_values': element['attrvalues'],
+        'required_value': element['attrreq'],
       });
     }
     // ScaffoldMessenger.of(context).showSnackBar(
@@ -246,7 +292,9 @@ class _CreateFormsPageState extends State<CreateFormsPage> {
                         context,
                         MaterialPageRoute(
                             builder: (context) => CreateDetailsPage(
-                                widget.formName, widget.formDescription,questions)));
+                                widget.formName,
+                                widget.formDescription,
+                                questions)));
                   },
                   // onPressed: createForm,
                   icon: Icon(Icons.create, size: 30), // Add a "create" icon

@@ -28,6 +28,8 @@ class _FormDataTablePageState extends State<FormDataTablePage> {
   @override
   void initState() {
     super.initState();
+    print('printting ');
+    print(widget.village);
     loadFormDetails();
   }
 
@@ -132,44 +134,44 @@ class _FormDataTablePageState extends State<FormDataTablePage> {
 
   void navigateToDetailsPage(BuildContext context, FormDetails form) {
     // if (widget.nextPage == 'service registraion') {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (context) => FamilyDataTablePage(
-                formName: form,
-                village: widget.village,
-                nextPage: widget.nextPage)),
-      );
-  //   } else if (widget.nextPage == "survey") {
-  //     Navigator.push(
-  //       context,
-  //       MaterialPageRoute(
-  //           builder: (context) => FamilyDataTablePage(
-  //               formName: form,
-  //               village: widget.village,
-  //               nextPage: widget.nextPage)),
-  //     );
-  //     // Navigator.push(
-  //     //   context,
-  //     //   MaterialPageRoute(
-  //     //     builder: (context) => TakeSurveyPage(
-  //     //       formName: form,
-  //     //       // familyDetails: family,
-  //     //       nextPage: widget.nextPage,
-  //     //     ),
-  //     //   ),
-  //     // );
-  //   } else {
-  //     Navigator.push(
-  //       context,
-  //       MaterialPageRoute(
-  //         builder: (context) => ServiceEnrolledPage(
-  //           nextPage: widget.nextPage,
-  //           formDetails: form,
-  //         ),
-  //       ),
-  //     );
-  //   }
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+          builder: (context) => FamilyDataTablePage(
+              formName: form,
+              village: widget.village,
+              nextPage: widget.nextPage)),
+    );
+    //   } else if (widget.nextPage == "survey") {
+    //     Navigator.push(
+    //       context,
+    //       MaterialPageRoute(
+    //           builder: (context) => FamilyDataTablePage(
+    //               formName: form,
+    //               village: widget.village,
+    //               nextPage: widget.nextPage)),
+    //     );
+    //     // Navigator.push(
+    //     //   context,
+    //     //   MaterialPageRoute(
+    //     //     builder: (context) => TakeSurveyPage(
+    //     //       formName: form,
+    //     //       // familyDetails: family,
+    //     //       nextPage: widget.nextPage,
+    //     //     ),
+    //     //   ),
+    //     // );
+    //   } else {
+    //     Navigator.push(
+    //       context,
+    //       MaterialPageRoute(
+    //         builder: (context) => ServiceEnrolledPage(
+    //           nextPage: widget.nextPage,
+    //           formDetails: form,
+    //         ),
+    //       ),
+    //     );
+    //   }
   }
 }
 

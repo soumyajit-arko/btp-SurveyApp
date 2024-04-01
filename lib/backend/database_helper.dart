@@ -343,8 +343,8 @@ class DatabaseHelper {
     SELECT DISTINCT Subject.subject_id, Subject.SubjectName, Subject.ChildName, Subject.SpouseName, Subject.Mobile, service_enrollment.start_date, service_enrollment.end_date
     FROM Subject
     INNER JOIN service_enrollment ON Subject.subject_id = service_enrollment.subject_id
-    INNER JOIN survey_project ON service_enrollment.sid = survey_project.sid
-    WHERE survey_project.name = ? AND Subject.Village = ? 
+    INNER JOIN survey_project ON service_enrollment.sid = survey_project.sid INNER JOIN Zone ON Zone.Zone_ID = Subject.zone_id
+    WHERE survey_project.name = ? AND Zone.name = ? 
   ''', [formName, village]);
     print(result);
     return result;
@@ -462,6 +462,33 @@ class DatabaseHelper {
   Future<List<Map<String, dynamic>>> getFields() async {
     final db = await database;
     return await db.query('field_project');
+  }
+
+  Future<List<Map<String, dynamic>>> getSubjectDetailstoUpload() async {
+    final db = await database;
+    var result =
+        await db.rawQuery('Select * from Subject where upload_time = 0');
+    return result;
+  }
+
+  Future<List<Map<String, dynamic>>> upadteSubjectDetailsAfterUpload(
+      String subjectID) async {
+    final db = await database;
+    var result = await db.rawQuery(
+        'UPDATE Subject SET upload_time = 1 WHERE subject_id = "$subjectID"');
+    return result;
+  }
+
+  Future<int> getCountForZone(String zoneId) async {
+    final db = await database;
+    List<Map<String, dynamic>> result = await db.rawQuery(
+      'SELECT COUNT(*) AS count FROM Subject WHERE Zone_ID = ?',
+      [zoneId],
+    );
+    
+    return result[0]['count'];
+    // int count =  int.parse(result);
+    // return count + 1;
   }
 
   Future<List<Map<String, dynamic>>> getSubjects() async {
@@ -612,21 +639,28 @@ class DatabaseHelper {
   Future<List<Map<String, Object?>>> getFamilyDetailsbyVillage(
       String village) async {
     final db = await database;
-    final result = await db.query(
-      'Subject',
-      columns: [
-        'subject_id',
-        'SubjectName',
-        'ChildName',
-        'SpouseName',
-        'Mobile'
-      ],
-      where: 'Village = ?',
-      whereArgs: [village],
-    );
-    print('village memebers : $result');
+    final result = await db.rawQuery("SELECT s.subject_id, s.SubjectName, s.ChildName, s.SpouseName, s.Mobile FROM Subject s JOIN Zone z ON s.Zone_ID = z.zone_id WHERE z.name = '$village'");
+    print('village members : $result');
     return result;
   }
+  // Future<List<Map<String, Object?>>> getFamilyDetailsbyVillage(
+  //     String village) async {
+  //   final db = await database;
+  //   final result = await db.query(
+  //     'Subject',
+  //     columns: [
+  //       'subject_id',
+  //       'SubjectName',
+  //       'ChildName',
+  //       'SpouseName',
+  //       'Mobile'
+  //     ],
+  //     where: 'Village = ?',
+  //     whereArgs: [village],
+  //   );
+  //   print('village memebers : $result');
+  //   return result;
+  // }
 
   Future<List<Map<String, Object?>>> getVillageNames() async {
     final db = await database;
@@ -666,6 +700,15 @@ class DatabaseHelper {
       whereArgs: [name],
     );
     print('The result is ');
+    print(result);
+    return result;
+  }
+
+  Future<List<Map<String, dynamic>>> getPreviousResponses(
+      String subjectId, String sid) async {
+    final db = await database;
+    final result = await db.rawQuery(
+        'SELECT * FROM record_log where record_type=0 AND subject_id="$subjectId" AND sid="$sid" ORDER BY survey_datetime DESC;');
     print(result);
     return result;
   }
