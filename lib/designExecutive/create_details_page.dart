@@ -94,7 +94,7 @@ class _CreateDetailsPageState extends State<CreateDetailsPage> {
       String description = widget.formDescription;
       String template = json.encode({"template_source": widget.questions});
       String details_source = json.encode({"details_source": details});
-      final sid = 's31';
+      final sid = 's38';
 
       await DatabaseHelper.instance.insertForm({
         'sid': sid,

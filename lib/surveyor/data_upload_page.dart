@@ -26,24 +26,24 @@ class _DataUploadPageState extends State<DataUploadPage> {
       Map<String, dynamic> payload = subject;
       print(subject);
       String jsonPayload = jsonEncode({
-        "subjectname":payload['SubjectName'],
-        "spousename":payload['SpouseName'],
-        "childname":payload['ChildName'],
-        "maritalstatus":payload['MaritalStatus'],
-        "village":payload['Village'],
-        "idtype":payload['IDType'],
-        "idnumber":payload['IDNumber'],
-        "age":payload['Age'],
-        "sex":payload['Sex'],
-        "caste":payload['Caste'],
-        "religion":payload['Religion'],
-        "image":payload['Image'],
-        "voice":payload['Voice'],
-        "occupation":payload['Occupation'],
-        "zone_id":payload['Zone_ID'],
-        "address":payload['Address'],
-        "mobile":payload['Mobile'],
-        "email":payload['Email']
+        "subjectname": payload['SubjectName'],
+        "spousename": payload['SpouseName'],
+        "childname": payload['ChildName'],
+        "maritalstatus": payload['MaritalStatus'],
+        "village": payload['Village'],
+        "idtype": payload['IDType'],
+        "idnumber": payload['IDNumber'],
+        "age": payload['Age'],
+        "sex": payload['Sex'],
+        "caste": payload['Caste'],
+        "religion": payload['Religion'],
+        "image": payload['Image'],
+        "voice": payload['Voice'],
+        "occupation": payload['Occupation'],
+        "zone_id": payload['Zone_ID'],
+        "address": payload['Address'],
+        "mobile": payload['Mobile'],
+        "email": payload['Email']
       });
       print(jsonPayload);
       var response = await http.post(
@@ -67,6 +67,31 @@ class _DataUploadPageState extends State<DataUploadPage> {
                 'Error Connecting to the server : ${response.statusCode}!!!'),
           ),
         );
+      }
+    }
+  }
+
+  Future<void> uploadResponses() async {
+    String url =
+        "${LoginPage.protocol}://${LoginPage.domainName}/api/user/create-field-entry";
+    final databaseHelper = DatabaseHelper.instance;
+    final data = await databaseHelper.getFieldEntriestoUpload();
+    for (var entry in data) {
+      Map<String, dynamic> payload = entry;
+      String jsonPayload = jsonEncode(payload);
+      var response = await http.post(
+        Uri.parse(url),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ${LoginPage.jwtToken}',
+        },
+        body: jsonPayload,
+      );
+      if (response.statusCode == 200) {
+        var json = jsonDecode(response.body);
+        print(json);
+      } else {
+        
       }
     }
   }

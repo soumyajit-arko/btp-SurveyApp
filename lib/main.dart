@@ -2,20 +2,24 @@
 // import 'package:app_001/surveyor/subject_selection_survey.dart';
 import 'package:app_001/surveyor/data_upload_page.dart';
 import 'package:flutter/material.dart';
+import 'package:logging/logging.dart';
 import 'login_page.dart';
 import 'backend/database_helper.dart';
 // import 'package:sqflite_common_ffi/sqflite_ffi.dart';
+import './log/logger.dart';
+
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-
+  setupLogging();
   // sqfliteFfiInit();
   // databaseFactory = databaseFactoryFfi;
+  log.info('Started the APP');
 
   final dbHelper = DatabaseHelper.instance;
   // dbHelper.deleteDatabaseUtil();
   dbHelper.initDatabase();
-  
+
   runApp(const MyApp());
 }
 

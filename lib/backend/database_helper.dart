@@ -1,3 +1,4 @@
+import 'package:app_001/log/logger.dart';
 import 'package:app_001/surveyor/family_details.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
@@ -445,6 +446,14 @@ class DatabaseHelper {
     return await db.insert('field_project', value);
   }
 
+  Future<int> getCountForResponses() async {
+    final db = await database;
+    List<Map<String, dynamic>> result = await db.rawQuery(
+      'SELECT COUNT(*) AS count FROM record_log',
+    );
+    return result[0]['count'];
+  }
+
   Future<int> insertResponse(Map<String, dynamic> response) async {
     final db = await database;
     print('response inserted');
@@ -462,6 +471,13 @@ class DatabaseHelper {
   Future<List<Map<String, dynamic>>> getFields() async {
     final db = await database;
     return await db.query('field_project');
+  }
+
+  Future<List<Map<String, dynamic>>> getFieldEntriestoUpload() async {
+    final db = await database;
+    var result =
+        await db.rawQuery('Select * from field_entry where upload_time = 0');
+    return result;
   }
 
   Future<List<Map<String, dynamic>>> getSubjectDetailstoUpload() async {
@@ -485,7 +501,7 @@ class DatabaseHelper {
       'SELECT COUNT(*) AS count FROM Subject WHERE Zone_ID = ?',
       [zoneId],
     );
-    
+
     return result[0]['count'];
     // int count =  int.parse(result);
     // return count + 1;
@@ -494,6 +510,11 @@ class DatabaseHelper {
   Future<List<Map<String, dynamic>>> getSubjects() async {
     final db = await database;
     return await db.query('Subject');
+  }
+
+  Future<List<Map<String, dynamic>>> getSubjectsSids() async {
+    final db = await database;
+    return await db.rawQuery('Select subject_id from Subject');
   }
 
   // Future<List<Map<String, dynamic>>> getResponses() async {
@@ -509,7 +530,6 @@ class DatabaseHelper {
     FROM record_log rl
     INNER JOIN survey_project sp ON rl.sid = sp.sid
     INNER JOIN Subject s ON rl.subject_id = s.subject_id
-    WHERE rl.record_type = 0
   ''');
   }
 
@@ -639,7 +659,8 @@ class DatabaseHelper {
   Future<List<Map<String, Object?>>> getFamilyDetailsbyVillage(
       String village) async {
     final db = await database;
-    final result = await db.rawQuery("SELECT s.subject_id, s.SubjectName, s.ChildName, s.SpouseName, s.Mobile FROM Subject s JOIN Zone z ON s.Zone_ID = z.zone_id WHERE z.name = '$village'");
+    final result = await db.rawQuery(
+        "SELECT s.subject_id, s.SubjectName, s.ChildName, s.SpouseName, s.Mobile FROM Subject s JOIN Zone z ON s.Zone_ID = z.zone_id WHERE z.name = '$village'");
     print('village members : $result');
     return result;
   }
@@ -709,6 +730,7 @@ class DatabaseHelper {
     final db = await database;
     final result = await db.rawQuery(
         'SELECT * FROM record_log where record_type=0 AND subject_id="$subjectId" AND sid="$sid" ORDER BY survey_datetime DESC;');
+    print('previous Responses : ');
     print(result);
     return result;
   }
@@ -834,10 +856,12 @@ class DatabaseHelper {
     final db = await database;
     bool flag = await zoneExists(zoneInfo['zone_id']);
     if (flag) {
-      print('already there');
+      // print('already there');
+      log.info('$zoneInfo already exists');
       return 1;
     } else {
-      print('inserting the zone');
+      log.info('Inserting $zoneInfo ');
+      // print('');
       return await db.insert('Zone', zoneInfo);
     }
   }
@@ -980,5 +1004,68 @@ class DatabaseHelper {
       select * from service_enrollment
     ''');
     print(res);
+  }
+
+  Future<void> check_responses() async {
+    final db = await database;
+    final res = await db.rawQuery('''
+      select * from record_log
+    ''');
+    print(res);
+  }
+
+  Future<void> check_responses_to_upload() async {
+    final db = await database;
+    final res = await db.rawQuery('''
+      select * from record_log where upload_time is null or upload_time = 0
+    ''');
+    print(res);
+  }
+
+  // Future<int> insertResponseUtil(Map<String, dynamic> response) async {
+  //   final db = await database;
+  //   print('response inserted');
+  //   print(response);
+  //   return await db.insert('record_log', response);
+  // }
+
+  Future<bool> responseExists(String rid) async {
+    final db = await database;
+    final List<Map<String, dynamic>> maps = await db.rawQuery('''
+    SELECT rid from record_log where rid = ?
+  ''', [rid]);
+    return maps.isNotEmpty;
+  }
+
+  Future<int> insertResponseUtil(Map<String, dynamic> response) async {
+    final db = await database;
+    bool flag = await responseExists(response['rid']);
+    if (flag) {
+      print('already there');
+      return 1;
+    } else {
+      print('inserting the response');
+      return await db.insert('record_log', response);
+    }
+  }
+
+  Future<bool> fieldEntryExists(String rid, String fid) async {
+    final db = await database;
+    final List<Map<String, dynamic>> maps = await db.rawQuery('''
+    SELECT rid from field_entry where rid = ? AND fid = ?
+  ''', [rid, fid]);
+    return maps.isNotEmpty;
+  }
+
+  Future<int> insertFiedEntryUtil(Map<String, dynamic> response) async {
+    final db = await database;
+    bool flag = await fieldEntryExists(response['rid'], response['fid']);
+    if (flag) {
+      print('already there');
+      return 1;
+    } else {
+      print('inserting the field_entry');
+      return await db.insert('field_entry', response);
+    }
   }
 }

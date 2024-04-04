@@ -1,9 +1,9 @@
 import 'dart:convert';
 import 'package:app_001/backend/database_helper.dart';
+import 'package:app_001/log/logger.dart';
 import 'package:app_001/login_page.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
-import 'package:sqflite/sqflite.dart';
 
 class DataDownloadPage extends StatefulWidget {
   const DataDownloadPage({super.key});
@@ -23,8 +23,8 @@ class _DataDownloadPageState extends State<DataDownloadPage> {
   }
 
   Future<void> download_villages() async {
-    final databaseHelper = DatabaseHelper.instance;
-    await databaseHelper.check_service_enrollment();
+    // final databaseHelper = DatabaseHelper.instance;
+    // await databaseHelper.check_service_enrollment();
     await getAllocatedZone();
     for (String zone in zones_allocated) {
       await getZoneInfo(zone);
@@ -41,6 +41,7 @@ class _DataDownloadPageState extends State<DataDownloadPage> {
         "${LoginPage.protocol}://${LoginPage.domainName}/api/user/get-allocated-zone";
     Map<String, dynamic> payload = {"userid": LoginPage.userId};
     String jsonPayload = jsonEncode(payload);
+    log.info('url : $url, json payload : $jsonPayload');
     var response = await http.post(
       Uri.parse(url),
       headers: {
@@ -71,6 +72,8 @@ class _DataDownloadPageState extends State<DataDownloadPage> {
         "${LoginPage.protocol}://${LoginPage.domainName}/api/user/get-zone-info";
     Map<String, dynamic> payload = {"zone_id": zone};
     String jsonPayload = jsonEncode(payload);
+    log.info('url : $url, json payload : $jsonPayload');
+
     var response = await http.post(
       Uri.parse(url),
       headers: {
@@ -81,10 +84,11 @@ class _DataDownloadPageState extends State<DataDownloadPage> {
     );
     if (response.statusCode == 200) {
       var json = jsonDecode(response.body);
-      print(json);
+      // print(json);
       final databaseHelper = DatabaseHelper.instance;
       int flag = await databaseHelper.storeTheZones(json['zone-info']);
-      print('$flag');
+      // print('$flag');
+      log.info('Status : $flag');
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -156,7 +160,7 @@ class _DataDownloadPageState extends State<DataDownloadPage> {
       final databaseHelper = DatabaseHelper.instance;
       json['survey-info']['upload_time'] = "1";
       int flag = await databaseHelper.storeTheSurveyForms(json['survey-info']);
-      print(flag);
+      // print(flag);
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -182,12 +186,12 @@ class _DataDownloadPageState extends State<DataDownloadPage> {
     );
     if (response.statusCode == 200) {
       var json = jsonDecode(response.body);
-      print(json['FieldProject-info']);
+      // print(json['FieldProject-info']);
       final databaseHelper = DatabaseHelper.instance;
       for (var element in json['FieldProject-info']) {
         element['upload_time'] = "1";
         var flag = await databaseHelper.insertFieldUtil(element);
-        print(flag);
+        // print(flag);
       }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -249,7 +253,7 @@ class _DataDownloadPageState extends State<DataDownloadPage> {
           "Email": subject["email"],
           "upload_time": 1
         });
-        print(flag);
+        // print(flag);
       }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -285,12 +289,12 @@ class _DataDownloadPageState extends State<DataDownloadPage> {
     );
     if (response.statusCode == 200) {
       var json = jsonDecode(response.body);
-      print(json['service-log']);
+      // print(json['service-log']);
       final databaseHelper = DatabaseHelper.instance;
       for (var service in json['service-log']) {
         service['upload_time'] = "1";
         int flag = await databaseHelper.insertServiceUtil(service);
-        print(flag);
+        // print(flag);
       }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -300,6 +304,98 @@ class _DataDownloadPageState extends State<DataDownloadPage> {
         ),
       );
     }
+  }
+
+  Future<void> getAllResponses() async {
+    final databaseHelper = DatabaseHelper.instance;
+    final subjects = await databaseHelper.getSubjectsSids();
+    // print(subjects);
+    for (var subject in subjects) {
+      // print(subject['subject_id']);
+      await getResponseOfASubject(subject['subject_id']);
+    }
+    // await databaseHelper.check_responses_to_upload();
+  }
+
+  Future<void> getResponseOfASubject(String subjectID) async {
+    String url =
+        "${LoginPage.protocol}://${LoginPage.domainName}/api/user/get-RecordLog-BySubjectId";
+    Map<String, dynamic> payload = {"subject_id": subjectID};
+    String jsonPayload = jsonEncode(payload);
+    var result = await http.post(
+      Uri.parse(url),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ${LoginPage.jwtToken}',
+      },
+      body: jsonPayload,
+    );
+    final databaseHelper = DatabaseHelper.instance;
+    if (result.statusCode == 200) {
+      var json = jsonDecode(result.body);
+      // print(json);
+      for (var response in json['record-log']) {
+        // print(response);
+        // response['upload_time'] = "1";
+        // response['InstanceTime'] = response['instance_time'];
+        int flag = await databaseHelper.insertResponseUtil({
+          "rid": response['rid'],
+          "subject_id": response['subject_id'],
+          "survey_datetime": response['survey_datetime'],
+          "sid": response['sid'],
+          "record_type": response['record_type'],
+          "survey_data": response['survey_data'],
+          "InstanceTime": response['instance_time'],
+          "upload_time": 1,
+        });
+        // print(flag);
+        final survey_data = jsonDecode(response['survey_data']);
+        // print(survey_data);
+        survey_data.forEach((key, value) {
+          getFieldEntriesOfASubject(key, response['rid']);
+        });
+        // for (var entry in survey_data) {
+        //   print(entry);
+        // }
+      }
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content:
+              Text('Error Connecting to the server : ${result.statusCode}!!!'),
+        ),
+      );
+    }
+  }
+
+  Future<void> getFieldEntriesOfASubject(String fid, String rid) async {
+    String url =
+        "${LoginPage.protocol}://${LoginPage.domainName}/api/user/get-FieldEntries-Value";
+    Map<String, dynamic> payload = {
+      "fid": fid,
+      "rid": rid,
+    };
+    String jsonPayload = jsonEncode(payload);
+    var result = await http.post(
+      Uri.parse(url),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ${LoginPage.jwtToken}',
+      },
+      body: jsonPayload,
+    );
+    if (result.statusCode == 200) {
+      var json = jsonDecode(result.body);
+      // print('entry : $json');
+      final databaseHelper = DatabaseHelper.instance;
+      int flag = await databaseHelper.insertFiedEntryUtil({
+        "rid": rid,
+        "fid": fid,
+        "value": json['value'],
+        "upload_time": 1,
+      });
+      // print(flag);
+    } else {}
   }
 
   @override
@@ -336,7 +432,7 @@ class _DataDownloadPageState extends State<DataDownloadPage> {
               onPressed: () async {
                 await getSubjects();
                 DatabaseHelper.instance.checkSubjects();
-                print('Download Beneficiaries');
+                // print('Download Beneficiaries');
               },
               child: Text('Download Beneficiaries'),
             ),
@@ -344,17 +440,19 @@ class _DataDownloadPageState extends State<DataDownloadPage> {
             ElevatedButton(
               onPressed: () async {
                 await getAllServices();
-                print('Download Services');
+                // print('Download Services');
               },
               child: Text('Download Services'),
             ),
             SizedBox(height: 20),
-            // ElevatedButton(
-            //   onPressed: () {
-            //     print('Download Responses');
-            //   },
-            //   child: Text('Download Responses'),
-            // ),
+            ElevatedButton(
+              onPressed: () async {
+                await getAllResponses();
+
+                // print('Download Responses');
+              },
+              child: Text('Download Responses'),
+            ),
           ],
         ),
       ),

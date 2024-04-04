@@ -19,9 +19,11 @@ class _DisplaySurveyResponsesState extends State<DisplaySurveyResponses> {
   }
 
   void _loadResponses() async {
-    responsesList = await DatabaseHelper.instance.getResponses();
-    print(responsesList);
-    setState(() {});
+    final res = await DatabaseHelper.instance.getResponses();
+    print(res);
+    setState(() {
+      responsesList = res;
+    });
   }
 
   @override
@@ -38,7 +40,7 @@ class _DisplaySurveyResponsesState extends State<DisplaySurveyResponses> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 Text(
-                  'Display Responses of various Subjects',
+                  'Display Responses of various Beneficiaries',
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
@@ -55,7 +57,7 @@ class _DisplaySurveyResponsesState extends State<DisplaySurveyResponses> {
                             DataColumn(label: Text('Mobile')),
                             DataColumn(label: Text('Age')),
                             DataColumn(label: Text('Village')),
-                            
+
                             // DataColumn(label: Text('sid')),
                             // DataColumn(label: Text('subject_id')),
                             DataColumn(label: Text('survey datetime')),
