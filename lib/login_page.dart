@@ -1,14 +1,23 @@
+import 'dart:io';
+import 'dart:typed_data';
+
 import 'package:app_001/designExecutive/design_executive_util_page.dart';
+import 'package:app_001/surveyor/hamburger_menu.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:path_provider/path_provider.dart';
 import 'backend/database_helper.dart'; // Import your database helper
 import 'surveyor/survery_page_util.dart';
 import 'admin/admin_page_util.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:footer/footer.dart';
+import 'package:footer/footer_view.dart';
 
 class LoginPage extends StatefulWidget {
   static String jwtToken = "";
   static String userId = "";
+  static String username = "";
   static String protocol = "http";
   // static String domainName = "csjitsi.iitkgp.ac.in";
   static String domainName = "10.5.29.229:8080";
@@ -29,7 +38,11 @@ class _LoginPageState extends State<LoginPage> {
     setState(() {
       LoginPage.jwtToken = "";
       LoginPage.userId = "";
+      LoginPage.username = "";
+      // pages = [];
+      // HamburgerMenu.pageTitles = ['Home', 'Log out'];
     });
+    // copyImageToApplicationDirectory();
   }
 
   void handleLogin() async {
@@ -56,6 +69,7 @@ class _LoginPageState extends State<LoginPage> {
       setState(() {
         LoginPage.jwtToken = json["jwtToken"];
         LoginPage.userId = json["userid"];
+        LoginPage.username = json["name"];
         userType = json["type"];
       });
       print("response body : $json");
@@ -103,77 +117,196 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
+  Future<void> copyImageToApplicationDirectory() async {
+    // Get the directory for storing application files
+    Directory appDir = await getApplicationDocumentsDirectory();
+
+    // Define the source and destination paths
+    String assetsImagePath = 'assets/images/p4.jpg';
+    String destinationImagePath = '${appDir.path}/zone1_4.jpg';
+    // print(destinationImagePath);
+    try {
+      // Load the image byte data from assets
+      ByteData imageBytes = await rootBundle.load(assetsImagePath);
+      List<int> byteList = imageBytes.buffer.asUint8List();
+
+      // Write the image byte data to a file in the application directory
+      File(destinationImagePath).writeAsBytes(byteList);
+
+      // /data/user/0/com.example.app_001/app_flutter/null
+      print('Image copied successfully to application directory.');
+    } catch (e) {
+      print('Error copying image: $e');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      drawer: HamburgerMenu(
+        userName: 'userName',
+        email: 'email',
+        pages: [SurveyorPageUtil(), LoginPage()],
+        icons: [Icons.home, Icons.logout],
+        pageTitles: ['Home', 'Log out'],
+        // ),
+      ),
       appBar: AppBar(
         title: Text('Login Page'),
+        centerTitle: true,
+        actions: [
+          IconButton(onPressed: () => {}, icon: Icon(Icons.arrow_back_rounded)),
+        ],
+        // leading: Icon(Icons.mail),
       ),
-      body: SingleChildScrollView(
+
+      body:
+          //  new FooterView(
+          // children: <Widget>[
+          SingleChildScrollView(
         child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
+              SizedBox(
+                height: 20,
+              ),
               Text(
-                'SERVICE PROJECT',
+                'Matri Karuna',
                 style: TextStyle(
-                  fontSize: 24,
+                  fontSize: 38,
                   fontWeight: FontWeight.bold,
+                  fontFamily: 'Georgia',
+                  color: Colors.blue,
+                  shadows: <Shadow>[
+                    Shadow(
+                      offset: Offset(2.5, 2.5),
+                      blurRadius: 3.0,
+                      color: Color.fromARGB(100, 0, 0, 0),
+                    ),
+                    // Shadow(
+                    //   offset: Offset(10.0, 10.0),
+                    //   blurRadius: 8.0,
+                    //   color: Color.fromARGB(125, 0, 0, 255),
+                    // ),
+                  ],
                 ),
               ),
-              Image.asset(
-                'assets/images/bg2.jpeg',
-                width: 450,
-                height: 250,
+              SizedBox(
+                height: 20,
               ),
-              SizedBox(height: 20),
               Container(
-                width: 200,
-                height: 40,
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: TextField(
-                        controller: usernameController,
-                        decoration: InputDecoration(
-                          labelText: 'Username',
-                          border: OutlineInputBorder(),
-                        ),
+                child: Image.asset(
+                  'assets/images/imlogo.jpg',
+                  // width: 190,
+                  height: 200,
+                ),
+                decoration: BoxDecoration(
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.5),
+                      spreadRadius: 4,
+                      blurRadius: 2,
+                      offset: Offset(0, 3), // changes position of shadow
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(height: 50),
+              Container(
+                width: 300,
+                height: 300,
+                color: Colors.grey[200],
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Text(
+                      'saMiX Login',
+                      style: TextStyle(
+                        fontSize: 35,
+                        fontWeight: FontWeight.bold,
                       ),
+                    ),
+                    SizedBox(height: 20),
+                    Container(
+                      width: 200,
+                      height: 40,
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: TextField(
+                              controller: usernameController,
+                              decoration: InputDecoration(
+                                labelText: 'Username',
+                                border: OutlineInputBorder(),
+                                prefixIcon: IconButton(
+                                    onPressed: () {}, icon: Icon(Icons.person)),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    Container(
+                      width: 200,
+                      height: 40,
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: TextField(
+                              controller: passwordController,
+                              decoration: InputDecoration(
+                                labelText: 'Password',
+                                border: OutlineInputBorder(),
+                                prefixIcon: IconButton(
+                                    onPressed: () {}, icon: Icon(Icons.key)),
+                              ),
+                              obscureText: true,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    SizedBox(height: 20),
+                    ElevatedButton(
+                      onPressed: handleLogin,
+                      child: Text('Login'),
                     ),
                   ],
                 ),
               ),
               SizedBox(
-                height: 10,
+                height: 130,
               ),
-              Container(
-                width: 200,
-                height: 40,
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: TextField(
-                        controller: passwordController,
-                        decoration: InputDecoration(
-                          labelText: 'Password',
-                          border: OutlineInputBorder(),
-                        ),
-                        obscureText: true,
-                      ),
-                    ),
-                  ],
+              // Align(
+              // alignment: Alignment.center,
+              // child:
+              Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(
+                    "Developed and designed at -\n Computer Science & Engineering Department, IIT Kharagpur",
+                    style: TextStyle(fontSize: 14),
+                    textAlign: TextAlign.center,
+                  ),
+                  // "Developed and designed at -\n Computer Science & Engineering Department, IIT Kharagpur\n Contact: Prof. Jayanta Mukhopadhyay, jay@cse.iitkgp.ac.in, \nPhone: +91-3222-283484",style: TextStyle(fontSize: 13),textAlign: TextAlign.center,),
                 ),
               ),
-              SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: handleLogin,
-                child: Text('Login'),
-              ),
+              // ),
             ],
           ),
         ),
       ),
+      // ],
+      // footer: new Footer(
+      // child: Padding(
+      // padding: new EdgeInsets.all(10.0),
+      // child: Text('Developed and designed at Computer Science & Engineering Department, IIT Kharagpur Contact: Prof. Jayanta Mukhopadhyay, jay@cse.iitkgp.ac.in, Phone: +91-3222-283484',style: TextStyle(color: Colors.black),)),
+      // ),
+      // flex: 1),
     );
   }
 }

@@ -480,10 +480,25 @@ class DatabaseHelper {
     return result;
   }
 
+  Future<List<Map<String, dynamic>>> getServiceEnrollmentstoUpload() async {
+    final db = await database;
+    var result = await db
+        .rawQuery('Select * from service_enrollment where upload_time = 0');
+    // await db.rawQuery('Select * from service_enrollment ');
+    return result;
+  }
+
   Future<List<Map<String, dynamic>>> getSubjectDetailstoUpload() async {
     final db = await database;
     var result =
         await db.rawQuery('Select * from Subject where upload_time = 0');
+    return result;
+  }
+
+  Future<List<Map<String, dynamic>>> getRecordLogstoUpload() async {
+    final db = await database;
+    var result =
+        await db.rawQuery('Select * from record_log where upload_time = 0');
     return result;
   }
 
@@ -492,6 +507,29 @@ class DatabaseHelper {
     final db = await database;
     var result = await db.rawQuery(
         'UPDATE Subject SET upload_time = 1 WHERE subject_id = "$subjectID"');
+    return result;
+  }
+
+  Future<List<Map<String, dynamic>>> upadteImage(String subjectID) async {
+    final db = await database;
+    final pathName = subjectID + "." + "jpg";
+    var result = await db.rawQuery(
+        "UPDATE Subject SET Image = '$pathName' WHERE subject_id = '$subjectID'");
+    return result;
+  }
+
+  Future<List<Map<String, dynamic>>> upadteRecordLogAfterUpload(
+      String rid) async {
+    final db = await database;
+    var result = await db
+        .rawQuery('UPDATE record_log SET upload_time = 1 WHERE rid = $rid');
+    return result;
+  }
+
+  Future<List<Map<String, dynamic>>> upadteFieldEntryAfterUpload(int id) async {
+    final db = await database;
+    var result = await db
+        .rawQuery('UPDATE field_entry SET upload_time = 1 WHERE id = $id');
     return result;
   }
 

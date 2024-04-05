@@ -89,3 +89,24 @@ service_enrollment (
 
 
 
+
+saMiX
+
+Customised for Ramakrishna Mission Home of Service, Varanasi
+
+multi-centric platform
+
+<!-- Each center has seperate license -->
+
+Cannot be customized
+Redundant
+
+Samix Login box
+APK version issue
+
+
+Current : 
+i button in display beneficiaries to show modal form with image and audio
+Upload and download image and audio
+Hamburger menu - Name,Current network bandwidth, Upload/Download, Logout, version 1.0
+Download and upload single buttons only in hamburger menu

@@ -420,10 +420,6 @@ class _DataDownloadPageState extends State<DataDownloadPage> {
             ElevatedButton(
               onPressed: () async {
                 await download_forms();
-                // DatabaseHelper.instance.checkUploadTime();
-                // DatabaseHelper.instance.checkSurveyForms();
-                // DatabaseHelper.instance.checkFields();
-                // print('Download Forms');
               },
               child: Text('Download Forms'),
             ),
@@ -449,7 +445,6 @@ class _DataDownloadPageState extends State<DataDownloadPage> {
               onPressed: () async {
                 await getAllResponses();
 
-                // print('Download Responses');
               },
               child: Text('Download Responses'),
             ),

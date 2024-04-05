@@ -21,14 +21,6 @@ class SubjectRegisterPage extends StatefulWidget {
 }
 
 class _SubjectRegisterPageState extends State<SubjectRegisterPage> {
-  // final TextEditingController nameController = TextEditingController();
-  // final TextEditingController ageController = TextEditingController();
-  // final TextEditingController sexController = TextEditingController();
-  // final TextEditingController occupationController = TextEditingController();
-  // final TextEditingController zoneIDController = TextEditingController();
-  // final TextEditingController addressController = TextEditingController();
-  // final TextEditingController mobileController = TextEditingController();
-  // final TextEditingController emailController = TextEditingController();
   final TextEditingController subjectNameController = TextEditingController();
   final TextEditingController childNameController = TextEditingController();
   final TextEditingController mobileController = TextEditingController();
@@ -36,9 +28,6 @@ class _SubjectRegisterPageState extends State<SubjectRegisterPage> {
   final TextEditingController villageController = TextEditingController();
   final TextEditingController idTypeController = TextEditingController();
   final TextEditingController idNumberController = TextEditingController();
-
-  // final TextEditingController initialDateController = TextEditingController();
-  // final TextEditingController finalDateController = TextEditingController();
   final TextEditingController addressController = TextEditingController();
   final TextEditingController spouseNameController = TextEditingController();
   final TextEditingController ageController = TextEditingController();
@@ -73,52 +62,11 @@ class _SubjectRegisterPageState extends State<SubjectRegisterPage> {
     super.initState();
   }
 
-  // void addSubject() async {
-  //   String name = nameController.text;
-
-  //   int age = int.tryParse(ageController.text) ?? 0;
-  //   String sex = sexController.text;
-  //   String zoneID = zoneIDController.text;
-  //   String occupation = occupationController.text;
-
-  //   String address = addressController.text;
-  //   String mobile = mobileController.text;
-  //   String email = emailController.text;
-
-  //   await DatabaseHelper.instance.insertSubject({
-  //     'Name': name,
-  //     'Age': age,
-  //     'Sex': sex,
-  //     'Zone_ID': zoneID,
-  //     'Occupation': occupation,
-  //     'Address': address,
-  //     'Mobile': mobile,
-  //     'Email': email
-  //   });
-
-  //   _clearFields();
-  // }
-
-  // void _clearFields() {
-  //   nameController.clear();
-
-  //   ageController.clear();
-  //   sexController.clear();
-  //   zoneIDController.clear();
-  //   occupationController.clear();
-
-  //   addressController.clear();
-  //   mobileController.clear();
-  //   emailController.clear();
-  // }
   Future<void> addSubject() async {
     Directory documentDirectory = await getApplicationDocumentsDirectory();
-    String filename = subjectNameController.text + ".jpg";
-    String pathutil = path.join(documentDirectory.path, filename);
-    final te = await _image?.copy(pathutil);
     // _image.
-    print(te);
-    print('done');
+    // print(te);
+    // print('done');
     String subjectName = subjectNameController.text;
     String spouseName = spouseNameController.text;
     String childName = childNameController.text;
@@ -127,20 +75,25 @@ class _SubjectRegisterPageState extends State<SubjectRegisterPage> {
     String idType = idTypeController.text;
     String idNumber = idNumberController.text;
     String mobile = mobileController.text;
-    // String initialDate = initialDateController.text;
-    // String finalDate = finalDateController.text;
     String address = addressController.text;
     String age = ageController.text;
     String sex = sexController.text;
     String caste = casteController.text;
-    String image = filename;
     String? voice = audioPath;
     String religion = religionController.text;
     String occupation = occupationController.text;
     String zoneid = zoneidController.text;
     String email = emailController.text;
+    int count = 1 + (await DatabaseHelper.instance.getCountForZone(zoneid));
+    String subjectID = "${zoneid}_$count";
+    String filename = subjectID + ".jpg";
+    String pathutil = path.join(documentDirectory.path, filename);
+    print(pathutil);
+    final te = await _image?.copy(pathutil);
+    String image = filename;
+
     await DatabaseHelper.instance.insertSubject({
-      'subject_id': "$subjectName/$spouseName/$childName",
+      'subject_id': subjectID,
       'SubjectName': subjectName,
       'SpouseName': spouseName,
       'ChildName': childName,
@@ -149,8 +102,6 @@ class _SubjectRegisterPageState extends State<SubjectRegisterPage> {
       'IDType': idType,
       'IDNumber': idNumber,
       'Mobile': mobile,
-      // 'InitialDate': initialDate,
-      // 'FinalDate': finalDate,
       'Address': address,
       'Age': age,
       'Sex': sex,
@@ -172,8 +123,8 @@ class _SubjectRegisterPageState extends State<SubjectRegisterPage> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) =>
-            FormDataTablePage(village: village, nextPage: "service registration"),
+        builder: (context) => FormDataTablePage(
+            village: village, nextPage: "service registration"),
       ),
     );
   }
@@ -203,8 +154,6 @@ class _SubjectRegisterPageState extends State<SubjectRegisterPage> {
     villageController.clear();
     idTypeController.clear();
     idNumberController.clear();
-    // initialDateController.clear();
-    // finalDateController.clear();
     addressController.clear();
     spouseNameController.clear();
     ageController.clear();
@@ -236,45 +185,6 @@ class _SubjectRegisterPageState extends State<SubjectRegisterPage> {
     );
   }
 
-  // Widget _buildFormField(String labelText, TextEditingController controller,
-  //     {TextInputType? keyboardType}) {
-  //   return Container(
-  //     // margin: EdgeInsets.only(left: 380, bottom: 15),
-  //     child: Column(
-  //       mainAxisAlignment: MainAxisAlignment.center,
-  //       children: [
-  //         Row(
-  //           mainAxisAlignment: MainAxisAlignment.center,
-  //           children: [
-  //             Container(
-  //               width: 100, // Adjust the width according to your preference
-  //               child: Text(
-  //                 labelText,
-  //                 style: TextStyle(fontSize: 18),
-  //               ),
-  //             ),
-  //             SizedBox(
-  //                 width: 20), // Adjust the space between label and text field
-  //             Expanded(
-  //               child: Padding(
-  //                 padding: const EdgeInsets.only(
-  //                     right: 380.0), // Adjust the horizontal padding
-  //                 child: TextField(
-  //                   controller: controller,
-  //                   keyboardType: keyboardType,
-  //                   decoration: InputDecoration(
-  //                     hintText: 'Enter $labelText',
-  //                     border: OutlineInputBorder(),
-  //                   ),
-  //                 ),
-  //               ),
-  //             ),
-  //           ],
-  //         ),
-  //       ],
-  //     ),
-  //   );
-  // }
   Future<void> _getImageFromCamera() async {
     final pickedFile = await ImagePicker().pickImage(
       source: ImageSource.camera,
@@ -324,73 +234,6 @@ class _SubjectRegisterPageState extends State<SubjectRegisterPage> {
     );
   }
 
-  // DateTime initialDateSelected = DateTime.now();
-  // DateTime finalDateSelected = DateTime.now();
-
-  // Widget _buildDateSelector(String labelText, DateTime selectedDate,
-  //     Function(DateTime) onDateSelected, TextEditingController dateController) {
-  //   if (selectedDate != null) {
-  //     dateController.text = _formatDate(selectedDate);
-  //   }
-
-  //   return Container(
-  //     margin: EdgeInsets.symmetric(vertical: 10),
-  //     child: Column(
-  //       mainAxisAlignment: MainAxisAlignment.center,
-  //       children: [
-  //         Row(
-  //           children: [
-  //             Container(
-  //               width: 100,
-  //               child: Text(
-  //                 labelText,
-  //                 style: TextStyle(fontSize: 18),
-  //               ),
-  //             ),
-  //             SizedBox(
-  //               width: 20,
-  //             ),
-  //             Expanded(
-  //               child: TextField(
-  //                 controller: dateController,
-  //                 readOnly: true,
-  //                 onTap: () => _selectDate(
-  //                     context, selectedDate, onDateSelected, dateController),
-  //                 decoration: InputDecoration(
-  //                   hintText: 'Select Date',
-  //                   border: OutlineInputBorder(),
-  //                 ),
-  //               ),
-  //             ),
-  //           ],
-  //         ),
-  //       ],
-  //     ),
-  //   );
-  // }
-
-  // Future<void> _selectDate(
-  //     BuildContext context,
-  //     DateTime selectedDate,
-  //     Function(DateTime) onDateSelected,
-  //     TextEditingController controller) async {
-  //   final DateTime? pickedDate = await showDatePicker(
-  //     context: context,
-  //     initialDate: selectedDate ?? DateTime.now(),
-  //     firstDate: DateTime(1900),
-  //     lastDate: DateTime(2101),
-  //   );
-
-  //   if (pickedDate != null) {
-  //     onDateSelected(pickedDate);
-  //     controller.text = _formatDate(pickedDate);
-  //   }
-  // }
-
-  // String _formatDate(DateTime date) {
-  //   return DateFormat('dd-MM-yyyy').format(date);
-  // }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -422,19 +265,6 @@ class _SubjectRegisterPageState extends State<SubjectRegisterPage> {
                   _buildFormField('ID Number', idNumberController),
                   _buildFormField('Mobile', mobileController,
                       keyboardType: TextInputType.phone),
-                  // _buildDateSelector('Initial Date', initialDateSelected,
-                  //     (DateTime date) {
-                  //   setState(() {
-                  //     initialDateSelected = date;
-                  //   });
-                  // }, initialDateController),
-                  // _buildDateSelector('Final Date', finalDateSelected,
-                  //     (DateTime date) {
-                  //   setState(() {
-                  //     finalDateSelected = date;
-                  //   });
-                  // }, finalDateController),
-
                   _buildFormField('Address', addressController),
                   _buildFormField('Age', ageController,
                       keyboardType: TextInputType.number),
@@ -449,11 +279,12 @@ class _SubjectRegisterPageState extends State<SubjectRegisterPage> {
                       keyboardType: TextInputType.emailAddress),
                   _image == null
                       ? const Text('No image selected.')
-                      : Image.file(
-                          _image!,
-                          height: 100,
-                          width: 100,
-                        ),
+                      : Text('Image_${subjectNameController.text}'),
+                  // Image.file(
+                  //     _image!,
+                  //     height: 100,
+                  //     width: 100,
+                  //   ),
                   const SizedBox(height: 20),
                   ElevatedButton(
                     onPressed: _getImageFromCamera,

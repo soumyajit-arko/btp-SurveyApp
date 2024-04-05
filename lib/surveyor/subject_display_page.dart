@@ -1,7 +1,11 @@
+// import 'dart:html';
+
+import 'dart:io';
+
 import 'package:flutter/material.dart';
-import 'package:sqflite/sqflite.dart';
+import 'package:path_provider/path_provider.dart';
 import '../backend/database_helper.dart';
-// import '../login_page.dart';
+import 'package:path/path.dart' as path;
 
 class SubjectDisplayPage extends StatefulWidget {
   @override
@@ -19,14 +23,52 @@ class _SubjectDisplayPageState extends State<SubjectDisplayPage> {
   }
 
   void _loadsubjects() async {
-    int val = await DatabaseHelper.instance.getCountForZone('zone1');
-    print(val);
-    subjects = await DatabaseHelper.instance.getSubjects();
-    for (var e in subjects) {
-      print(e['Zone_ID']);
-      print(e['Village']);
+    // int val = await DatabaseHelper.instance.getCountForZone('zone1');
+    // print(val);
+    final subjects_ = await DatabaseHelper.instance.getSubjects();
+    // for (var e in subjects) {
+    //   print(e['Zone_ID']);
+    //   print(e['Village']);
+    // }
+    setState(() {
+      subjects = subjects_;
+    });
+  }
+
+  Widget biometricDialogue(String filePath) {
+    try {
+      // Load the image file
+      File imageFile = File(filePath);
+
+      // Check if the image file exists
+      if (!imageFile.existsSync()) {
+        throw Exception('Image not found');
+      }
+
+      // If image file exists, show the dialog with the image
+      return Dialog(
+        child: Container(
+          width: 200,
+          height: 250,
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              image: FileImage(imageFile),
+              fit: BoxFit.fill,
+            ),
+          ),
+        ),
+      );
+    } catch (e) {
+      // If image file not found or any other exception occurs, show error message
+      return Dialog(
+        child: Container(
+          width: 200,
+          height: 250,
+          alignment: Alignment.center,
+          child: Text('Image is not available'),
+        ),
+      );
     }
-    setState(() {});
   }
 
   @override
@@ -62,6 +104,9 @@ class _SubjectDisplayPageState extends State<SubjectDisplayPage> {
                               ),
                               DataColumn(
                                 label: Text('Child Name'),
+                              ),
+                              DataColumn(
+                                label: Text('Biometric'),
                               ),
                               DataColumn(
                                 label: Text('Marital Status'),
@@ -101,6 +146,27 @@ class _SubjectDisplayPageState extends State<SubjectDisplayPage> {
                                           subject['SpouseName'].toString())),
                                       DataCell(Text(
                                           subject['ChildName'].toString())),
+                                      DataCell(
+                                        Text('View Biometric'),
+                                        onTap: () async {
+                                          print(subject['Image']);
+                                          // final db = DatabaseHelper.instance;
+                                          // print(
+                                          //     subject['subject_id'].toString());
+                                          // final flag = await db.upadteImage(
+                                          //     subject['subject_id'].toString());
+                                          // print(flag);
+                                          final filepath =
+                                              await getApplicationDocumentsDirectory();
+                                          await showDialog(
+                                            context: context,
+                                            builder: (_) => biometricDialogue(
+                                              path.join(filepath.path,
+                                                  subject['Image'].toString()),
+                                            ),
+                                          );
+                                        },
+                                      ),
                                       DataCell(Text(
                                           subject['MaritalStatus'].toString())),
                                       DataCell(
@@ -109,8 +175,8 @@ class _SubjectDisplayPageState extends State<SubjectDisplayPage> {
                                           Text(subject['IDType'].toString())),
                                       DataCell(
                                           Text(subject['IDNumber'].toString())),
-                                      DataCell(Text(subject['Mobile']
-                                          .toString())), // Assuming 'Mobile' is the contact number
+                                      DataCell(
+                                          Text(subject['Mobile'].toString())),
                                       DataCell(
                                           Text(subject['Address'].toString())),
                                       DataCell(Text(subject['Age'].toString())),
@@ -128,22 +194,6 @@ class _SubjectDisplayPageState extends State<SubjectDisplayPage> {
               ),
             ),
           ),
-          // Positioned(
-          //   top: 10, // Adjust top position as needed
-          //   right: 10, // Adjust right position as needed
-          //   child: ElevatedButton.icon(
-          //     onPressed: () {
-          //       Navigator.pushReplacement(
-          //         context,
-          //         MaterialPageRoute(
-          //           builder: (context) => LoginPage(),
-          //         ),
-          //       );
-          //     },
-          //     icon: Icon(Icons.logout, size: 30), // Add a logout icon
-          //     label: Text('Logout'),
-          //   ),
-          // ),
         ],
       ),
     );

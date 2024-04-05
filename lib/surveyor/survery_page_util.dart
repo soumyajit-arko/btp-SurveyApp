@@ -1,6 +1,7 @@
 import 'package:app_001/surveyor/data_download_page.dart';
 import 'package:app_001/surveyor/data_upload_page.dart';
 import 'package:app_001/surveyor/display_survey_responses.dart';
+import 'package:app_001/surveyor/hamburger_menu.dart';
 // import 'package:app_001/surveyor/family_details.dart';
 // import 'package:app_001/surveyor/subject_selection_survey.dart';
 import 'package:app_001/surveyor/village_data_table_page.dart';
@@ -19,8 +20,16 @@ class _SurveyorPageUtilState extends State<SurveyorPageUtil> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      drawer: HamburgerMenu(
+        userName: LoginPage.userId,
+        email: LoginPage.username,
+        pages: [SurveyorPageUtil(), LoginPage()],
+        icons: [Icons.home, Icons.logout],
+        pageTitles: ['Home', 'Log out'],
+        // ),
+      ),
       appBar: AppBar(
-        title: Text('Home Page'),
+        title: Text('Home'),
       ),
       body: Stack(
         children: <Widget>[
@@ -152,22 +161,22 @@ class _SurveyorPageUtilState extends State<SurveyorPageUtil> {
               ],
             ),
           ),
-          Positioned(
-            top: 10, // Adjust top position as needed
-            right: 10, // Adjust right position as needed
-            child: ElevatedButton.icon(
-              onPressed: () {
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => LoginPage(),
-                  ),
-                );
-              },
-              icon: Icon(Icons.logout, size: 30), // Add a logout icon
-              label: Text('Logout'),
-            ),
-          ),
+          // Positioned(
+          //   top: 10, // Adjust top position as needed
+          //   right: 10, // Adjust right position as needed
+          //   child: ElevatedButton.icon(
+          //     onPressed: () {
+          //       Navigator.pushReplacement(
+          //         context,
+          //         MaterialPageRoute(
+          //           builder: (context) => LoginPage(),
+          //         ),
+          //       );
+          //     },
+          //     icon: Icon(Icons.logout, size: 30), // Add a logout icon
+          //     label: Text('Logout'),
+          //   ),
+          // ),
         ],
       ),
     );

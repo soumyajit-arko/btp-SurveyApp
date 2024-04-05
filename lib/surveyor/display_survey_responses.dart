@@ -39,13 +39,15 @@ class _DisplaySurveyResponsesState extends State<DisplaySurveyResponses> {
                 child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
+                SizedBox(height: 10,),
                 Text(
-                  'Display Responses of various Beneficiaries',
+                  'Responses of various Beneficiaries',
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
+                SizedBox(height: 5,),
                 responsesList.isNotEmpty
                     ? SingleChildScrollView(
                         scrollDirection: Axis.horizontal,

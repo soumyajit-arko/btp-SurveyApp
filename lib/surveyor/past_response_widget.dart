@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -68,12 +70,12 @@ class _PastResponseWidgetState extends State<PastResponseWidget> {
         if (selectedResponse != null) ...[
           SizedBox(height: 8),
           Text(
-            'Selected Response:',
-            style: TextStyle(fontWeight: FontWeight.bold),
+            'Past Response -',
+            style: TextStyle(fontWeight: FontWeight.bold,fontSize: 22),
           ),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: selectedResponse!.entries
+            children: (jsonDecode(selectedResponse!['survey_data']) as Map<String, dynamic>).entries
                 .map((entry) => Padding(
                       padding: const EdgeInsets.symmetric(vertical: 4.0),
                       child: Row(
@@ -82,7 +84,7 @@ class _PastResponseWidgetState extends State<PastResponseWidget> {
                           Text(
                             '${entry.key}: ',
                             style: TextStyle(
-                              fontWeight: FontWeight.bold,
+                              // fontWeight: FontWeight.bold,
                             ),
                           ),
                           Expanded(

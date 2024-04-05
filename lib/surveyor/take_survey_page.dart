@@ -1,5 +1,4 @@
 import 'dart:math';
-
 import 'package:app_001/surveyor/biometric_page.dart';
 import 'package:app_001/surveyor/family_details.dart';
 import 'package:app_001/surveyor/form_details.dart';
@@ -33,10 +32,11 @@ class _TakeSurveyPageState extends State<TakeSurveyPage> {
   Map<String, dynamic> responses = {};
   Map<String, dynamic> pastResponse = {};
   List<Map<String, dynamic>> pastResponses = [];
-  String pageTitle = "Take Survey";
-  String saveText = "Save Survey";
+  String pageTitle = "Take Service";
+  String saveText = "Save Service";
   // String selectedResponse = ''; // Variable to hold the selected response
   Map<String, dynamic>? selectedResponse;
+  Map<String, dynamic> selectedResponseUtil = {};
 
   @override
   void initState() {
@@ -72,7 +72,9 @@ class _TakeSurveyPageState extends State<TakeSurveyPage> {
     // print('details :  : ${details[0]['template_source']}');
     // print('d :::: ${d['template_source']}');
     if (widget.nextPage != "survey") {
-      jsonContent = jsonDecode(details[0]['details_source'])['details_source'];
+      if (details[0]['details_source'] != null)
+        jsonContent =
+            jsonDecode(details[0]['details_source'])['details_source'];
     } else {
       print('halo : ');
       jsonContent =
@@ -112,18 +114,15 @@ class _TakeSurveyPageState extends State<TakeSurveyPage> {
       }
     }
     // print(jsonEncode(jsonContent));
-    List<Map<String, dynamic>> mapList =
-        List<Map<String, dynamic>>.from(jsonContent);
-    // print(mapList);
-    // final data = json.decode(jsonContent);
-    // print('data : $data');
-    // print(jsonContent);
-    // List<Map<String, dynamic>> mapList =
-    //     data.cast<Map<String, dynamic>>().toList();
+    if (jsonContent != "") {
+      List<Map<String, dynamic>> mapList =
+          List<Map<String, dynamic>>.from(jsonContent);
+      // print(mapList);
 
-    setState(() {
-      questions = mapList;
-    });
+      setState(() {
+        questions = mapList;
+      });
+    }
 
     // for (var e in mapList) {
     //   print('e : $e : ${e['attrtype']}');
@@ -245,9 +244,15 @@ class _TakeSurveyPageState extends State<TakeSurveyPage> {
 
   Widget questionTextWithResponse(String questionText) {
     String prevText = "";
-    if (pastResponse[questionText] != null) {
-      prevText = "(" + pastResponse[questionText] + ")";
+    if (selectedResponseUtil.isNotEmpty) {
+      prevText = "(" + selectedResponseUtil[questionText] + ")";
+    } else {
+      if (pastResponse.isNotEmpty) {
+        prevText = "(" + pastResponse[questionText] + ")";
+      }
     }
+    // if (pastResponse[questionText] != null) {
+    // }
     return Text(
       "$questionText $prevText",
       style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
@@ -283,34 +288,35 @@ class _TakeSurveyPageState extends State<TakeSurveyPage> {
               //   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               // ),
               SizedBox(height: 10),
-              if (questionType == 'Single Choice')
-                for (var option in options)
-                  RadioListTile<String>(
-                    title: Text(option),
-                    value: option,
-                    groupValue: responses[questionText],
-                    onChanged: (value) {
-                      handleOptionSelected(questionText, value ?? '');
-                    },
-                  ),
-              if (questionType == 'Multiple Choice')
-                for (var option in options)
-                  CheckboxListTile(
-                    title: Text(option),
-                    value: responses[questionText]?.contains(option) ?? false,
-                    onChanged: (selected) {
-                      if (selected != null) {
-                        handleMultipleChoiceOptionSelected(
-                          questionText,
-                          option,
-                          selected,
-                        );
-                      }
-                    },
-                  ),
-              if (questionType == 'Text Answer' ||
-                  questionType == 'Integer Answer')
-              _buildSmallTextField(questionText, 'Enter your answer'),
+              // if (questionType == 'Single Choice')
+              //   for (var option in options)
+              //     RadioListTile<String>(
+              //       title: Text(option),
+              //       value: option,
+              //       groupValue: responses[questionText],
+              //       onChanged: (value) {
+              //         handleOptionSelected(questionText, value ?? '');
+              //       },
+              //     ),
+              // if (questionType == 'Multiple Choice')
+              //   for (var option in options)
+              //     CheckboxListTile(
+              //       title: Text(option),
+              //       value: responses[questionText]?.contains(option) ?? false,
+              //       onChanged: (selected) {
+              //         if (selected != null) {
+              //           handleMultipleChoiceOptionSelected(
+              //             questionText,
+              //             option,
+              //             selected,
+              //           );
+              //         }
+              //       },
+              //     ),
+              // if (questionType == 'Text Answer' ||
+              //     questionType == 'Integer Answer')
+                _buildSmallTextField(questionText, 'Enter your answer'),
+
             ],
           ),
         ),
@@ -332,15 +338,29 @@ class _TakeSurveyPageState extends State<TakeSurveyPage> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 SizedBox(height: 20),
-                PastResponseWidget(
-                  pastResponses: pastResponses,
-                  onSelect: (response) {
-                    setState(() {
-                      selectedResponse = response;
-                    });
-                  },
-                ),
+                if (widget.nextPage == 'survey')
+                  PastResponseWidget(
+                    pastResponses: pastResponses,
+                    onSelect: (response) {
+                      setState(() {
+                        selectedResponse = response;
+                        selectedResponseUtil =
+                            jsonDecode(response['survey_data']);
+                      });
+                      print('THe response selected is : $selectedResponse');
+                    },
+                  ),
                 SizedBox(height: 20),
+                if (questions.isEmpty)
+                  Text(
+                    'No details are required',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 20),
+                  ),
+                if (questions.isEmpty)
+                  SizedBox(
+                    height: 20,
+                  ),
                 for (var question in questions) _buildQuestionWidget(question),
                 ElevatedButton.icon(
                   onPressed: () async {
