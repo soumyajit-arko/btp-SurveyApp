@@ -7,36 +7,35 @@ import 'package:flutter/material.dart';
 
 class DataDownloadPage extends StatefulWidget {
   const DataDownloadPage({super.key});
+  static List<dynamic> zones_allocated = [],
+  forms_allocated = [],
+  services_available = [];
 
   @override
-  State<DataDownloadPage> createState() => _DataDownloadPageState();
+  State<DataDownloadPage> createState() => DataDownloadPageState();
 }
 
-class _DataDownloadPageState extends State<DataDownloadPage> {
-  List<dynamic> zones_allocated = [],
-      forms_allocated = [],
-      services_available = [];
-
+class DataDownloadPageState extends State<DataDownloadPage> {
   @override
   void initState() {
     super.initState();
   }
 
-  Future<void> download_villages() async {
+  static Future<void> download_villages() async {
     // final databaseHelper = DatabaseHelper.instance;
     // await databaseHelper.check_service_enrollment();
     await getAllocatedZone();
-    for (String zone in zones_allocated) {
+    for (String zone in DataDownloadPage.zones_allocated) {
       await getZoneInfo(zone);
     }
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Successfully Downloaded Villages'),
-      ),
-    );
+    // ScaffoldMessenger.of(context).showSnackBar(
+    //   SnackBar(
+    //     content: Text('Successfully Downloaded Villages'),
+    //   ),
+    // );
   }
 
-  Future<void> getAllocatedZone() async {
+  static Future<void> getAllocatedZone() async {
     String url =
         "${LoginPage.protocol}://${LoginPage.domainName}/api/user/get-allocated-zone";
     Map<String, dynamic> payload = {"userid": LoginPage.userId};
@@ -51,23 +50,23 @@ class _DataDownloadPageState extends State<DataDownloadPage> {
       body: jsonPayload,
     );
     if (response.statusCode == 200) {
-      zones_allocated.clear();
+      DataDownloadPage.zones_allocated.clear();
 
       var json = jsonDecode(response.body);
-      setState(() {
-        zones_allocated = json['zone-id'];
-      });
+      // setState(() {
+        DataDownloadPage.zones_allocated = json['zone-id'];
+      // });
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-              'Error Connecting to the server : ${response.statusCode}!!!'),
-        ),
-      );
+      // ScaffoldMessenger.of(context).showSnackBar(
+      //   SnackBar(
+      //     content: Text(
+      //         'Error Connecting to the server : ${response.statusCode}!!!'),
+      //   ),
+      // );
     }
   }
 
-  Future<void> getZoneInfo(String zone) async {
+  static Future<void> getZoneInfo(String zone) async {
     String url =
         "${LoginPage.protocol}://${LoginPage.domainName}/api/user/get-zone-info";
     Map<String, dynamic> payload = {"zone_id": zone};
@@ -90,29 +89,29 @@ class _DataDownloadPageState extends State<DataDownloadPage> {
       // print('$flag');
       log.info('Status : $flag');
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-              'Error Connecting to the server : ${response.statusCode}!!!'),
-        ),
-      );
+      // ScaffoldMessenger.of(context).showSnackBar(
+      //   SnackBar(
+      //     content: Text(
+      //         'Error Connecting to the server : ${response.statusCode}!!!'),
+      //   ),
+      // );
     }
   }
 
-  Future<void> download_forms() async {
+  static Future<void> download_forms() async {
     await getAllocatedSurveyorForms();
-    for (String surveyId in forms_allocated) {
+    for (String surveyId in DataDownloadPage.forms_allocated) {
       await getSurveyInfo(surveyId);
       await getFieldInfo(surveyId);
     }
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Successfully Downloaded forms'),
-      ),
-    );
+    // ScaffoldMessenger.of(context).showSnackBar(
+    //   SnackBar(
+    //     content: Text('Successfully Downloaded forms'),
+    //   ),
+    // );
   }
 
-  Future<void> getAllocatedSurveyorForms() async {
+  static Future<void> getAllocatedSurveyorForms() async {
     String url =
         "${LoginPage.protocol}://${LoginPage.domainName}/api/user/get-allocate-surveyor";
     Map<String, dynamic> payload = {"userid": LoginPage.userId};
@@ -126,23 +125,23 @@ class _DataDownloadPageState extends State<DataDownloadPage> {
       body: jsonPayload,
     );
     if (response.statusCode == 200) {
-      forms_allocated.clear();
+      DataDownloadPage.forms_allocated.clear();
       var json = jsonDecode(response.body);
-      setState(() {
-        forms_allocated = json['survey-ids'];
-      });
+      // setState(() {
+        DataDownloadPage.forms_allocated = json['survey-ids'];
+      // });
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-              'Error Connecting to the server : ${response.statusCode}!!!'),
-        ),
-      );
+      // ScaffoldMessenger.of(context).showSnackBar(
+      //   SnackBar(
+      //     content: Text(
+      //         'Error Connecting to the server : ${response.statusCode}!!!'),
+      //   ),
+      // );
       // print('Error Connecting to the server : ${response.statusCode}');
     }
   }
 
-  Future<void> getSurveyInfo(String surveyId) async {
+  static Future<void> getSurveyInfo(String surveyId) async {
     String url =
         "${LoginPage.protocol}://${LoginPage.domainName}/api/user/get-survey-info";
     Map<String, dynamic> payload = {"sid": surveyId};
@@ -162,16 +161,16 @@ class _DataDownloadPageState extends State<DataDownloadPage> {
       int flag = await databaseHelper.storeTheSurveyForms(json['survey-info']);
       // print(flag);
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-              'Error Connecting to the server : ${response.statusCode}!!!'),
-        ),
-      );
+      // ScaffoldMessenger.of(context).showSnackBar(
+      //   SnackBar(
+      //     content: Text(
+      //         'Error Connecting to the server : ${response.statusCode}!!!'),
+      //   ),
+      // );
     }
   }
 
-  Future<void> getFieldInfo(String surveyId) async {
+  static Future<void> getFieldInfo(String surveyId) async {
     String url =
         "${LoginPage.protocol}://${LoginPage.domainName}/api/user/get-FieldProject-info";
     Map<String, dynamic> payload = {"sid": surveyId};
@@ -194,27 +193,27 @@ class _DataDownloadPageState extends State<DataDownloadPage> {
         // print(flag);
       }
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-              'Error Connecting to the server : ${response.statusCode}!!!'),
-        ),
-      );
+      // ScaffoldMessenger.of(context).showSnackBar(
+      //   SnackBar(
+      //     content: Text(
+      //         'Error Connecting to the server : ${response.statusCode}!!!'),
+      //   ),
+      // );
     }
   }
 
-  Future<void> getSubjects() async {
-    for (String zone in zones_allocated) {
+  static Future<void> getSubjects() async {
+    for (String zone in DataDownloadPage.zones_allocated) {
       await getBeneficiariesByZone(zone);
     }
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Successfully Downloaded Beneficiaries'),
-      ),
-    );
+    // ScaffoldMessenger.of(context).showSnackBar(
+    //   SnackBar(
+    //     content: Text('Successfully Downloaded Beneficiaries'),
+    //   ),
+    // );
   }
 
-  Future<void> getBeneficiariesByZone(String zone) async {
+  static Future<void> getBeneficiariesByZone(String zone) async {
     String url =
         "${LoginPage.protocol}://${LoginPage.domainName}/api/user/get-SubjectInfo-ByZone";
     Map<String, dynamic> payload = {"zone_id": zone};
@@ -256,25 +255,25 @@ class _DataDownloadPageState extends State<DataDownloadPage> {
         // print(flag);
       }
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-              'Error Connecting to the server : ${response.statusCode}!!!'),
-        ),
-      );
+      // ScaffoldMessenger.of(context).showSnackBar(
+      //   SnackBar(
+      //     content: Text(
+      //         'Error Connecting to the server : ${response.statusCode}!!!'),
+      //   ),
+      // );
     }
   }
 
-  Future<void> getAllServices() async {
+  static Future<void> getAllServices() async {
     await getServicesList();
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Successfully Downloaded Services'),
-      ),
-    );
+    // ScaffoldMessenger.of(context).showSnackBar(
+    //   SnackBar(
+    //     content: Text('Successfully Downloaded Services'),
+    //   ),
+    // );
   }
 
-  Future<void> getServicesList() async {
+  static Future<void> getServicesList() async {
     String url =
         "${LoginPage.protocol}://${LoginPage.domainName}/api/user/get-all-services";
     Map<String, dynamic> payload = {};
@@ -297,16 +296,16 @@ class _DataDownloadPageState extends State<DataDownloadPage> {
         // print(flag);
       }
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-              'Error Connecting to the server : ${response.statusCode}!!!'),
-        ),
-      );
+      // ScaffoldMessenger.of(context).showSnackBar(
+      //   SnackBar(
+      //     content: Text(
+      //         'Error Connecting to the server : ${response.statusCode}!!!'),
+      //   ),
+      // );
     }
   }
 
-  Future<void> getAllResponses() async {
+  static Future<void> getAllResponses() async {
     final databaseHelper = DatabaseHelper.instance;
     final subjects = await databaseHelper.getSubjectsSids();
     // print(subjects);
@@ -317,7 +316,7 @@ class _DataDownloadPageState extends State<DataDownloadPage> {
     // await databaseHelper.check_responses_to_upload();
   }
 
-  Future<void> getResponseOfASubject(String subjectID) async {
+  static Future<void> getResponseOfASubject(String subjectID) async {
     String url =
         "${LoginPage.protocol}://${LoginPage.domainName}/api/user/get-RecordLog-BySubjectId";
     Map<String, dynamic> payload = {"subject_id": subjectID};
@@ -359,16 +358,16 @@ class _DataDownloadPageState extends State<DataDownloadPage> {
         // }
       }
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content:
-              Text('Error Connecting to the server : ${result.statusCode}!!!'),
-        ),
-      );
+      // ScaffoldMessenger.of(context).showSnackBar(
+      //   SnackBar(
+      //     content:
+      //         Text('Error Connecting to the server : ${result.statusCode}!!!'),
+      //   ),
+      // );
     }
   }
 
-  Future<void> getFieldEntriesOfASubject(String fid, String rid) async {
+  static Future<void> getFieldEntriesOfASubject(String fid, String rid) async {
     String url =
         "${LoginPage.protocol}://${LoginPage.domainName}/api/user/get-FieldEntries-Value";
     Map<String, dynamic> payload = {
@@ -427,7 +426,7 @@ class _DataDownloadPageState extends State<DataDownloadPage> {
             ElevatedButton(
               onPressed: () async {
                 await getSubjects();
-                DatabaseHelper.instance.checkSubjects();
+                // DatabaseHelper.instance.checkSubjects();
                 // print('Download Beneficiaries');
               },
               child: Text('Download Beneficiaries'),
@@ -444,7 +443,6 @@ class _DataDownloadPageState extends State<DataDownloadPage> {
             ElevatedButton(
               onPressed: () async {
                 await getAllResponses();
-
               },
               child: Text('Download Responses'),
             ),

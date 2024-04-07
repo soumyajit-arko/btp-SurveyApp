@@ -147,6 +147,7 @@ class DatabaseHelper {
             Occupation TEXT,
             Zone_ID TEXT,
             Email TEXT,
+            Relatives TEXT,
             Instance_time TIME DEFAULT CURRENT_TIME,
             upload_time TEXT
           )
@@ -188,6 +189,9 @@ class DatabaseHelper {
             subject_id TEXT,
             survey_datetime DATETIME,
             sid INTEGER,
+            caretaker TEXT,
+            Image TEXT,
+            Voice TEXT,
             record_type INTEGER,
             survey_data TEXT,
             InstanceTime TIME DEFAULT CURRENT_TIME,

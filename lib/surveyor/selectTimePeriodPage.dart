@@ -1,5 +1,9 @@
+import 'package:app_001/login_page.dart';
 import 'package:app_001/surveyor/form_details.dart';
+import 'package:app_001/surveyor/hamburger_menu.dart';
+import 'package:app_001/surveyor/survery_page_util.dart';
 import 'package:app_001/surveyor/take_survey_page.dart';
+import 'package:app_001/utils/NetworkSpeedChecker.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -30,6 +34,21 @@ class _SelectTimePeriodPageState extends State<SelectTimePeriodPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      drawer: HamburgerMenu(
+        userName: LoginPage.userId,
+        email: LoginPage.username,
+        pages: [
+          SurveyorPageUtil(),
+          LoginPage(),
+          NetworkSpeedChecker(),
+        ],
+        icons: [
+          Icons.home,
+          Icons.logout,
+          Icons.network_cell_rounded,
+        ],
+        pageTitles: ['Home', 'Log out', 'Bandwidth'],
+      ),
       appBar: AppBar(
         title: Text('Service Enrollment'),
       ),

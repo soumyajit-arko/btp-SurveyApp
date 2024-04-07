@@ -1,3 +1,7 @@
+import 'package:app_001/login_page.dart';
+import 'package:app_001/surveyor/hamburger_menu.dart';
+import 'package:app_001/surveyor/survery_page_util.dart';
+import 'package:app_001/utils/NetworkSpeedChecker.dart';
 import 'package:flutter/material.dart';
 import '../backend/database_helper.dart';
 // import '../login_page.dart';
@@ -29,6 +33,21 @@ class _DisplaySurveyResponsesState extends State<DisplaySurveyResponses> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      drawer: HamburgerMenu(
+        userName: LoginPage.userId,
+        email: LoginPage.username,
+        pages: [
+          SurveyorPageUtil(),
+          LoginPage(),
+          NetworkSpeedChecker(),
+        ],
+        icons: [
+          Icons.home,
+          Icons.logout,
+          Icons.network_cell_rounded,
+        ],
+        pageTitles: ['Home', 'Log out', 'Bandwidth'],
+      ),
       appBar: AppBar(
         title: Text('Display Responses'),
       ),
@@ -39,7 +58,9 @@ class _DisplaySurveyResponsesState extends State<DisplaySurveyResponses> {
                 child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                SizedBox(height: 10,),
+                SizedBox(
+                  height: 10,
+                ),
                 Text(
                   'Responses of various Beneficiaries',
                   style: TextStyle(
@@ -47,7 +68,9 @@ class _DisplaySurveyResponsesState extends State<DisplaySurveyResponses> {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                SizedBox(height: 5,),
+                SizedBox(
+                  height: 5,
+                ),
                 responsesList.isNotEmpty
                     ? SingleChildScrollView(
                         scrollDirection: Axis.horizontal,

@@ -104,9 +104,12 @@ Redundant
 Samix Login box
 APK version issue
 
-
-Current : 
+Done :
 i button in display beneficiaries to show modal form with image and audio
-Upload and download image and audio
 Hamburger menu - Name,Current network bandwidth, Upload/Download, Logout, version 1.0
 Download and upload single buttons only in hamburger menu
+
+Current : 
+Upload and download image and audio
+
+Store care giver in record log

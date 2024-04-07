@@ -4,6 +4,7 @@ import 'package:app_001/admin/admin_page_util.dart';
 import 'package:app_001/surveyor/data_upload_page.dart';
 import 'package:app_001/surveyor/hamburger_menu.dart';
 import 'package:app_001/surveyor/survery_page_util.dart';
+import 'package:app_001/utils/NetworkSpeedChecker.dart';
 import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
 import 'login_page.dart';
@@ -20,7 +21,7 @@ void main() {
   log.info('Started the APP');
 
   final dbHelper = DatabaseHelper.instance;
-  // dbHelper.deleteDatabaseUtil();
+  dbHelper.deleteDatabaseUtil();
   dbHelper.initDatabase();
 
   runApp(const MyApp());
@@ -32,7 +33,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Login App',
-      // home: 
+      // home: NetworkSpeedChecker(),
       // home: DataUploadPage(),
       home: LoginPage(),
       // home: FamilyDataTablePage(),

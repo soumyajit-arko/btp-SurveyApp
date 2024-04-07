@@ -1,8 +1,11 @@
 // import 'package:app_001/surveyor/form_selection_survey.dart';
+import 'package:app_001/login_page.dart';
+import 'package:app_001/surveyor/hamburger_menu.dart';
 import 'package:app_001/surveyor/selectTimePeriodPage.dart';
 import 'package:app_001/surveyor/subject_register_page.dart';
 import 'package:app_001/surveyor/survery_page_util.dart';
 import 'package:app_001/surveyor/take_survey_page.dart';
+import 'package:app_001/utils/NetworkSpeedChecker.dart';
 import 'package:flutter/material.dart';
 import 'package:app_001/backend/database_helper.dart';
 import 'family_details.dart';
@@ -127,8 +130,28 @@ class _FamilyDataTablePageState extends State<FamilyDataTablePage> {
     List<Widget> content = [dataTable];
 
     return Scaffold(
+      drawer: HamburgerMenu(
+        userName: LoginPage.userId,
+        email: LoginPage.username,
+        pages: [
+          SurveyorPageUtil(),
+          LoginPage(),
+          NetworkSpeedChecker(),
+        ],
+        icons: [
+          Icons.home,
+          Icons.logout,
+          Icons.network_cell_rounded,
+        ],
+        pageTitles: ['Home', 'Log out', 'Bandwidth'],
+      ),
       appBar: AppBar(
         title: Text('Family Data Table'),
+        actions: [
+          IconButton(
+              onPressed: () => {Navigator.pop(context)},
+              icon: Icon(Icons.arrow_back_rounded)),
+        ],
       ),
       body: Container(
         child: Column(
@@ -190,20 +213,6 @@ class _FamilyDataTablePageState extends State<FamilyDataTablePage> {
               children: [
                 ElevatedButton(
                   onPressed: () {
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => SurveyorPageUtil()),
-                    );
-                  },
-                  child: Text('Home'),
-                ),
-                SizedBox(
-                  height: 20,
-                  width: 20,
-                ), // Adding some space between buttons
-                ElevatedButton(
-                  onPressed: () {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -216,7 +225,6 @@ class _FamilyDataTablePageState extends State<FamilyDataTablePage> {
                   height: 20,
                   width: 20,
                 ), // Adding some space between buttons
-                // if(widget.nextPage!='survey'){}
                 Visibility(
                   visible: widget.nextPage == 'survey',
                   child: ElevatedButton(
@@ -275,11 +283,10 @@ class _FamilyDataTablePageState extends State<FamilyDataTablePage> {
         context,
         MaterialPageRoute(
             builder: (context) => SelectTimePeriodPage(
-                  formName: widget.formName,
-                  familyDetails: family,
-                  nextPage: widget.nextPage,
-                  village: widget.village
-                )
+                formName: widget.formName,
+                familyDetails: family,
+                nextPage: widget.nextPage,
+                village: widget.village)
             // FormDataTablePage(family: family, nextPage: widget.nextPage),
             ),
       );

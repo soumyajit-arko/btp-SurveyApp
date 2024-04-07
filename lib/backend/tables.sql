@@ -84,6 +84,7 @@ CREATE TABLE record_log (
             survey_datetime DATETIME,
             sid INTEGER,
             record_type INTEGER,
+            caretaker TEXT,
             survey_data TEXT,
             InstanceTime TIME DEFAULT CURRENT_TIME,
             upload_time TEXT,

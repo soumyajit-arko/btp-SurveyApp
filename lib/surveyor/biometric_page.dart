@@ -1,5 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:app_001/surveyor/hamburger_menu.dart';
+import 'package:app_001/surveyor/survery_page_util.dart';
+import 'package:app_001/utils/NetworkSpeedChecker.dart';
 import 'package:http/http.dart' as http;
 // import 'package:audioplayers/audioplayers.dart';
 // import 'package:camera/camera.dart';
@@ -334,8 +337,28 @@ class _BiometricPageState extends State<BiometricPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      drawer: HamburgerMenu(
+        userName: LoginPage.userId,
+        email: LoginPage.username,
+        pages: [
+          SurveyorPageUtil(),
+          LoginPage(),
+          NetworkSpeedChecker(),
+        ],
+        icons: [
+          Icons.home,
+          Icons.logout,
+          Icons.network_cell_rounded,
+        ],
+        pageTitles: ['Home', 'Log out', 'Bandwidth'],
+      ),
       appBar: AppBar(
         title: Text('Biometric Page'),
+         actions: [
+          IconButton(
+              onPressed: () => {Navigator.pop(context)},
+              icon: Icon(Icons.arrow_back_rounded)),
+        ],
       ),
       body: Stack(
         children: <Widget>[

@@ -5,6 +5,7 @@ import 'package:app_001/surveyor/hamburger_menu.dart';
 // import 'package:app_001/surveyor/family_details.dart';
 // import 'package:app_001/surveyor/subject_selection_survey.dart';
 import 'package:app_001/surveyor/village_data_table_page.dart';
+import 'package:app_001/utils/NetworkSpeedChecker.dart';
 // import 'form_selection_survey.dart';
 import 'subject_display_page.dart';
 import 'subject_register_page.dart';
@@ -23,10 +24,17 @@ class _SurveyorPageUtilState extends State<SurveyorPageUtil> {
       drawer: HamburgerMenu(
         userName: LoginPage.userId,
         email: LoginPage.username,
-        pages: [SurveyorPageUtil(), LoginPage()],
-        icons: [Icons.home, Icons.logout],
-        pageTitles: ['Home', 'Log out'],
-        // ),
+        pages: [
+          SurveyorPageUtil(),
+          LoginPage(),
+          NetworkSpeedChecker(),
+        ],
+        icons: [
+          Icons.home,
+          Icons.logout,
+          Icons.network_cell_rounded,
+        ],
+        pageTitles: ['Home', 'Log out', 'Bandwidth'],
       ),
       appBar: AppBar(
         title: Text('Home'),
@@ -110,31 +118,31 @@ class _SurveyorPageUtilState extends State<SurveyorPageUtil> {
                       label: Text('Enroll to a Service'),
                     ),
                     SizedBox(height: 20),
-                    ElevatedButton.icon(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => DataUploadPage(),
-                          ),
-                        );
-                      },
-                      icon: Icon(Icons.assignment, size: 30), // Add an icon
-                      label: Text('Upload Data'),
-                    ),
-                    SizedBox(height: 20),
-                    ElevatedButton.icon(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => DataDownloadPage(),
-                          ),
-                        );
-                      },
-                      icon: Icon(Icons.assignment, size: 30), // Add an icon
-                      label: Text('Download Data'),
-                    ),
+                    // ElevatedButton.icon(
+                    //   onPressed: () {
+                    //     Navigator.push(
+                    //       context,
+                    //       MaterialPageRoute(
+                    //         builder: (context) => DataUploadPage(),
+                    //       ),
+                    //     );
+                    //   },
+                    //   icon: Icon(Icons.assignment, size: 30), // Add an icon
+                    //   label: Text('Upload Data'),
+                    // ),
+                    // SizedBox(height: 20),
+                    // ElevatedButton.icon(
+                    //   onPressed: () {
+                    //     Navigator.push(
+                    //       context,
+                    //       MaterialPageRoute(
+                    //         builder: (context) => DataDownloadPage(),
+                    //       ),
+                    //     );
+                    //   },
+                    //   icon: Icon(Icons.assignment, size: 30), // Add an icon
+                    //   label: Text('Download Data'),
+                    // ),
                     // SizedBox(height: 20),
                     // ElevatedButton.icon(
                     //   onPressed: () {

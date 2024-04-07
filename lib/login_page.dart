@@ -2,7 +2,9 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:app_001/designExecutive/design_executive_util_page.dart';
+import 'package:app_001/surveyor/data_download_page.dart';
 import 'package:app_001/surveyor/hamburger_menu.dart';
+import 'package:app_001/utils/NetworkSpeedChecker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
@@ -43,6 +45,7 @@ class _LoginPageState extends State<LoginPage> {
       // HamburgerMenu.pageTitles = ['Home', 'Log out'];
     });
     // copyImageToApplicationDirectory();
+    // copyAudioToApplicationDirectory();
   }
 
   void handleLogin() async {
@@ -140,23 +143,53 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
+  Future<void> copyAudioToApplicationDirectory() async {
+    // Get the directory for storing application files
+    Directory appDir = await getApplicationDocumentsDirectory();
+
+    // Define the source and destination paths
+    String assetsAudioPath = 'assets/images/p6.mp3';
+    String destinationAudioPath = '${appDir.path}/zone1_6.mp3';
+    // print(destinationAudioPath);
+    try {
+      // Load the image byte data from assets
+      ByteData audioBytes = await rootBundle.load(assetsAudioPath);
+      List<int> byteList = audioBytes.buffer.asUint8List();
+
+      // Write the image byte data to a file in the application directory
+      File(destinationAudioPath).writeAsBytes(byteList);
+
+      // /data/user/0/com.example.app_001/app_flutter/null
+      print('Audio copied successfully to application directory.');
+    } catch (e) {
+      print('Error copying image: $e');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: HamburgerMenu(
-        userName: 'userName',
-        email: 'email',
-        pages: [SurveyorPageUtil(), LoginPage()],
-        icons: [Icons.home, Icons.logout],
-        pageTitles: ['Home', 'Log out'],
-        // ),
-      ),
+      // drawer: HamburgerMenu(
+      //   userName: 'userName',
+      //   email: 'email',
+      //   pages: [
+      //     SurveyorPageUtil(),
+      //     LoginPage(),
+      //     NetworkSpeedChecker(),
+      //   ],
+      //   icons: [
+      //     Icons.home,
+      //     Icons.logout,
+      //     Icons.network_cell_rounded,
+      //   ],
+      //   pageTitles: ['Home', 'Log out', 'Bandwidth'],
+      // ),
       appBar: AppBar(
         title: Text('Login Page'),
         centerTitle: true,
-        actions: [
-          IconButton(onPressed: () => {}, icon: Icon(Icons.arrow_back_rounded)),
-        ],
+        // actions: [
+        //   IconButton(onPressed: () => {}, icon: Icon(Icons.arrow_back_rounded)),
+        // ],
         // leading: Icon(Icons.mail),
       ),
 

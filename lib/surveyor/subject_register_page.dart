@@ -1,8 +1,12 @@
 import 'dart:io';
 // import 'package:audioplayers/audioplayers.dart';
 // import 'package:camera/camera.dart';
+import 'package:app_001/login_page.dart';
 import 'package:app_001/surveyor/form_selection_survey.dart';
+import 'package:app_001/surveyor/hamburger_menu.dart';
+import 'package:app_001/surveyor/survery_page_util.dart';
 import 'package:app_001/surveyor/village_data_table_page.dart';
+import 'package:app_001/utils/NetworkSpeedChecker.dart';
 import 'package:path/path.dart' as path;
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -39,6 +43,7 @@ class _SubjectRegisterPageState extends State<SubjectRegisterPage> {
   final TextEditingController occupationController = TextEditingController();
   final TextEditingController zoneidController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
+  final List<TextEditingController> _controllers = [TextEditingController()];
 
   File? _image;
 
@@ -60,6 +65,14 @@ class _SubjectRegisterPageState extends State<SubjectRegisterPage> {
     showPlayer = false;
 
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    for (var controller in _controllers) {
+      controller.dispose();
+    }
+    super.dispose();
   }
 
   Future<void> addSubject() async {
@@ -89,6 +102,11 @@ class _SubjectRegisterPageState extends State<SubjectRegisterPage> {
     String filename = subjectID + ".jpg";
     String pathutil = path.join(documentDirectory.path, filename);
     print(pathutil);
+    List<String> names = _controllers
+        .map((controller) => controller.text.trim())
+        .where((name) => name.isNotEmpty)
+        .toList();
+    String relatives = names.join(', ');
     final te = await _image?.copy(pathutil);
     String image = filename;
 
@@ -112,6 +130,7 @@ class _SubjectRegisterPageState extends State<SubjectRegisterPage> {
       'Occupation': occupation,
       'Zone_ID': zoneid,
       'Email': email,
+      'Relatives': relatives,
       'upload_time': 0,
     });
     _clearFields();
@@ -165,6 +184,7 @@ class _SubjectRegisterPageState extends State<SubjectRegisterPage> {
     occupationController.clear();
     zoneidController.clear();
     emailController.clear();
+    _controllers.clear();
     // _image.delete()
   }
 
@@ -237,6 +257,21 @@ class _SubjectRegisterPageState extends State<SubjectRegisterPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      drawer: HamburgerMenu(
+        userName: LoginPage.userId,
+        email: LoginPage.username,
+        pages: [
+          SurveyorPageUtil(),
+          LoginPage(),
+          NetworkSpeedChecker(),
+        ],
+        icons: [
+          Icons.home,
+          Icons.logout,
+          Icons.network_cell_rounded,
+        ],
+        pageTitles: ['Home', 'Log out', 'Bandwidth'],
+      ),
       appBar: AppBar(
         title: Text('Beneficiary Enrollment Page'),
       ),
@@ -277,6 +312,67 @@ class _SubjectRegisterPageState extends State<SubjectRegisterPage> {
                   _buildFormField('Zone ID', zoneidController),
                   _buildFormField('Email', emailController,
                       keyboardType: TextInputType.emailAddress),
+                  //
+                  // Text(
+                  //   'Relatives',
+                  //   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  // ),
+                  SizedBox(height: 8),
+                  Column(
+                    children: _controllers.asMap().entries.map((entry) {
+                      final index = entry.key;
+                      final controller = entry.value;
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 8.0),
+                        child: Row(
+                          children: [
+                            Container(
+                              width: 100,
+                              child: Text(
+                                'Relative ${index + 1}',
+                                style: TextStyle(fontSize: 16),
+                              ),
+                            ),
+                            SizedBox(width: 20),
+                            Expanded(
+                              child: TextField(
+                                controller: controller,
+                                onChanged: (value) {
+                                  // Check if the last text field is not empty and the limit is not reached, then add a new one
+                                  if (_controllers.length < 5 &&
+                                      index == _controllers.length - 1 &&
+                                      value.isNotEmpty) {
+                                    setState(() {
+                                      _controllers.add(TextEditingController());
+                                    });
+                                  }
+                                },
+                                decoration: InputDecoration(
+                                  hintText: 'Enter name',
+                                  border: OutlineInputBorder(),
+                                ),
+                                keyboardType: TextInputType.text,
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                  // ElevatedButton(
+                  //   onPressed: () {
+                  //     List<String> names = _controllers
+                  //         .map((controller) => controller.text.trim())
+                  //         .where((name) => name.isNotEmpty)
+                  //         .toList();
+                  //     // Join the list of names with a delimiter (comma in this case)
+                  //     String namesString = names.join(', ');
+                  //     // Use the 'namesString' variable where you need it
+                  //     print(namesString);
+                  //   },
+                  //   child: Text('Submit'),
+                  // ),
+                  //
                   _image == null
                       ? const Text('No image selected.')
                       : Text('Image_${subjectNameController.text}'),

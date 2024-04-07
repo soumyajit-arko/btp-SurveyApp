@@ -1,12 +1,15 @@
-import 'dart:math';
+import 'package:app_001/login_page.dart';
 import 'package:app_001/surveyor/biometric_page.dart';
 import 'package:app_001/surveyor/family_details.dart';
 import 'package:app_001/surveyor/form_details.dart';
+import 'package:app_001/surveyor/hamburger_menu.dart';
 import 'package:app_001/surveyor/past_response_widget.dart';
 import 'package:app_001/surveyor/survery_page_util.dart';
+import 'package:app_001/utils/NetworkSpeedChecker.dart';
 import 'package:flutter/material.dart';
 import '../backend/database_helper.dart';
 import 'dart:convert';
+
 
 class TakeSurveyPage extends StatefulWidget {
   final FormDetails formName;
@@ -49,8 +52,13 @@ class _TakeSurveyPageState extends State<TakeSurveyPage> {
   void changeTitle() {
     if (widget.nextPage != 'survey') {
       setState(() {
-        pageTitle = "Regisration for Service";
+        pageTitle = "Regisration for ${widget.formName.formName} Service";
         saveText = "Enroll for service";
+      });
+    } else {
+      setState(() {
+        pageTitle = widget.formName.formName;
+        saveText = "Save Service";
       });
     }
   }
@@ -220,7 +228,7 @@ class _TakeSurveyPageState extends State<TakeSurveyPage> {
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Survey Successfuly Saved'),
+          content: Text('Service Successfuly Saved'),
         ),
       );
     }
@@ -315,8 +323,7 @@ class _TakeSurveyPageState extends State<TakeSurveyPage> {
               //     ),
               // if (questionType == 'Text Answer' ||
               //     questionType == 'Integer Answer')
-                _buildSmallTextField(questionText, 'Enter your answer'),
-
+              _buildSmallTextField(questionText, 'Enter your answer'),
             ],
           ),
         ),
@@ -327,8 +334,28 @@ class _TakeSurveyPageState extends State<TakeSurveyPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      drawer: HamburgerMenu(
+        userName: LoginPage.userId,
+        email: LoginPage.username,
+        pages: [
+          SurveyorPageUtil(),
+          LoginPage(),
+          NetworkSpeedChecker(),
+        ],
+        icons: [
+          Icons.home,
+          Icons.logout,
+          Icons.network_cell_rounded,
+        ],
+        pageTitles: ['Home', 'Log out', 'Bandwidth'],
+      ),
       appBar: AppBar(
         title: Text(pageTitle),
+        actions: [
+          IconButton(
+              onPressed: () => {Navigator.pop(context)},
+              icon: Icon(Icons.arrow_back_rounded)),
+        ],
       ),
       body: Stack(
         children: <Widget>[
@@ -347,7 +374,7 @@ class _TakeSurveyPageState extends State<TakeSurveyPage> {
                         selectedResponseUtil =
                             jsonDecode(response['survey_data']);
                       });
-                      print('THe response selected is : $selectedResponse');
+                      print('The response selected is : $selectedResponse');
                     },
                   ),
                 SizedBox(height: 20),
