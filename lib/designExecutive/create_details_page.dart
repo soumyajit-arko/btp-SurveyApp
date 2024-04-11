@@ -94,7 +94,7 @@ class _CreateDetailsPageState extends State<CreateDetailsPage> {
       String description = widget.formDescription;
       String template = json.encode({"template_source": widget.questions});
       String details_source = json.encode({"details_source": details});
-      final sid = 's38';
+      final sid = 's40';
 
       await DatabaseHelper.instance.insertForm({
         'sid': sid,
@@ -177,6 +177,7 @@ class _CreateDetailsPageState extends State<CreateDetailsPage> {
                     'Multiple Choice',
                     'Text Answer',
                     'Integer Answer',
+                    'Check Box'
                   ].map((String value) {
                     return DropdownMenuItem<String>(
                       value: value,
@@ -197,6 +198,7 @@ class _CreateDetailsPageState extends State<CreateDetailsPage> {
                 SizedBox(
                   height: 10,
                 ),
+                if(selectedType!='Check Box')
                 _buildSmallTextField(attributeUnitController, 'Attribute Unit'),
                 Row(
                   children: <Widget>[

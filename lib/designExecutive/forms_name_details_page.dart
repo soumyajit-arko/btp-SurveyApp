@@ -40,7 +40,7 @@ class _FormsNameDetailsPageState extends State<FormsNameDetailsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Add Survey Details'),
+        title: Text('Add Service Details'),
       ),
       body: Stack(
         children: <Widget>[
@@ -74,7 +74,7 @@ class _FormsNameDetailsPageState extends State<FormsNameDetailsPage> {
                     );
                   },
                   icon: Icon(Icons.create, size: 30), // Add a "create" icon
-                  label: Text('Create Survey Form'),
+                  label: Text('Create Service Form'),
                 ),
               ],
             )),

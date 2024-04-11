@@ -51,6 +51,11 @@ class _SelectTimePeriodPageState extends State<SelectTimePeriodPage> {
       ),
       appBar: AppBar(
         title: Text('Service Enrollment'),
+        actions: [
+          IconButton(
+              onPressed: () => {Navigator.pop(context)},
+              icon: Icon(Icons.arrow_back_rounded)),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(20.0),

@@ -83,14 +83,17 @@ CREATE TABLE record_log (
             subject_id TEXT,
             survey_datetime DATETIME,
             sid INTEGER,
+            image TEXT,
+            voice TEXT,
             record_type INTEGER,
-            caretaker TEXT,
             survey_data TEXT,
+            userid TEXT,
+            username TEXT,
             InstanceTime TIME DEFAULT CURRENT_TIME,
             upload_time TEXT,
             FOREIGN KEY (sid) REFERENCES survey_project(sid),
-            FOREIGN KEY (subject_id) REFERENCES Subject(subject_id)
-
+            FOREIGN KEY (subject_id) REFERENCES Subject(subject_id),
+            FOREIGN KEY (userid) REFERENCES users(Userid)
           )
 
 CREATE TABLE field_entry (

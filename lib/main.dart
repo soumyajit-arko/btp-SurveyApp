@@ -21,7 +21,7 @@ void main() {
   log.info('Started the APP');
 
   final dbHelper = DatabaseHelper.instance;
-  dbHelper.deleteDatabaseUtil();
+  // dbHelper.deleteDatabaseUtil();
   dbHelper.initDatabase();
 
   runApp(const MyApp());
@@ -39,6 +39,11 @@ class MyApp extends StatelessWidget {
       // home: FamilyDataTablePage(),
       // home: FormDataTablePage(),
       debugShowCheckedModeBanner: false,
+      // routes: {
+      //   '/': (context) => LoginPage(), // Example of a named route for the home screen
+      //   '/surveyor_page_util': (context) => SurveyorPageUtil(), // Route for the SurveyorPageUtil
+      //   // Add more routes as needed
+      // },
     );
   }
 }

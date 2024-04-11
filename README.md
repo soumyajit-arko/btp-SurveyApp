@@ -1,5 +1,10 @@
 # WORK FLOW
 
+Perform a survey with your friends
+Check which one do they prefer
+How can you analyse the data
+The existing solutions architectures
+
 User Login 
 -> Store the user data of whoever will be loggin in the device in the table.
 Note : First time login should happen with internet connection
@@ -113,3 +118,5 @@ Current :
 Upload and download image and audio
 
 Store care giver in record log
+
+

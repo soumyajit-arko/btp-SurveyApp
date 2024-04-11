@@ -38,52 +38,6 @@ class _CreateFormsPageState extends State<CreateFormsPage> {
     };
   }
 
-/*
-{
-    "template_source": [
-        {
-            "attrunit": "none",
-            "attrreq": "true",
-            "attrname": "Name",
-            "attrtype": "MEDIUMTEXT",
-            "attrvalues": "",
-        },
-        {
-            "attrunit": "Kg",
-            "attrreq": "false",
-            "attrname": "Weight",
-            "attrtype": "INTEGER",
-            "attrvalues": "",
-        },
-        {
-            "attrunit": "none",
-            "attrreq": "true",
-            "attrname": "Food Habits",
-            "attrtype": "MEDIUMTEXT"
-            "attrvalues": "",
-        }
-    ]
-}
-
-vs
-
-[
-    {
-        "question": "Q1",
-        "type": "Single Choice",
-        "unit": "",
-        "options": "1,2",
-        "required": 0
-    },
-    {
-        "question": "L",
-        "type": "Text Answer",
-        "unit": "",
-        "options": "",
-        "required": 0
-    }
-]
-*/
   void addQuestion() {
     if (questionController.text.isNotEmpty) {
       final question = {
@@ -171,7 +125,7 @@ vs
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Add Survey Questions'),
+        title: Text('Add Service Questions'),
       ),
       body: Stack(
         children: <Widget>[
@@ -197,6 +151,7 @@ vs
                     'Multiple Choice',
                     'Text Answer',
                     'Integer Answer',
+                    'Check Box',
                   ].map((String value) {
                     return DropdownMenuItem<String>(
                       value: value,
@@ -217,6 +172,7 @@ vs
                 SizedBox(
                   height: 10,
                 ),
+                if(selectedType!='Check Box')
                 _buildSmallTextField(attributeUnitController, 'Attribute Unit'),
                 Row(
                   children: <Widget>[
@@ -303,22 +259,6 @@ vs
               ],
             )),
           ),
-          // Positioned(
-          //   top: 10, // Adjust top position as needed
-          //   right: 10, // Adjust right position as needed
-          //   child: ElevatedButton.icon(
-          //     onPressed: () {
-          //       Navigator.pushReplacement(
-          //         context,
-          //         MaterialPageRoute(
-          //           builder: (context) => LoginPage(),
-          //         ),
-          //       );
-          //     },
-          //     icon: Icon(Icons.logout, size: 30), // Add a logout icon
-          //     label: Text('Logout'),
-          //   ),
-          // ),
         ],
       ),
     );

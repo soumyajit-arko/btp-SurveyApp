@@ -417,7 +417,7 @@ class _SubjectRegisterPageState extends State<SubjectRegisterPage> {
                       addSubject();
                     },
                     icon: const Icon(Icons.person, size: 30),
-                    label: const Text('Create Subject'),
+                    label: const Text('Register Beneficiary'),
                   ),
                 ],
               ),

@@ -1,7 +1,4 @@
-// import 'dart:html';
-
 import 'dart:io';
-
 import 'package:app_001/Audio/audio_player.dart';
 import 'package:app_001/login_page.dart';
 import 'package:app_001/surveyor/hamburger_menu.dart';
@@ -28,13 +25,7 @@ class _SubjectDisplayPageState extends State<SubjectDisplayPage> {
   }
 
   void _loadsubjects() async {
-    // int val = await DatabaseHelper.instance.getCountForZone('zone1');
-    // print(val);
     final subjects_ = await DatabaseHelper.instance.getSubjects();
-    // for (var e in subjects) {
-    //   print(e['Zone_ID']);
-    //   print(e['Village']);
-    // }
     setState(() {
       subjects = subjects_;
     });
@@ -104,41 +95,7 @@ class _SubjectDisplayPageState extends State<SubjectDisplayPage> {
       );
     }
   }
-  // Widget biometricDialogue(String filePath) {
-  //   try {
-  //     // Load the image file
-  //     File imageFile = File(filePath);
 
-  //     // Check if the image file exists
-  //     if (!imageFile.existsSync()) {
-  //       throw Exception('Image not found');
-  //     }
-
-  //     // If image file exists, show the dialog with the image
-  //     return Dialog(
-  //       child: Container(
-  //         width: 200,
-  //         height: 250,
-  //         decoration: BoxDecoration(
-  //           image: DecorationImage(
-  //             image: FileImage(imageFile),
-  //             fit: BoxFit.fill,
-  //           ),
-  //         ),
-  //       ),
-  //     );
-  //   } catch (e) {
-  //     // If image file not found or any other exception occurs, show error message
-  //     return Dialog(
-  //       child: Container(
-  //         width: 200,
-  //         height: 250,
-  //         alignment: Alignment.center,
-  //         child: Text('Image is not available'),
-  //       ),
-  //     );
-  //   }
-  // }
   Widget TextFieldUtil(String text) {
     if (text.isNotEmpty && text != 'null') {
       return Text(text);
@@ -226,6 +183,9 @@ class _SubjectDisplayPageState extends State<SubjectDisplayPage> {
                               DataColumn(
                                 label: Text('Caste'),
                               ),
+                              DataColumn(
+                                label: Text('Relatives'),
+                              ),
                             ],
                             rows: subjects
                                 .map(
@@ -240,24 +200,14 @@ class _SubjectDisplayPageState extends State<SubjectDisplayPage> {
                                       DataCell(
                                         Text('View Biometric'),
                                         onTap: () async {
-                                          print(subject['Image']);
-                                          // final db = DatabaseHelper.instance;
-                                          // print(
-                                          //     subject['subject_id'].toString());
-                                          // final flag = await db.upadteImage(
-                                          //     subject['subject_id'].toString());
-                                          // print(flag);
                                           final filepath =
                                               await getApplicationDocumentsDirectory();
-                                          await showDialog(
+                                          showDialog(
                                             context: context,
                                             builder: (_) => biometricDialogue(
                                               path.join(filepath.path,
                                                   subject['Image'].toString()),
-                                              path.join(
-                                                  filepath.path,
-                                                  subject['subject_id'] +
-                                                      ".mp3"),
+                                               (subject['Voice']!=null) ? subject['Voice'] : "",
                                             ),
                                           );
                                         },
@@ -280,6 +230,8 @@ class _SubjectDisplayPageState extends State<SubjectDisplayPage> {
                                           subject['Sex'].toString())),
                                       DataCell(TextFieldUtil(
                                           subject['Caste'].toString())),
+                                      DataCell(TextFieldUtil(
+                                          subject['Relatives'].toString())),
                                     ],
                                   ),
                                 )

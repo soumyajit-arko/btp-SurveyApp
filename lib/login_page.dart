@@ -1,20 +1,15 @@
 import 'dart:io';
-import 'dart:typed_data';
-
 import 'package:app_001/designExecutive/design_executive_util_page.dart';
-import 'package:app_001/surveyor/data_download_page.dart';
-import 'package:app_001/surveyor/hamburger_menu.dart';
-import 'package:app_001/utils/NetworkSpeedChecker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
-import 'backend/database_helper.dart'; // Import your database helper
+import 'backend/database_helper.dart';
 import 'surveyor/survery_page_util.dart';
 import 'admin/admin_page_util.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:footer/footer.dart';
-import 'package:footer/footer_view.dart';
+// import 'package:footer/footer.dart';
+// import 'package:footer/footer_view.dart';
 
 class LoginPage extends StatefulWidget {
   static String jwtToken = "";
@@ -33,6 +28,7 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController usernameController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   // String? userType;
+  // List<String> logs = []; // List to store logs
 
   @override
   void initState() {
@@ -44,6 +40,7 @@ class _LoginPageState extends State<LoginPage> {
       // pages = [];
       // HamburgerMenu.pageTitles = ['Home', 'Log out'];
     });
+    // util();
     // copyImageToApplicationDirectory();
     // copyAudioToApplicationDirectory();
   }
@@ -60,64 +57,88 @@ class _LoginPageState extends State<LoginPage> {
     print(url);
     Map<String, dynamic> payload = {"username": username, "password": password};
     String jsonPayload = jsonEncode(payload);
-    var response = await http.post(
-      Uri.parse(url),
-      headers: {'Content-Type': 'application/json'},
-      body: jsonPayload,
-    );
+    const int timeoutDuration = 10;
 
-    if (response.statusCode == 200) {
-      var json = jsonDecode(response.body);
-      String userType = "";
-      setState(() {
-        LoginPage.jwtToken = json["jwtToken"];
-        LoginPage.userId = json["userid"];
-        LoginPage.username = json["name"];
-        userType = json["type"];
-      });
-      print("response body : $json");
-      if (userType != "") {
-        if (userType == 'adm') {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => AdminPageUtil()),
-          );
-          print('logging in as adm');
-        } else if (userType == 'svy') {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => SurveyorPageUtil()),
-          );
-          print('logging in as svy');
-        } else if (userType == 'dex') {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => DesignExecutiveUtilPage()),
-          );
-          print('logging in as dex');
+    try {
+      // Log message before API call
+      // logMessage('Attempting login...');
+      var response = await http.post(
+        Uri.parse(url),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonPayload,
+      ).timeout(Duration(seconds: timeoutDuration));
+
+      if (response.statusCode == 200) {
+        // logMessage('Login successful!');
+
+        var json = jsonDecode(response.body);
+        String userType = "";
+        setState(() {
+          LoginPage.jwtToken = json["jwtToken"];
+          LoginPage.userId = json["userid"];
+          LoginPage.username = json["name"];
+          userType = json["type"];
+        });
+        print("response body : $json");
+        if (userType != "") {
+          if (userType == 'adm') {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => AdminPageUtil()),
+            );
+            print('logging in as adm');
+          } else if (userType == 'svy') {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => SurveyorPageUtil()),
+            );
+            print('logging in as svy');
+          } else if (userType == 'dex') {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => DesignExecutiveUtilPage()),
+            );
+            print('logging in as dex');
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('Cannot Login!!!'),
+              ),
+            );
+          }
         } else {
+          // logMessage('Problem Connecting to the server!!!');
+
+          // print('Login failed. User not found.');
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('Cannot Login!!!'),
+              content: Text('Incorrect credentials!!!'),
             ),
           );
         }
       } else {
-        // print('Login failed. User not found.');
+        // logMessage('Cannot login bruh!!!');
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Incorrect credentials!!!'),
+            content: Text('Problem Connecting to the server!!!'),
           ),
         );
+        // print('Error Connecting to the server : ${response.statusCode}');
       }
-    } else {
+    } catch (e) {
+      // logMessage(e);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Problem Connecting to the server!!!'),
+          content: Text('Error: $e'),
         ),
       );
-      // print('Error Connecting to the server : ${response.statusCode}');
     }
+  }
+
+  Future<void> util() async {
+    final db = DatabaseHelper.instance;
+    await db.upadteImage('zone1_4');
   }
 
   Future<void> copyImageToApplicationDirectory() async {
@@ -328,6 +349,23 @@ class _LoginPageState extends State<LoginPage> {
                   // "Developed and designed at -\n Computer Science & Engineering Department, IIT Kharagpur\n Contact: Prof. Jayanta Mukhopadhyay, jay@cse.iitkgp.ac.in, \nPhone: +91-3222-283484",style: TextStyle(fontSize: 13),textAlign: TextAlign.center,),
                 ),
               ),
+              // Display logs
+              // SizedBox(height: 20),
+              // Container(
+              //   width: 300,
+              //   height: 150,
+              //   padding: EdgeInsets.all(10),
+              //   decoration: BoxDecoration(
+              //     color: Colors.grey[200],
+              //     borderRadius: BorderRadius.circular(10),
+              //   ),
+              //   child: ListView.builder(
+              //     itemCount: logs.length,
+              //     itemBuilder: (context, index) {
+              //       return Text(logs[index]);
+              //     },
+              //   ),
+              // ),
               // ),
             ],
           ),
@@ -342,4 +380,11 @@ class _LoginPageState extends State<LoginPage> {
       // flex: 1),
     );
   }
+
+  // // Function to append log message to logs list
+  // void logMessage(String message) {
+  //   setState(() {
+  //     logs.add(message);
+  //   });
+  // }
 }
