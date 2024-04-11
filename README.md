@@ -11,7 +11,7 @@ Note : First time login should happen with internet connection
 
 After logging in 
 -> Get the user info from the server if logging in for the first time
-
+ 
 ```
     users (
         Name TEXT,
