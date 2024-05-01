@@ -52,3 +52,5 @@ flutter run
 ### Additional Notes
 
 - Make sure you have Flutter and Dart installed on your system. You can follow the official Flutter installation guide for detailed instructions.
+- To change the protocol and domainName(url)  of the server go to lib/login_page.dart file and modify variables `protocol` and `domainName`
+- The images and voice are base64 encoded before transferring to the server
