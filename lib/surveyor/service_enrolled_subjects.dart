@@ -124,6 +124,7 @@ class _ServiceEnrolledPageState extends State<ServiceEnrolledPage> {
                         filterFamilyList(query);
                       },
                       decoration: InputDecoration(
+                        isDense: true,
                         labelText: 'Search by $selectedCategory',
                         prefixIcon: Icon(Icons.search),
                         border: OutlineInputBorder(),

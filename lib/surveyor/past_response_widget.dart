@@ -107,11 +107,12 @@ class PastResponseWidget extends StatefulWidget {
   final List<Map<String, dynamic>> pastResponses;
   final Function(Map<String, dynamic>) onSelect;
   final Map<String, dynamic>? defaultOption;
-
+  final String careTaker;
   const PastResponseWidget({
     Key? key,
     required this.pastResponses,
     required this.onSelect,
+    required this.careTaker,
     this.defaultOption,
   }) : super(key: key);
 
@@ -131,7 +132,6 @@ class _PastResponseWidgetState extends State<PastResponseWidget> {
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -204,7 +204,7 @@ class _PastResponseWidgetState extends State<PastResponseWidget> {
         if (widget.defaultOption == null && selectedIndex >= 0) ...[
           SizedBox(height: 8),
           Text(
-            'Selected Response -',
+            'Previous Caretaker - ${widget.careTaker}',
             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
           ),
           Column(

@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:app_001/log/logger.dart';
 import 'package:app_001/surveyor/family_details.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
@@ -316,6 +319,67 @@ class DatabaseHelper {
     return await db.query('questions');
   }
 
+  void renameFile(String oldPath, String newPath) {
+    File oldFile = File(oldPath);
+    if (oldFile.existsSync()) {
+      oldFile.renameSync(newPath);
+      print('File renamed successfully.');
+    } else {
+      print('File does not exist at the old path.');
+    }
+  }
+
+  Future<void> updateSubjectId(String oldSubjectId, String newSubjectId) async {
+    final db = await database;
+    Directory documentDirectory = await getApplicationDocumentsDirectory();
+    String oldpathutil = join(documentDirectory.path, oldSubjectId + ".jpg");
+    String newpathutil = join(documentDirectory.path, newSubjectId + ".jpg");
+    await db.transaction((txn) async {
+      await txn.execute('''
+        UPDATE Subject
+        SET subject_id = ?,Image = ?
+        WHERE subject_id = ?
+      ''', [newSubjectId, newpathutil, oldSubjectId]);
+
+      renameFile(oldpathutil, newpathutil);
+
+      await txn.execute('''
+        UPDATE record_log
+        SET subject_id = ?
+        WHERE subject_id = ?
+      ''', [newSubjectId, oldSubjectId]);
+
+      await txn.execute('''
+        UPDATE service_enrollment
+        SET subject_id = ?
+        WHERE subject_id = ?
+      ''', [newSubjectId, oldSubjectId]);
+    });
+  }
+
+  Future<void> updateRecordLogID(String oldrid, String newrid) async {
+    final db = await database;
+    Directory documentDirectory = await getApplicationDocumentsDirectory();
+    String oldpathutil = join(documentDirectory.path, oldrid + ".jpg");
+    String newpathutil = join(documentDirectory.path, newrid + ".jpg");
+
+    await db.transaction((txn) async {
+      await txn.execute('''
+        UPDATE record_log
+        SET rid = ?,image = ?
+        WHERE rid = ?
+      ''', [newrid, newpathutil, oldrid]);
+
+      renameFile(oldpathutil, newpathutil);
+
+      await txn.execute('''
+        UPDATE field_entry
+        SET rid = ?
+        WHERE rid = ?
+      ''', [newrid, oldrid]);
+    });
+  }
+
   Future<List<Map<String, Object?>>> getSubjectsValidForService(
       String serviceName) async {
     // Get current date
@@ -344,15 +408,26 @@ class DatabaseHelper {
   Future<List<Map<String, Object?>>> getFamilyDetailsByFormAndVillage(
       String formName, String village) async {
     final db = await database;
-    print('halo');
+    final currentDate =
+        DateTime.now().toIso8601String(); // Get current date in ISO 8601 format
     final result = await db.rawQuery('''
-    SELECT DISTINCT Subject.subject_id, Subject.SubjectName, Subject.ChildName, Subject.SpouseName, Subject.Mobile, service_enrollment.start_date, service_enrollment.end_date
+    SELECT DISTINCT 
+      Subject.subject_id, 
+      Subject.SubjectName, 
+      Subject.ChildName, 
+      Subject.SpouseName, 
+      Subject.Mobile, 
+      service_enrollment.start_date, 
+      service_enrollment.end_date
     FROM Subject
     INNER JOIN service_enrollment ON Subject.subject_id = service_enrollment.subject_id
-    INNER JOIN survey_project ON service_enrollment.sid = survey_project.sid INNER JOIN Zone ON Zone.Zone_ID = Subject.zone_id
-    WHERE survey_project.name = ? AND Zone.name = ? 
-  ''', [formName, village]);
-    print(result);
+    INNER JOIN survey_project ON service_enrollment.sid = survey_project.sid 
+    INNER JOIN Zone ON Zone.Zone_ID = Subject.zone_id
+    WHERE 
+      survey_project.name = ? 
+      AND Zone.name = ? 
+      AND service_enrollment.end_date > ?
+  ''', [formName, village, currentDate]);
     return result;
   }
 
@@ -569,7 +644,7 @@ class DatabaseHelper {
   Future<List<Map<String, dynamic>>> getResponses() async {
     final db = await database;
     return await db.rawQuery('''
-    SELECT s.SubjectName, s.Mobile, s.Village,s.Age, sp.name AS FormName, rl.*
+    SELECT s.SubjectName, s.SpouseName,s.ChildName, s.Mobile, s.Village,s.Age, sp.name AS FormName, rl.*
     FROM record_log rl
     INNER JOIN survey_project sp ON rl.sid = sp.sid
     INNER JOIN Subject s ON rl.subject_id = s.subject_id

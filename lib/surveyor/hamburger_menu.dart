@@ -1,4 +1,5 @@
 import 'package:app_001/admin/admin_page_util.dart';
+import 'package:app_001/login_page.dart';
 import 'package:app_001/surveyor/data_download_page.dart';
 import 'package:app_001/surveyor/subject_register_page.dart';
 import 'package:app_001/surveyor/survery_page_util.dart';
@@ -6,12 +7,14 @@ import 'package:app_001/utils/NetworkSpeedChecker.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
-class HamburgerMenu extends StatelessWidget {
+class HamburgerMenu extends StatefulWidget {
   final String userName;
   final String email;
   final List<Widget> pages;
   final List<IconData> icons;
   final List<String> pageTitles;
+  final VoidCallback? reloadCallback;
+
   // final VoidCallback onDownloadPressed;
 
   HamburgerMenu({
@@ -20,8 +23,54 @@ class HamburgerMenu extends StatelessWidget {
     required this.pages,
     required this.icons,
     required this.pageTitles,
+    this.reloadCallback,
     // required this.onDownloadPressed,
   });
+
+  @override
+  _HamburgerMenuState createState() => _HamburgerMenuState();
+}
+
+class _HamburgerMenuState extends State<HamburgerMenu> {
+  Future<void> changeUsername(BuildContext context) async {
+    TextEditingController usernameController = TextEditingController();
+
+    await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Change Username'),
+          content: TextField(
+            controller: usernameController,
+            decoration: InputDecoration(hintText: 'Enter new username'),
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                String newUsername = usernameController.text;
+                // Validate new username if needed
+                setState(() {
+                  LoginPage.username = newUsername; // Modify the username
+                });
+                if (widget.reloadCallback != null) {
+                  widget.reloadCallback!(); // Callback to reload the menu
+                }
+                Navigator.of(context).pop();
+              },
+              child: Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   Future<void> checkNetworkSpeed(BuildContext context) async {
     final url =
         "https://images.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png";
@@ -107,17 +156,17 @@ class HamburgerMenu extends StatelessWidget {
       child: Column(
         children: <Widget>[
           UserAccountsDrawerHeader(
-            accountName: Text(userName),
-            accountEmail: Text(email),
+            accountName: Text(widget.userName),
+            accountEmail: Text(widget.email),
             currentAccountPicture: CircleAvatar(
               child: Icon(Icons.person),
             ),
           ),
           Expanded(
             child: ListView.builder(
-              itemCount: pages.length + 3,
+              itemCount: widget.pages.length + 3,
               itemBuilder: (BuildContext context, int index) {
-                if (index == pages.length + 2) {
+                if (index == widget.pages.length + 2) {
                   // Display the download button at the end
                   return ListTile(
                     leading: Icon(Icons.download), // Icon for download button
@@ -130,7 +179,7 @@ class HamburgerMenu extends StatelessWidget {
                       await DataDownloadPageState.getAllResponses();
                     },
                   );
-                } else if (index == pages.length + 1) {
+                } else if (index == widget.pages.length + 1) {
                   // Display the download button at the end
                   return ListTile(
                     leading: Icon(Icons.upload), // Icon for download button
@@ -143,7 +192,7 @@ class HamburgerMenu extends StatelessWidget {
                       // await DataDownloadPageState.getAllResponses();
                     },
                   );
-                } else if (index == pages.length) {
+                } else if (index == widget.pages.length) {
                   // Display the download button at the end
                   return ListTile(
                     leading: Icon(Icons.person), // Icon for download button
@@ -165,19 +214,21 @@ class HamburgerMenu extends StatelessWidget {
                   );
                 } else {
                   return ListTile(
-                    leading: Icon(icons[index]),
-                    title: Text(pageTitles[index]),
+                    leading: Icon(widget.icons[index]),
+                    title: Text(widget.pageTitles[index]),
                     onTap: () {
-                      if (pages[index] is NetworkSpeedChecker) {
+                      if (widget.pages[index] is NetworkSpeedChecker) {
                         // If the Bandwidth button is pressed, call checkNetworkSpeed directly
                         checkNetworkSpeed(context);
-                      } else if (pageTitles[index] == 'Download') {
-                        // onDownloadPressed();
+                      } else if (widget.pageTitles[index] ==
+                          'Change Username') {
+                        changeUsername(context);
                       } else {
                         // If any other button is pressed, navigate to the corresponding page
                         Navigator.of(context).pop(); // Close the drawer
                         Navigator.of(context).push(
-                          MaterialPageRoute(builder: (_) => pages[index]),
+                          MaterialPageRoute(
+                              builder: (_) => widget.pages[index]),
                         );
                       }
                     },

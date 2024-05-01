@@ -209,6 +209,7 @@ class _CreateFormsPageState extends State<CreateFormsPage> {
                                 options[i] = text;
                               },
                               decoration: InputDecoration(
+                                isDense: true,
                                 labelText: 'Option ${i + 1}',
                                 border: OutlineInputBorder(),
                               ),

@@ -2,46 +2,41 @@ import 'package:app_001/login_page.dart';
 import 'package:app_001/surveyor/form_selection_survey.dart';
 import 'package:app_001/surveyor/hamburger_menu.dart';
 import 'package:app_001/surveyor/survery_page_util.dart';
+import 'package:app_001/surveyor/village_data_table_page.dart';
 import 'package:app_001/utils/NetworkSpeedChecker.dart';
 import 'package:flutter/material.dart';
 import 'package:app_001/backend/database_helper.dart';
 
-class VillageDataTablePage extends StatefulWidget {
+class ChangeUserNamePage extends StatefulWidget {
   final String nextPage;
-  const VillageDataTablePage({required this.nextPage, super.key});
+  const ChangeUserNamePage({required this.nextPage, super.key});
   @override
-  _VillageDataTablePageState createState() => _VillageDataTablePageState();
+  _ChangeUserNamePageState createState() => _ChangeUserNamePageState();
 }
 
-class _VillageDataTablePageState extends State<VillageDataTablePage> {
-  List<String> Villages = [];
+class _ChangeUserNamePageState extends State<ChangeUserNamePage> {
+  List<String> userNamesList = [];
   List<String> filteredList = [];
   TextEditingController searchController = TextEditingController();
-  String selectedCategory = 'Village';
+  String selectedCategory = 'User';
 
   @override
   void initState() {
     super.initState();
-    loadVillageDetails();
+    loadUserDetails();
   }
 
-  Future<void> loadVillageDetails() async {
-    final dbHelper = DatabaseHelper.instance;
-    final villageDetails = await dbHelper.getVillageNames();
+  Future<void> loadUserDetails() async {
 
     setState(() {
-      Villages = villageDetails
-          .map(
-            (village) => village['Village'].toString(),
-          )
-          .toList();
-      filteredList = Villages;
+      userNamesList = LoginPage.usernames;
+      filteredList = userNamesList;
     });
   }
 
   void filterFamilyList(String query) {
     setState(() {
-      filteredList = Villages.where(
+      filteredList = userNamesList.where(
               (element) => element.toLowerCase().contains(query.toLowerCase()))
           .toList();
     });
@@ -52,13 +47,13 @@ class _VillageDataTablePageState extends State<VillageDataTablePage> {
     var dataTable = PaginatedDataTable(
       showCheckboxColumn: false,
       columns: const <DataColumn>[
-        DataColumn(label: Text('Village')),
+        DataColumn(label: Text('User')),
       ],
-      source: _VillageDataSource(
+      source: _UserDataSource(
         filteredList,
-        onRowClicked: (village) {
+        onRowClicked: (username) {
           navigateToFormsPage(
-              context, village); // Navigate to details page on row click
+              context, username); // Navigate to details page on row click
         },
       ),
       // header: const Text('Family Details'),
@@ -84,7 +79,7 @@ class _VillageDataTablePageState extends State<VillageDataTablePage> {
         pageTitles: ['Home', 'Log out', 'Bandwidth'],
       ),
       appBar: AppBar(
-        title: Text('Village Data Table'),
+        title: Text('User Data Table'),
         actions: [
           IconButton(
               onPressed: () => {Navigator.pop(context)},
@@ -135,34 +130,34 @@ class _VillageDataTablePageState extends State<VillageDataTablePage> {
     );
   }
 
-  void navigateToFormsPage(BuildContext context, String village) {
+  void navigateToFormsPage(BuildContext context, String username) {
     Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) =>
-            FormDataTablePage(village: village, nextPage: widget.nextPage),
+            VillageDataTablePage(nextPage: widget.nextPage),
       ),
     );
   }
 }
 
-class VillageDetailsPage extends StatelessWidget {
-  final String village;
+class UserDetailsPage extends StatelessWidget {
+  final String user;
 
-  VillageDetailsPage({required this.village});
+  UserDetailsPage({required this.user});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Village Details'),
+        title: Text('User Details'),
       ),
       body: Container(
         child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text('Village : $village'),
+              Text('User : $user'),
             ],
           ),
         ),
@@ -171,18 +166,18 @@ class VillageDetailsPage extends StatelessWidget {
   }
 }
 
-class _VillageDataSource extends DataTableSource {
-  final List<String> _villageList;
+class _UserDataSource extends DataTableSource {
+  final List<String> _usersList;
   final Function(String) onRowClicked; // Add this callback
 
-  _VillageDataSource(this._villageList, {required this.onRowClicked});
+  _UserDataSource(this._usersList, {required this.onRowClicked});
 
   @override
   DataRow? getRow(int index) {
-    if (index >= _villageList.length) {
+    if (index >= _usersList.length) {
       return null;
     }
-    final village = _villageList[index];
+    final village = _usersList[index];
     return DataRow(
       cells: [
         DataCell(Text(village)),
@@ -196,7 +191,7 @@ class _VillageDataSource extends DataTableSource {
   }
 
   @override
-  int get rowCount => _villageList.length;
+  int get rowCount => _usersList.length;
 
   @override
   bool get isRowCountApproximate => false;

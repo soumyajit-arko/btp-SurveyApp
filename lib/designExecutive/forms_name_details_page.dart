@@ -29,6 +29,7 @@ class _FormsNameDetailsPageState extends State<FormsNameDetailsPage> {
       child: TextField(
         controller: controller,
         decoration: InputDecoration(
+          isDense: true,
           labelText: labelText,
           border: OutlineInputBorder(),
         ),

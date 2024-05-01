@@ -128,6 +128,7 @@ class _FormDataTablePageState extends State<FormDataTablePage> {
                         filterFormList(query);
                       },
                       decoration: InputDecoration(
+                        isDense: true,
                         labelText: 'Search by Form Name',
                         prefixIcon: Icon(Icons.search),
                         border: OutlineInputBorder(),

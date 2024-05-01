@@ -10,8 +10,10 @@ import 'package:app_001/surveyor/survery_page_util.dart';
 import 'package:app_001/utils/NetworkSpeedChecker.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:path_provider/path_provider.dart';
 import '../backend/database_helper.dart';
 import 'dart:convert';
+import 'package:path/path.dart' as path;
 
 class TakeSurveyPage extends StatefulWidget {
   final FormDetails formName;
@@ -40,6 +42,7 @@ class _TakeSurveyPageState extends State<TakeSurveyPage> {
   List<Map<String, dynamic>> pastResponses = [];
   String pageTitle = "Take Service";
   String saveText = "Save Service";
+  String careTaker = "";
   // String selectedResponse = ''; // Variable to hold the selected response
   Map<String, dynamic>? selectedResponse;
   Map<String, dynamic> selectedResponseUtil = {};
@@ -106,11 +109,16 @@ class _TakeSurveyPageState extends State<TakeSurveyPage> {
         // print(pR[0]['survey_data'].runtimeType);
         // print(pR[0]['survey_data']);
         var x = jsonDecode(pR[0]['survey_data']);
+        String careTaker_ = "";
+        if (pR[0]['username'] != null) {
+          careTaker_ = pR[0]['username'];
+        }
         // print(x.runtimeType);
         // print(x);
 
         setState(() {
           pastResponse = x;
+          careTaker = careTaker_;
         });
       }
     }
@@ -166,6 +174,7 @@ class _TakeSurveyPageState extends State<TakeSurveyPage> {
       final response = responses[questionText];
       print('checking req = true or not');
       print('$questionText : $response');
+      if (question['attrtype'] == 'Check Box') continue;
       if ((req == 'true' || req == 1 || req == '1') &&
           (response == null || response.isEmpty)) {
         print('found not true');
@@ -218,6 +227,10 @@ class _TakeSurveyPageState extends State<TakeSurveyPage> {
         'sid': sid,
         'record_type': 1,
         'survey_data': responsesJson,
+        'image': "",
+        'voice': "",
+        'username': LoginPage.username,
+        'userid': LoginPage.userId,
         'upload_time': 0,
       });
       print('B : : : $b');
@@ -230,12 +243,21 @@ class _TakeSurveyPageState extends State<TakeSurveyPage> {
       });
       print('doen : $c');
     } else {
+      Directory documentDirectory = await getApplicationDocumentsDirectory();
+      String imageFileName = "${rid + 1}"+".jpg";
+      String pathutil = path.join(documentDirectory.path, imageFileName);
+      final te = await _image?.copy(pathutil);
+
       final b = await DatabaseHelper.instance.insertResponse({
         'rid': rid + 1,
         'subject_id': subID,
         'survey_datetime': formattedDatetime,
         'sid': sid,
         'record_type': 0,
+        'image': imageFileName,
+        'voice': audioPath ?? "",
+        'username': LoginPage.username,
+        'userid': LoginPage.userId,
         'survey_data': responsesJson,
         'upload_time': 0,
       });
@@ -287,6 +309,7 @@ class _TakeSurveyPageState extends State<TakeSurveyPage> {
           handleOptionSelected(questionText, value);
         },
         decoration: InputDecoration(
+          isDense: true,
           hintText: (unit.isNotEmpty) ? hintText + " in $unit" : hintText,
           border: OutlineInputBorder(),
         ),
@@ -304,7 +327,7 @@ class _TakeSurveyPageState extends State<TakeSurveyPage> {
       }
       prevText += ")";
     } else {
-      if (pastResponse.isNotEmpty) {
+      if (pastResponse.isNotEmpty && pastResponse[questionText] != null) {
         prevText = "(" + pastResponse[questionText];
         if (unit_.isNotEmpty) {
           prevText += " $unit_";
@@ -345,7 +368,6 @@ class _TakeSurveyPageState extends State<TakeSurveyPage> {
     final unit_ = question['attrunit'];
     final req = question['attrreq'];
     dynamic options;
-    print('question TYpe : $questionType');
     if (options_ == null) {
       options = null;
     } else {
@@ -353,7 +375,7 @@ class _TakeSurveyPageState extends State<TakeSurveyPage> {
     }
 
     if (questionType == 'Check Box') {
-      responses[questionText] = "false";
+      // responses[questionText] = "false";
       return Row(
         children: [
           Checkbox(
@@ -363,8 +385,18 @@ class _TakeSurveyPageState extends State<TakeSurveyPage> {
               print(checkboxValues[questionText]);
               setState(() {
                 checkboxValues[questionText] = newValue ?? false;
-                responses[questionText] = newValue == true ? "true" : "false";
+                responses[questionText] =
+                    (checkboxValues[questionText] == true) ? "true" : "false";
               });
+              print(checkboxValues[questionText]);
+              if (checkboxValues[questionText] != null &&
+                  checkboxValues[questionText] == true) {
+                print('yo its true');
+                print(responses[questionText]);
+              } else {
+                print('well its false');
+                print(responses[questionText]);
+              }
               // updateCheckboxResponse(questionText, newValue);
             },
           ),
@@ -395,72 +427,6 @@ class _TakeSurveyPageState extends State<TakeSurveyPage> {
       ),
     );
   }
-  // Widget _buildQuestionWidget(Map<String, dynamic> question) {
-  //   final questionText = question['attrname'];
-  //   final questionType = question['attrtype'];
-  //   final options_ = question['attrvalues'];
-  //   final unit_ = question['attrunit'];
-  //   final req = question['attrreq'];
-  //   dynamic options;
-  //   print('question TYpe : $questionType');
-  //   if (options_ == null) {
-  //     options = null;
-  //   } else {
-  //     options = options_.split(',');
-  //   }
-
-  //   return Padding(
-  //     padding: const EdgeInsets.symmetric(vertical: 16.0),
-  //     child: Card(
-  //       elevation: 4.0,
-  //       shape: RoundedRectangleBorder(
-  //         borderRadius: BorderRadius.circular(10.0),
-  //       ),
-  //       child: Padding(
-  //         padding: const EdgeInsets.all(16.0),
-  //         child: Column(
-  //           crossAxisAlignment: CrossAxisAlignment.start,
-  //           children: [
-  //             questionTextWithResponse(questionText, unit_, req),
-  //             // Text(
-  //             //   questionText,
-  //             //   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-  //             // ),
-  //             SizedBox(height: 10),
-  //             // if (questionType == 'Single Choice')
-  //             //   for (var option in options)
-  //             //     RadioListTile<String>(
-  //             //       title: Text(option),
-  //             //       value: option,
-  //             //       groupValue: responses[questionText],
-  //             //       onChanged: (value) {
-  //             //         handleOptionSelected(questionText, value ?? '');
-  //             //       },
-  //             //     ),
-  //             // if (questionType == 'Multiple Choice')
-  //             //   for (var option in options)
-  //             //     CheckboxListTile(
-  //             //       title: Text(option),
-  //             //       value: responses[questionText]?.contains(option) ?? false,
-  //             //       onChanged: (selected) {
-  //             //         if (selected != null) {
-  //             //           handleMultipleChoiceOptionSelected(
-  //             //             questionText,
-  //             //             option,
-  //             //             selected,
-  //             //           );
-  //             //         }
-  //             //       },
-  //             //     ),
-  //             // if (questionType == 'Text Answer' ||
-  //             //     questionType == 'Integer Answer')
-  //             _buildSmallTextField(questionText, 'Enter your answer', unit_),
-  //           ],
-  //         ),
-  //       ),
-  //     ),
-  //   );
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -507,6 +473,7 @@ class _TakeSurveyPageState extends State<TakeSurveyPage> {
                       });
                       print('The response selected is : $selectedResponse');
                     },
+                    careTaker: careTaker,
                   ),
                 SizedBox(height: 20),
                 if (questions.isEmpty)

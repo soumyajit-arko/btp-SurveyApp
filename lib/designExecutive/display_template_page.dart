@@ -34,6 +34,7 @@ class _TemplateSourcePageState extends State<TemplateSourcePage> {
         height: 50,
         child: TextField(
           decoration: InputDecoration(
+            isDense: true,
             hintText: hintText,
             border: OutlineInputBorder(),
           ),

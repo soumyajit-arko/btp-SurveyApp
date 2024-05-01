@@ -154,6 +154,7 @@ class _SelectTimePeriodPageState extends State<SelectTimePeriodPage> {
                     dateController,
                   ),
                   decoration: InputDecoration(
+                    isDense: true,
                     hintText: 'Select Date',
                     border: OutlineInputBorder(),
                   ),

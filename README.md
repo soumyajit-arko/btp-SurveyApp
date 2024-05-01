@@ -1,5 +1,7 @@
 # WORK FLOW
 
+
+
 Perform a survey with your friends
 Check which one do they prefer
 How can you analyse the data
@@ -119,4 +121,10 @@ Upload and download image and audio
 
 Store care giver in record log
 
+
+Upload Subjects update the subject_id in Subject,record_log,service_enrollment
+=> Image and audio file names are also dependent on subject_id
+
+Upload record_log update the rid
+in record_log,field_entry
 

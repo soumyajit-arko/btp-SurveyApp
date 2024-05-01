@@ -1,3 +1,5 @@
+import 'package:app_001/backend/database_helper.dart';
+import 'package:app_001/surveyor/change_username.dart';
 import 'package:app_001/surveyor/data_download_page.dart';
 import 'package:app_001/surveyor/data_upload_page.dart';
 import 'package:app_001/surveyor/display_survey_responses.dart';
@@ -28,13 +30,18 @@ class _SurveyorPageUtilState extends State<SurveyorPageUtil> {
           SurveyorPageUtil(),
           LoginPage(),
           NetworkSpeedChecker(),
+          SurveyorPageUtil(),
         ],
         icons: [
           Icons.home,
           Icons.logout,
           Icons.network_cell_rounded,
+          Icons.edit_outlined,
         ],
-        pageTitles: ['Home', 'Log out', 'Bandwidth'],
+        pageTitles: ['Home', 'Log out', 'Bandwidth', 'Change Username'],
+        reloadCallback: () {
+          setState(() {}); // Trigger a rebuild of the parent widget
+        },
       ),
       appBar: AppBar(
         title: Text('Home'),
@@ -118,17 +125,35 @@ class _SurveyorPageUtilState extends State<SurveyorPageUtil> {
                       label: Text('Enroll to a Service'),
                     ),
                     SizedBox(height: 20),
+                    ElevatedButton.icon(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ChangeUserNamePage(nextPage: 'survey'),
+                          ),
+                        );
+                      },
+                      icon: Icon(Icons.assignment, size: 30), // Add an icon
+                      label: Text('Change username'),
+                    ),
+                    // SizedBox(height: 20),
                     // ElevatedButton.icon(
-                    //   onPressed: () {
-                    //     Navigator.push(
-                    //       context,
-                    //       MaterialPageRoute(
-                    //         builder: (context) => DataUploadPage(),
-                    //       ),
-                    //     );
+                    //   onPressed: () async {
+                    //     await DatabaseHelper.instance
+                    //         .updateSubjectId('ppp', 'zone4_2');
                     //   },
                     //   icon: Icon(Icons.assignment, size: 30), // Add an icon
-                    //   label: Text('Upload Data'),
+                    //   label: Text('Update Subject'),
+                    // ),
+                    // SizedBox(height: 20),
+                    // ElevatedButton.icon(
+                    //   onPressed: () async {
+                    //     await DatabaseHelper.instance
+                    //         .updateRecordLogID('9898', '17');
+                    //   },
+                    //   icon: Icon(Icons.assignment, size: 30), // Add an icon
+                    //   label: Text('Update record_id'),
                     // ),
                     // SizedBox(height: 20),
                     // ElevatedButton.icon(

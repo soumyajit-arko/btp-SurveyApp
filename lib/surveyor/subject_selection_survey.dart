@@ -110,8 +110,6 @@ class _FamilyDataTablePageState extends State<FamilyDataTablePage> {
       columns: <DataColumn>[
         DataColumn(label: Text('Beneficiary Name/Spouse Name/Child Name')),
         DataColumn(label: Text('Mobile')),
-        // DataColumn(label: Text('Child Name')),
-        // DataColumn(label: Text('Spouse Name')),
         DataColumn(label: Text('Start Date')),
         DataColumn(label: Text('End Date')),
       ],
@@ -185,6 +183,7 @@ class _FamilyDataTablePageState extends State<FamilyDataTablePage> {
                         filterFamilyList(query);
                       },
                       decoration: InputDecoration(
+                        isDense: true,
                         labelText: 'Search by $selectedCategory',
                         prefixIcon: Icon(Icons.search),
                         border: OutlineInputBorder(),

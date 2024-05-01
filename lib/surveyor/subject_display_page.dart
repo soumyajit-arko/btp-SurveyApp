@@ -26,6 +26,9 @@ class _SubjectDisplayPageState extends State<SubjectDisplayPage> {
 
   void _loadsubjects() async {
     final subjects_ = await DatabaseHelper.instance.getSubjects();
+    for (var row in subjects_) {
+      print(row);
+    }
     setState(() {
       subjects = subjects_;
     });
@@ -96,6 +99,21 @@ class _SubjectDisplayPageState extends State<SubjectDisplayPage> {
     }
   }
 
+  Widget TextFieldUtilName(Map<String, dynamic> subject) {
+    String name = subject['SubjectName'].toString();
+    if (subject['SpouseName'] != null &&
+        subject['SpouseName'] != '' &&
+        subject['SpouseName'] != 'null') {
+      name += "/" + subject['SpouseName'].toString();
+    }
+    if (subject['ChildName'] != null &&
+        subject['ChildName'] != '' &&
+        subject['ChildName'] != 'null') {
+      name += "/" + subject['ChildName'].toString();
+    }
+    return Text(name);
+  }
+
   Widget TextFieldUtil(String text) {
     if (text.isNotEmpty && text != 'null') {
       return Text(text);
@@ -147,12 +165,12 @@ class _SubjectDisplayPageState extends State<SubjectDisplayPage> {
                               DataColumn(
                                 label: Text('Beneficiary Name'),
                               ),
-                              DataColumn(
-                                label: Text('Spouse Name'),
-                              ),
-                              DataColumn(
-                                label: Text('Child Name'),
-                              ),
+                              // DataColumn(
+                              //   label: Text('Spouse Name'),
+                              // ),
+                              // DataColumn(
+                              //   label: Text('Child Name'),
+                              // ),
                               DataColumn(
                                 label: Text('Biometric'),
                               ),
@@ -191,12 +209,11 @@ class _SubjectDisplayPageState extends State<SubjectDisplayPage> {
                                 .map(
                                   (subject) => DataRow(
                                     cells: <DataCell>[
-                                      DataCell(TextFieldUtil(
-                                          subject['SubjectName'].toString())),
-                                      DataCell(TextFieldUtil(
-                                          subject['SpouseName'].toString())),
-                                      DataCell(TextFieldUtil(
-                                          subject['ChildName'].toString())),
+                                      DataCell(TextFieldUtilName(subject)),
+                                      // DataCell(TextFieldUtil(
+                                      //     subject['SpouseName'].toString())),
+                                      // DataCell(TextFieldUtil(
+                                      //     subject['ChildName'].toString())),
                                       DataCell(
                                         Text('View Biometric'),
                                         onTap: () async {
@@ -207,7 +224,9 @@ class _SubjectDisplayPageState extends State<SubjectDisplayPage> {
                                             builder: (_) => biometricDialogue(
                                               path.join(filepath.path,
                                                   subject['Image'].toString()),
-                                               (subject['Voice']!=null) ? subject['Voice'] : "",
+                                              (subject['Voice'] != null)
+                                                  ? subject['Voice']
+                                                  : "",
                                             ),
                                           );
                                         },

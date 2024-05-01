@@ -15,6 +15,7 @@ class LoginPage extends StatefulWidget {
   static String jwtToken = "";
   static String userId = "";
   static String username = "";
+  static List<String> usernames = [];
   static String protocol = "http";
   // static String domainName = "csjitsi.iitkgp.ac.in";
   static String domainName = "10.5.29.229:8080";
@@ -62,11 +63,13 @@ class _LoginPageState extends State<LoginPage> {
     try {
       // Log message before API call
       // logMessage('Attempting login...');
-      var response = await http.post(
-        Uri.parse(url),
-        headers: {'Content-Type': 'application/json'},
-        body: jsonPayload,
-      ).timeout(Duration(seconds: timeoutDuration));
+      var response = await http
+          .post(
+            Uri.parse(url),
+            headers: {'Content-Type': 'application/json'},
+            body: jsonPayload,
+          )
+          .timeout(Duration(seconds: timeoutDuration));
 
       if (response.statusCode == 200) {
         // logMessage('Login successful!');
@@ -77,6 +80,7 @@ class _LoginPageState extends State<LoginPage> {
           LoginPage.jwtToken = json["jwtToken"];
           LoginPage.userId = json["userid"];
           LoginPage.username = json["name"];
+          LoginPage.usernames.add(json['name']);
           userType = json["type"];
         });
         print("response body : $json");

@@ -92,13 +92,12 @@ class _SubjectRegisterPageState extends State<SubjectRegisterPage> {
     String age = ageController.text;
     String sex = sexController.text;
     String caste = casteController.text;
-    String? voice = audioPath;
     String religion = religionController.text;
     String occupation = occupationController.text;
     String zoneid = zoneidController.text;
     String email = emailController.text;
     int count = 1 + (await DatabaseHelper.instance.getCountForZone(zoneid));
-    String subjectID = "${zoneid}_$count";
+    String subjectID = "$count";
     String filename = subjectID + ".jpg";
     String pathutil = path.join(documentDirectory.path, filename);
     print(pathutil);
@@ -125,7 +124,7 @@ class _SubjectRegisterPageState extends State<SubjectRegisterPage> {
       'Sex': sex,
       'Caste': caste,
       'Image': image,
-      'Voice': voice,
+      'Voice': audioPath,
       'Religion': religion,
       'Occupation': occupation,
       'Zone_ID': zoneid,
@@ -198,6 +197,7 @@ class _SubjectRegisterPageState extends State<SubjectRegisterPage> {
         controller: controller,
         keyboardType: keyboardType,
         decoration: InputDecoration(
+          isDense: true,
           labelText: labelText,
           border: OutlineInputBorder(),
         ),
@@ -242,6 +242,7 @@ class _SubjectRegisterPageState extends State<SubjectRegisterPage> {
                   controller: controller,
                   keyboardType: keyboardType,
                   decoration: InputDecoration(
+                    isDense: true,
                     hintText: 'Enter $labelText',
                     border: OutlineInputBorder(),
                   ),
@@ -348,6 +349,7 @@ class _SubjectRegisterPageState extends State<SubjectRegisterPage> {
                                   }
                                 },
                                 decoration: InputDecoration(
+                                  isDense: true,
                                   hintText: 'Enter name',
                                   border: OutlineInputBorder(),
                                 ),
