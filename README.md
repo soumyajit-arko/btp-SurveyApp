@@ -1,130 +1,54 @@
-# WORK FLOW
+### Step 1: Clone the Repository
 
+Open your terminal or command prompt and navigate to the directory where you want to store the project. Use the `git clone` command followed by the GitHub repository URL.
 
-
-Perform a survey with your friends
-Check which one do they prefer
-How can you analyse the data
-The existing solutions architectures
-
-User Login 
--> Store the user data of whoever will be loggin in the device in the table.
-Note : First time login should happen with internet connection
-
-After logging in 
--> Get the user info from the server if logging in for the first time
- 
-```
-    users (
-        Name TEXT,
-        Userid TEXT PRIMARY KEY,
-        Password TEXT,
-        Age INTEGER,
-        Sex TEXT,
-        Center_code TEXT,
-        User_Type TEXT,
-        Address TEXT,
-        Mobile TEXT UNIQUE,
-        Email TEXT UNIQUE,
-        Instance_time TEXT
-      )
-```
-Health Care Worker
---
-Download Data
-
-1. Download the survey forms
-
-```
-        survey_project (
-            name TEXT,
-            sid TEXT PRIMARY KEY ,
-            creation_date DATE  DEFAULT CURRENT_DATE,
-            description TEXT,
-            template_source TEXT,
-            details_source TEXT,
-            instance_time TIME DEFAULT CURRENT_TIME
-          )
-
-template_source:[
-    {
-        "question": "How many times did you come to hospital",
-        "type": "Single Choice",
-        "unit": "",
-        "options": "1,2,3,more than 3 ",
-        "required": 0
-    },
-    {
-        "question": "Do you have any of the following problems",
-        "type": "Multiple Choice",
-        "unit": "",
-        "options": "Diabetics,Cancer,Ulcer",
-        "required": 0
-    },
-    {
-        "question": "Any previous medical history",
-        "type": "Text Answer",
-        "unit": "",
-        "options": "",
-        "required": 0
-    },
-    {
-        "question": "Age when you first found this problem",
-        "type": "Integer Answer",
-        "unit": "",
-        "options": "",
-        "required": 0
-    }
-]
-
-
-
-```
-2. Download the services list
-```
-service_enrollment (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            subject_id INTEGER,
-            sid TEXT,
-            start_date TEXT,
-            end_date TEXT,
-            FOREIGN KEY (subject_id) REFERENCES Subject(subject_id),
-            FOREIGN KEY (sid) REFERENCES survey_project(sid)
-          )
+```bash
+git clone https://github.com/shashankgoud001/btp
 ```
 
+### Step 2: Navigate to the Project Directory
 
+Once the cloning process is complete, navigate to the directory of the downloaded project.
 
+```bash
+cd <project_directory>
+```
 
+### Step 3: Get Dependencies
 
-saMiX
+Flutter projects use dependencies specified in the `pubspec.yaml` file. Run the following command to get all the dependencies required for the project.
 
-Customised for Ramakrishna Mission Home of Service, Varanasi
+```bash
+flutter pub get
+```
 
-multi-centric platform
+This command will download and install all the dependencies listed in the `pubspec.yaml` file.
 
-<!-- Each center has seperate license -->
+### Step 4: Run the App
 
-Cannot be customized
-Redundant
+Now that you have cloned the repository and installed the dependencies, you can run the Flutter app on either an emulator or a physical device.
 
-Samix Login box
-APK version issue
+#### Emulator
 
-Done :
-i button in display beneficiaries to show modal form with image and audio
-Hamburger menu - Name,Current network bandwidth, Upload/Download, Logout, version 1.0
-Download and upload single buttons only in hamburger menu
+If you have an emulator set up, you can run the app using the following command:
 
-Current : 
-Upload and download image and audio
+```bash
+flutter emulators
+flutter emulators --launch <emulator_id>
+flutter run
+```
 
-Store care giver in record log
+Replace `<emulator_id>` with the ID of your emulator.
 
+#### Physical Device
 
-Upload Subjects update the subject_id in Subject,record_log,service_enrollment
-=> Image and audio file names are also dependent on subject_id
+To run the app on a physical device, connect your device to your computer via USB and enable USB debugging. Then, run the app using the following command:
 
-Upload record_log update the rid
-in record_log,field_entry
+```bash
+flutter devices
+flutter run
+```
 
+### Additional Notes
+
+- Make sure you have Flutter and Dart installed on your system. You can follow the official Flutter installation guide for detailed instructions.
